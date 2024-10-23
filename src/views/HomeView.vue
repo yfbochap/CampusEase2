@@ -4,5 +4,6 @@
 
 <template>
   <main>
+    Welcome to CampusEase
   </main>
 </template>
