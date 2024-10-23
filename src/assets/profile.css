@@ -1,0 +1,13 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.profile-header {
+    background-color: #353EC5;
+}
+
+.profile-name {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
