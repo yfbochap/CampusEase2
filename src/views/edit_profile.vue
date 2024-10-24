@@ -28,7 +28,7 @@
             <h3 class="card-title">Your Information</h3>
             <form>
               <div class="mb-3">
-                <label for="name" class="form-label">Namesx</label>
+                <label for="name" class="form-label">Name</label>
                 <input type="text" class="form-control" id="name" v-model="name">
               </div>
               <div class="mb-3">
