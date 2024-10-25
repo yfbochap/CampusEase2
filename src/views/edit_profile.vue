@@ -1,8 +1,6 @@
 <template>
     <div>
-      <!-- Navbar Section -->
-        <NavBar />
-
+      
       <!-- Header Section -->
       <div class="container-fluid text-white p-2" style="background-color:#353EC5;">
         <div class="d-flex justify-content-between align-items-center">
@@ -28,12 +26,8 @@
             <h3 class="card-title">Your Information</h3>
             <form>
               <div class="mb-3">
-                <label for="name" class="form-label">Name</label>
+                <label for="name" class="form-label">Username</label>
                 <input type="text" class="form-control" id="name" v-model="name">
-              </div>
-              <div class="mb-3">
-                <label for="surname" class="form-label">Surname</label>
-                <input type="text" class="form-control" id="surname" v-model="surname">
               </div>
               <div class="mb-3">
                 <label for="mobile" class="form-label">Mobile</label>
@@ -62,9 +56,6 @@
   import NavBar from '@/components/Navbar.vue';
 
   export default {
-    components: {
-        NavBar
-    },
     data() {
       return {
         name: "",
@@ -78,6 +69,6 @@
   </script>
   
   <style scoped>
-  @import '../assets/editprofile.css';
+  @import '../assets/edit_profile.css';
   </style>
   
