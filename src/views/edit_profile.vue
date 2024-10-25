@@ -4,7 +4,9 @@
       <!-- Header Section -->
       <div class="container-fluid text-white p-2" style="background-color:#353EC5;">
         <div class="d-flex justify-content-between align-items-center">
-          <button class="btn btn-light btn-sm"><i class="fas fa-arrow-left"></i> Back</button>
+          <RouterLink class="nav-link" to="/profile">
+            <button class="btn btn-light btn-sm"><i class="fas fa-arrow-left"></i> Back</button>
+          </RouterLink>
           <h2 class="mb-0" style="margin: auto;">Edit Profile</h2>
         </div>
       </div>
