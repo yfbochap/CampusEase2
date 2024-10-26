@@ -1,6 +1,5 @@
 <template>
     <div>
-      
       <!-- Header Section -->
       <div class="container-fluid text-white p-2" style="background-color:#353EC5;">
         <div class="d-flex justify-content-between align-items-center">
@@ -72,5 +71,7 @@
   
   <style scoped>
   @import '../assets/edit_profile.css';
+
+
   </style>
   
