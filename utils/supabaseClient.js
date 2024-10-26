@@ -16,3 +16,13 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 // }
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+// function loginWithGoogle(){
+//     supabase.auth.signInWithOAuth({
+//         provider: 'google'
+//       })
+// }
+
+// function logout(){
+//     const { error } = await supabase.auth.signOut()
+// }

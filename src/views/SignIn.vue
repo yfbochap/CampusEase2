@@ -28,6 +28,22 @@ const handleSignIn = async () => {
     alert(error.error_description || error.message);
   }
 };
+
+const handleGoogleSignIn = async () => {
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        scopes: 'profile email',
+        redirectTo: 'http://localhost:5173/home' // Change this to your redirect URL
+      }
+    });
+    if (error) throw error;
+  } catch (error) {
+    alert(error.message);
+  }
+};
+
 </script>
 
 <template>
@@ -59,21 +75,41 @@ const handleSignIn = async () => {
         </div>
         <div class="d-flex justify-content-center">
           <button
-            class="btn btn-dark text-white"
+            class="btn btn-dark text-white w-100"
             type="submit"
           >
             Sign In
           </button>
         </div>
       </form>
+
       <div class="mt-3 text-center">
         <p>
           Don't have an account? 
           <router-link to="/SignUp" class="text-primary">Sign Up</router-link>
         </p>
       </div>
+
+      <div class="separator mt-4">
+        <span>Or continue to</span>
+      </div>
+
+      <!-- Google Sign-In Button -->
+      <div class="mt-3 text-center">
+        <button
+          class="btn btn-outline-primary w-100"
+          @click="handleGoogleSignIn"
+        >
+        <i class="fab fa-google"></i>
+          Sign In with Google
+        </button>
+      </div>
+
     </div>
   </div>
+
+
+
 </template>
 
 <style scoped>
@@ -85,5 +121,27 @@ const handleSignIn = async () => {
   background-size: cover;
   background-position: center;
   height: 100vh; /* Full height to cover the screen */
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #6c757d; /* Optional: color for the 'or' text */
+}
+
+.separator::before,
+.separator::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #d3d3d3; /* Color for the line */
+}
+
+.separator:not(:empty)::before {
+  margin-right: 0.75em;
+}
+
+.separator:not(:empty)::after {
+  margin-left: 0.75em;
 }
 </style>
