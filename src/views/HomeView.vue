@@ -43,7 +43,6 @@
 
 <template>
   <main>
-    <SignedIn>
       <div class="container">
         <div class="logo-placeholder">
           <img src="@/assets/images/CElogo1.1.png" alt="CampusEase Logo" />
@@ -54,30 +53,31 @@
         </div>
 
         <button class="get-started-btn" @click="goToLogin">Get Started</button>
-      </div>
-      <button v-on:click="handleAddEvent">
+
+        <button v-on:click="handleAddEvent">
         RAHHH
       </button>
-    </SignedIn>
+      </div>
   </main>
 </template>
 
-<style>
-body {
-  font-family: sans-serif;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  align-items: center;
+<style scoped>
+/* body {
+
+} */
+main{
   background-image: url("@/assets/images/bg-1.jpeg"); /* Adjusted path */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
-
 .container {
   text-align: center;
-  margin-top: 10px;
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  align-items: center;
 }
 
 .translucent-background {
@@ -92,6 +92,7 @@ body {
   justify-content: center;
   align-items: center;
   margin-bottom: 10px;
+  margin-top: 50px;
 }
 
 .logo-placeholder img {

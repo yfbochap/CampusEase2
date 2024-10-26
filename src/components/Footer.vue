@@ -1,7 +1,7 @@
 <template>
     <!-- Breakpoints need to be added -->
     <div class="container"> 
-    <footer class="d-flex justify-content-between align-items-center py-3 my-4 border-top border-secondary">
+    <footer class="d-flex justify-content-between align-items-center py-3 mt-4 border-top border-secondary">
         <p class="mb-0 col-4 text-secondary">Copyright &#169 IS211</p> 
         <ul class="nav col-8 justify-content-end">
             <li class="nav-item">
