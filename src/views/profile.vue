@@ -43,9 +43,11 @@
           <a href="#" class="list-group-item d-flex justify-content-between align-items-center">
             <span><i class="fas fa-history me-3"></i> Past Events</span>
           </a>
-          <a href="#" class="list-group-item d-flex justify-content-between align-items-center text-danger">
-            <span><i class="fas fa-sign-out-alt me-3"></i> Logout</span>
-          </a>
+          <div class="text-center mb-3">
+            <RouterLink class="nav-link" to="/SignIn">
+              <button class="btn btn-danger">Logout</button>
+            </RouterLink>
+          </div>
         </div>
       </div>
     </div>
@@ -58,15 +60,14 @@ export default {
   name: 'ProfilePage',
   data() {
     return {
-      events: [], // To hold fetched events
-      campusEaseCalendarId: null // Store the exclusive CampusEase calendar ID
+      events: [],
+      campusEaseCalendarId: null
     };
   },
   methods: {
     goBack() {
       this.$router.go(-1); 
     },
-    // Initialize Google API Client
     initClient() {
       gapi.client.init({
         apiKey: 'AIzaSyAdMutgjV2OcfJgxr8ywiyj3Z1smkAiMRM',  
@@ -74,13 +75,11 @@ export default {
         discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
         scope: "https://www.googleapis.com/auth/calendar"
       }).then(() => {
-        // Prompt the user to authenticate
         gapi.auth2.getAuthInstance().signIn().then(() => {
           this.fetchGoogleCalendar();
         });
       });
     },
-    // Create an exclusive CampusEase calendar if not already created
     createCampusEaseCalendar() {
       gapi.client.calendar.calendars.insert({
         resource: {
@@ -89,19 +88,16 @@ export default {
         }
       }).then((response) => {
         console.log('CampusEase Calendar Created:', response);
-        // Save the newly created calendar ID to use later for listing events
         this.campusEaseCalendarId = response.result.id;
-        // Fetch events for the new calendar if any are added
         this.listUpcomingEvents(this.campusEaseCalendarId);
       }).catch((error) => {
         console.error('Error creating CampusEase Calendar:', error);
       });
     },
-    // Fetch the user's upcoming events from the CampusEase calendar
     listUpcomingEvents(calendarId = 'primary') {
       gapi.client.calendar.events.list({
         calendarId: calendarId, 
-        timeMin: (new Date()).toISOString(), // Get events starting from today
+        timeMin: (new Date()).toISOString(),
         showDeleted: false,
         singleEvents: true,
         maxResults: 10,
@@ -109,69 +105,24 @@ export default {
       }).then((response) => {
         const events = response.result.items;
         if (events.length > 0) {
-          this.events = events; // Store the events in the component state
+          this.events = events;
         } else {
           console.log('No upcoming events found.');
         }
       });
     },
-    // Function to be called when the user clicks on "Events Calendar"
     fetchGoogleCalendar() {
       gapi.load('client:auth2', () => {
         this.initClient();
         if (!this.campusEaseCalendarId) {
-          this.createCampusEaseCalendar(); // Create exclusive calendar if it doesn't exist
+          this.createCampusEaseCalendar();
         } else {
-          // If the calendar exists, list events from it
           this.listUpcomingEvents(this.campusEaseCalendarId);
         }
-      }
-      )
+      });
     }
   }
 }
-
-//     // Insert a dummy event for testing purposes
-//     addDummyEvent() {
-//       if (!this.campusEaseCalendarId) {
-//         alert('CampusEase Calendar has not been created yet.');
-//         return;
-//       }
-      
-//       const event = {
-//         summary: 'CampusEase Test Event',
-//         location: 'SMU Campus',
-//         description: 'This is a test event for CampusEase.',
-//         start: {
-//           dateTime: new Date(new Date().getTime() + 60 * 60 * 1000).toISOString(), // 1 hour from now
-//           timeZone: 'Asia/Singapore'
-//         },
-//         end: {
-//           dateTime: new Date(new Date().getTime() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
-//           timeZone: 'Asia/Singapore'
-//         }
-//       };
-
-//       gapi.client.calendar.events.insert({
-//         calendarId: this.campusEaseCalendarId,
-//         resource: event
-//       }).then((response) => {
-//         console.log('Dummy event created:', response);
-//         alert('Dummy event added to CampusEase calendar!');
-//         // Optionally refresh the events list to show the newly added event
-//         this.listUpcomingEvents(this.campusEaseCalendarId);
-//       }).catch((error) => {
-//         console.error('Error creating dummy event:', error);
-//       });
-//     }
-//   },
-//   mounted() {
-//     this.campusEaseCalendarId = localStorage.getItem('campusEaseCalendarId') || null;
-//   }
-  
-// };
-
-
 </script>
 
 <style scoped>
@@ -186,7 +137,6 @@ export default {
 .d-flex.justify-content-center.align-items-center {
   position: relative;
   z-index: 1;
-  /* background: rgba(0, 0, 0, 0.5);  */
   border-radius: 15px;
 }
 </style>
