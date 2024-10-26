@@ -12,13 +12,16 @@
       </router-link> 
       
       <!-- Collapsable button -->
-      <div class="d-flex justify-content-end">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-          <ul class="navbar-nav">
+        <router-link class="account-icon order-lg-last" to="/profile">
+                <i class="fas fa-user"></i>
+        </router-link>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
             <li class="nav-item">
               <RouterLink class="nav-link" to="/">HOME</RouterLink>
             </li>
@@ -30,12 +33,9 @@
             </li>
           </ul>
         </div>
-        <router-link class="account-icon" to="/profile">
-                <i class="fas fa-user"></i>
-        </router-link>
         
       </div>
-    </div>
+
   </nav>
 </template>
 
@@ -47,12 +47,17 @@
     height: 40px;
     width: 40px;
   }
+  .navbar-toggler{
+    margin-left: auto;
+    margin-right: 10px;
+  }
   
   .navbar {
     background-color: #f8f9fa;
     width: 100%;
     justify-content: space-between;
     align-items: center;
+    display: flex;
   }
 
   .navbar-nav .nav-link {
