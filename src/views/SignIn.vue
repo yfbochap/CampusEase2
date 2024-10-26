@@ -8,7 +8,7 @@ const password = ref("");
 
 const handleSignIn = async () => {
   try {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: email.value,
       password: password.value,
     });
@@ -18,7 +18,7 @@ const handleSignIn = async () => {
     const { user } = data;
     console.log(data)
 
-    if (!user?.email_verified) {
+    if (!user?.email_confirmed_at) {
       throw new Error("Please verify your email before signing in.");
     }
 
@@ -31,7 +31,7 @@ const handleSignIn = async () => {
 </script>
 
 <template>
-  <div class="d-flex align-items-center justify-content-center min-vh-100">
+  <div class="d-flex align-items-center justify-content-center min-vh-100 background-image">
     <div class="w-full max-w-md p-4 bg-white shadow rounded">
       <h2 class="text-center mb-4">Sign In</h2>
       <form @submit.prevent="handleSignIn">
@@ -79,5 +79,11 @@ const handleSignIn = async () => {
 <style scoped>
 .bg-light {
   background-color: #f8f9fa !important;
+}
+.background-image {
+  background-image: url('../assets/images/campus-background.png');
+  background-size: cover;
+  background-position: center;
+  height: 100vh; /* Full height to cover the screen */
 }
 </style>

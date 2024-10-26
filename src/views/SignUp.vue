@@ -41,7 +41,7 @@ const handleSignup = async () => {
 
     // if (insertError) throw insertError;
 
-    // router.push("/SignIn");
+    router.push("/SignIn");
   } catch (error) {
     alert(error.error_description || error.message);
   }
@@ -49,7 +49,7 @@ const handleSignup = async () => {
 </script>
 
 <template>
-  <div class="container d-flex justify-content-center min-vh-100">
+  <div class="d-flex align-items-center justify-content-center min-vh-100 background-image">
     <div class="col-md-6">
       <div class="card shadow">
         <div class="card-body">
@@ -117,5 +117,11 @@ const handleSignup = async () => {
 <style scoped>
 .card {
   border-radius: 1rem;
+}
+.background-image {
+  background-image: url('../assets/images/community-service.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh; /* Full height to cover the screen */
 }
 </style>
