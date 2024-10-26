@@ -1,0 +1,72 @@
+[33mcommit 8ea6919d32615f562fc75ca792afb111c999ad06[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Merge: ecb6aa7 e0c04aa
+Author: JingKai888 <jingkai.lim.2023@scis.smu.edu.sg>
+Date:   Wed Oct 23 14:45:12 2024 +0800
+
+    Profile page and edit profile page updated
+
+[33mcommit ecb6aa70c3656a5b3020a2e2eb1aea590e98ce7b[m
+Author: JingKai888 <jingkai.lim.2023@scis.smu.edu.sg>
+Date:   Wed Oct 23 14:37:46 2024 +0800
+
+    Profile page and edit profile page created
+
+[33mcommit e0c04aa0dc4b960714123da55bd42b03ed896094[m
+Author: tyeryan <tay.yee.en@gmail.com>
+Date:   Wed Oct 23 11:18:39 2024 +0800
+
+    Added EventCreation.vue for event creation page
+
+[33mcommit 057ef322d7798014ce80049ca20c4f4df0decb7e[m[33m ([m[1;32mmaster[m[33m)[m
+Author: YF Leong <yfbochap@gmail.com>
+Date:   Thu Oct 17 12:49:27 2024 +0800
+
+    removed original template stuff, added dashboard.vue
+
+[33mcommit 5bd8d9d269382f09050386d8b910b606d1856e1c[m
+Author: YF Leong <yfbochap@gmail.com>
+Date:   Wed Oct 16 17:23:35 2024 +0800
+
+    resolved conflict
+
+[33mcommit 4ae49305aa702822dec5bb2fd0cad12edd685689[m
+Author: unknown <jingkai.lim.2023@scis.smu.edu.sg>
+Date:   Tue Oct 8 09:39:57 2024 +0800
+
+    just updated
+
+[33mcommit 402ba154e6056c741ec6c5b42b5634580e593da1[m
+Author: YF Leong <yfbochap@gmail.com>
+Date:   Tue Oct 8 09:12:13 2024 +0800
+
+    test again
+
+[33mcommit 7158cad9462d6f8ae46011011c5d6cb7846fef09[m
+Author: YF Leong <yfbochap@gmail.com>
+Date:   Tue Oct 8 00:56:16 2024 +0800
+
+    test 3
+
+[33mcommit ad40dd52963ee3bb3bbd61613554a2a347123fac[m
+Author: YF Leong <yfbochap@gmail.com>
+Date:   Tue Oct 8 00:55:05 2024 +0800
+
+    test 2
+
+[33mcommit 48e92985137323f6087fbbd327223aa21e43cf3d[m
+Author: YF Leong <yfbochap@gmail.com>
+Date:   Tue Oct 8 00:45:53 2024 +0800
+
+    Test modification
+
+[33mcommit fcaf2b300753f84c705569ec698db604aa847c4b[m
+Author: YF Leong <yfbochap@gmail.com>
+Date:   Tue Oct 8 00:15:24 2024 +0800
+
+    Initial commit
+
+[33mcommit 6bc590af5854dfb4fd462ebb9c5b7fcd81f8d726[m
+Author: YF Leong <yfbochap@gmail.com>
+Date:   Mon Oct 7 23:52:14 2024 +0800
+
+    Initial commit

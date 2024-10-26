@@ -1,3 +1,7 @@
+<!-- <script setup>
+    import { SignedIn, SignedOut, SignOutButton } from 'vue-clerk'
+</script>
+
 <template>
   <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container-fluid">
@@ -126,5 +130,6 @@
       cursor: pointer;
   }
 
-
-</style>
+  
+  </style>
+  
