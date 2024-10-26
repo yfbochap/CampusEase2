@@ -9,42 +9,60 @@
         <!-- Carousel -->
         <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
-                
-                <!-- Loop through the events in groups of 3 -->
                 <div 
                     class="carousel-item" 
                     :class="{ active: index === 0 }" 
                     v-for="(eventGroup, index) in groupedEvents" 
                     :key="index"
                 >
-                    <div class="row d-flex justify-content-center"> <!-- div 1 item, consisting of 3 cards in it -->
-
-                        <!-- Individual Card Details-->
-                        <div class="col-md-3" v-for="event in eventGroup">
-                            <
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-md-3" v-for="event in eventGroup" :key="event.id">
                             <div class="card mb-4 shadow-sm">
                                 <img :src="event.image" class="card-img-top" :alt="event.name">
                                 <div class="card-body">
                                     <h5 class="card-title">{{ event.name }}</h5>
                                     <h6 class="card-subtitle">{{ event.location }}</h6>
-                                    <p class="card-text">{{ event.content }}</p>
-                                    <router-link class="btn btn-outline-success" to="/event#event">Learn more...</router-link>
+                                    <p class="card-text">{{ event.content }} <a @click="showModal(event)"><u>Read More...</u></a></p>
+
+                                    <!-- buttons -->
+                                    <router-link class="btn btn-outline-success" to="/event">Learn More</router-link> &nbsp
                                     <a :href=event.signup>Signup Here!   </a>
+
+                                    </div>                  
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+        </div>
 
+
+        <!-- Modal Information -->
+        <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Event Description</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="closeModal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h6>{{ selectedEvent?.content }}</h6>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
                     </div>
                 </div>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
         </div>
     </div>
 </template>
@@ -53,15 +71,15 @@
 export default {
     data() {
         return {
-            numEvents: 8, // adjust the number of events displayed in total
+            numEvents: 8,
             events: [],
-            numEventsGroup: 3 //adjust the number of events diplayed together (need to adjust col-3 for this in html)
+            numEventsGroup: 3,
+            selectedEvent: null // Variable to hold the selected event details
         };
     },
     computed: {
         groupedEvents() {
-            // Group events into arrays of num events specified
-            const num = this.numEventsGroup
+            const num = this.numEventsGroup;
             return this.events.reduce((acc, event, index) => {
                 const groupIndex = Math.floor(index / num);
                 if (!acc[groupIndex]) acc[groupIndex] = [];
@@ -71,19 +89,31 @@ export default {
         }
     },
     created() {
-        // Create the number of events
         for (let i = 1; i <= this.numEvents; i++) {
             this.events.push({
-                image: "",
+                id: i, // Ensure each event has a unique ID
+                image: "https://picsum.photos/200",
                 name: "SMOOOO" + i,
                 location: "Big Steps @ SCIS " + i,
                 content: `This is the description for event number ${i}.`,
-                signup:"http://www.google.com"
+                signup: "http://www.google.com"
             });
         }
     },
-    mounted(){
-    // -------- CODE TO INITIALISE GOOGLE MAPS ---------
+    methods: {
+        showModal(event) {
+            this.selectedEvent = event; // Set the selected event
+            // Show the modal using Bootstrap's modal show method
+            $('#eventModal').modal('show');
+        },
+        closeModal() {
+            this.selectedEvent = null; // Reset selected event when closing
+            // Hide the modal
+            $('#eventModal').modal('hide');
+        }
+    },
+    mounted() {
+        // -------- CODE TO INITIALISE GOOGLE MAPS ---------
     (g => {
         var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window;
         b = b[c] || (b[c] = {});
@@ -122,7 +152,7 @@ export default {
         const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
         map = new Map(document.getElementById("map"), { 
-            zoom: 18, // Zoom level when application is opened
+            zoom: 16, // Zoom level when application is opened
             minZoom: 13, // Set minimum zoom level
             maxZoom: 19, // Set maximum zoom level
             center: position,
@@ -140,7 +170,7 @@ export default {
         google.maps.event.addListener(map, 'bounds_changed', debounce(getVisibleBuildings, 600));
         google.maps.event.addListener(map, 'zoom_changed', debounce(getVisibleBuildings, 600));
 
-        const marker = new AdvancedMarkerElement({ //
+        const marker = new AdvancedMarkerElement({
         map: map,
         position: position,
         title: "SMU",
@@ -176,21 +206,27 @@ export default {
 </script>
 
 <style scoped>
-    .carousel-control-prev,
-    .carousel-control-next{
-        width: 80px;
-    }
+.carousel-control-prev,
+.carousel-control-next {
+    width: 80px;
+}
 
-    #eventMapTitle {
-        background-color: black;
-        text-align: center;
-        color: white;
-    }
-    #map {
-        height: 400px;
-        width: 100%;
-    }
-    #eventCardArea {
-        display: flex;
-    }
+#eventMapTitle {
+    background-color: black;
+    text-align: center;
+    color: white;
+}
+
+#map {
+    height: 400px;
+    width: 100%;
+}
+
+#eventCardArea {
+    display: flex;
+}
+
+.modal-title, .modal-body {
+    color: black ;
+}
 </style>
