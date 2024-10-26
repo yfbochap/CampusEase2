@@ -47,7 +47,20 @@ const router = createRouter({
       name:'SignUp',
       component: SignUp
     },
-  ]
+    {
+      path:'/event',
+      name:'event',
+      component: () => import('../views/Events.vue')
+    },
+    {
+      path: '/:pathMatch(.*)*', 
+      redirect: '/' 
+    },
+  ],
+  scrollBehavior(to, from, savedPosition) {
+    // Always scroll to top when navigating
+    return { top: 0 };
+  }
 })
 
 export default router

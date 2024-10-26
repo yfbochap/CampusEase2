@@ -1,51 +1,51 @@
-
-
 <template>
     <div id="eventMapTitle">
         <h2>Event Map</h2>
     </div>
-    <div id="map"></div>
 
-    <div class="container mt-5">
-        <h1 class="text-center">Our Events</h1>
-        <!-- Carousel -->
-        <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                
-                <!-- Loop through the events in groups of 3 -->
-                <div 
-                    class="carousel-item" 
-                    :class="{ active: index === 0 }" 
-                    v-for="(eventGroup, index) in groupedEvents" 
-                    :key="index"
-                >
-                    <div class="row d-flex justify-content-center"> <!-- div 1 item, consisting of 3 cards in it -->
+    <div class="row">
+        <div id="map" class="col-6"></div>
 
-                        <!-- Individual Card Details-->
-                        <div class="col-md-3" v-for="event in eventGroup">
-                            <div class="card mb-4 shadow-sm">
-                                <img :src="event.image" class="card-img-top" :alt="event.name">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ event.name }}</h5>
-                                    <h6 class="card-subtitle">{{ event.location }}</h6>
-                                    <p class="card-text">{{ event.content }}</p>
-                                    <a href="#">Learn More...</a>
-                                    <a :href=event.signup>Signup Here!   </a>
+        <div class="container mt-5 col-6">
+            <!-- Carousel -->
+            <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    
+                    <!-- Loop through the events in groups of 3 -->
+                    <div 
+                        class="carousel-item" 
+                        :class="{ active: index === 0 }" 
+                        v-for="(eventGroup, index) in groupedEvents" 
+                        :key="index"
+                    >
+                        <div class="row d-flex justify-content-center"> <!-- div 1 item, consisting of 3 cards in it -->
+
+                            <!-- Individual Card Details-->
+                            <div class="col-md-3" v-for="event in eventGroup">
+                                <div class="card mb-4 shadow-sm">
+                                    <img :src="event.image" class="card-img-top" :alt="event.name">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ event.name }}</h5>
+                                        <h6 class="card-subtitle">{{ event.location }}</h6>
+                                        <p class="card-text">{{ event.content }}</p>
+                                        <a href="#">Learn More...</a>
+                                        <a :href=event.signup>Signup Here!   </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
+                        </div>
                     </div>
                 </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
         </div>
     </div>
 </template>
@@ -75,7 +75,7 @@ export default {
         // Create the number of events
         for (let i = 1; i <= this.numEvents; i++) {
             this.events.push({
-                image: "https://via.placeholder.com/300",
+                image: "",
                 name: "SMOOOO" + i,
                 location: "Big Steps @ SCIS " + i,
                 content: `This is the description for event number ${i}.`,
@@ -109,11 +109,11 @@ export default {
     let service; // Initialize the Places API
     let debounceTimeout; // So to not make too many calls to the API
 
-    const allowedBounds = {
-        north: 1.2988, // Upper boundary (latitude)
-        south: 1.2938, // Lower boundary (latitude)
-        west: 103.8430, // Left boundary (longitude)
-        east: 103.8580 // Right boundary (longitude)
+    const allowedBounds = { // TODO: fix this
+        // north: 1.2988, // Upper boundary (latitude)
+        // south: 1.2938, // Lower boundary (latitude)
+        // west: 103.8430, // Left boundary (longitude)
+        // east: 103.8580 // Right boundary (longitude)
     };
 
     async function initMap() { // Initialise conditions for overall map
@@ -122,10 +122,10 @@ export default {
         const { Map } = await google.maps.importLibrary("maps");
         const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
-        map = new Map(document.getElementById("map"), {
-            zoom: 17, // Zoom level when application is opened
-            minZoom: 17, // Set minimum zoom level
-            maxZoom: 22, // Set maximum zoom level
+        map = new Map(document.getElementById("map"), { 
+            zoom: 16, // Zoom level when application is opened
+            minZoom: 13, // Set minimum zoom level
+            maxZoom: 19, // Set maximum zoom level
             center: position,
             mapId: "SMU",
             disableDefaultUI: true,
@@ -137,7 +137,7 @@ export default {
 
         service = new google.maps.places.PlacesService(map);
 
-        // Corrected event listener attachment
+        // Event listeners
         google.maps.event.addListener(map, 'bounds_changed', debounce(getVisibleBuildings, 600));
         google.maps.event.addListener(map, 'zoom_changed', debounce(getVisibleBuildings, 600));
 
@@ -160,7 +160,7 @@ export default {
     initMap();
 
 
-    function getVisibleBuildings() {
+    function getVisibleBuildings() {    
         const bounds = map.getBounds();
         const request = {
             bounds: bounds,
@@ -187,11 +187,18 @@ export default {
         text-align: center;
         color: white;
     }
+    /* do not need this
     #map {
         height: 400px;
-        width: 100%;
-    }
+        width: 50%;
+    } */
     #eventCardArea {
         display: flex;
     }
+
+    .card {
+    min-height: 400px;
+    max-height: 400px;
+}
+
 </style>

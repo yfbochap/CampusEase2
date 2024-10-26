@@ -1,6 +1,6 @@
 <!-- <script setup>
     import { SignedIn, SignedOut, SignOutButton } from 'vue-clerk'
-</script>
+</script> -->
 
 <template>
   <nav class="navbar navbar-expand-lg navbar-light">
