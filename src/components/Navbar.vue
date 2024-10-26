@@ -8,7 +8,7 @@
       
       <!--image-->
       <router-link class="navbar-brand" to="/">
-        <img src="@/assets/images/CE-LogoTransNW.png" alt="Logo" id="navbarLogo"/> &nbspCampusEase
+        <img src="@/assets/images/CElogo1.1.png" alt="Logo" id="navbarLogo"/> &nbspCampusEase
       </router-link> 
       <!-- Not sure how to fix this it seems like the router-link tag takes up all the space in the nav when image is used -->
 
