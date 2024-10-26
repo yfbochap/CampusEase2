@@ -1,27 +1,25 @@
-<!-- <script setup>
-    import { SignedIn, SignedOut, SignOutButton } from 'vue-clerk'
-</script> -->
-
 <template>
   <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container-fluid">
       
       <!--image-->
       <router-link class="navbar-brand" to="/">
-        <img src="@/assets/images/CElogo1.1.png" alt="Logo" id="navbarLogo"/> &nbspCampusEase
+        <img src="@/assets/images/CE-LogoTransNW.png" alt="Logo" id="navbarLogo" style="width: 40px;"/> &nbspCampusEase
       </router-link> 
-      
-      <!-- Collapsable button -->
+
+  
+      <!-- Collapsible button -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
 
         <router-link class="account-icon order-lg-last" to="/profile">
-                <i class="fas fa-user"></i>
+            <i class="fas fa-user"></i>
         </router-link>
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
+        <!-- Nav Links -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul class="navbar-nav">
             <li class="nav-item">
               <RouterLink class="nav-link" to="/">HOME</RouterLink>
             </li>
@@ -31,11 +29,11 @@
             <li class="nav-item">
               <RouterLink class="nav-link" to="/dashboard">EVENTS</RouterLink>
             </li>
+            <!-- <li class="nav-item">
+            </li> -->
           </ul>
         </div>
-        
       </div>
-
   </nav>
 </template>
 
@@ -47,17 +45,17 @@
     height: 40px;
     width: 40px;
   }
-  .navbar-toggler{
-    margin-left: auto;
-    margin-right: 10px;
-  }
   
   .navbar {
     background-color: #f8f9fa;
     width: 100%;
     justify-content: space-between;
     align-items: center;
-    display: flex;
+  }
+
+  .navbar-toggler{
+    margin-left: auto;
+    margin-right: 10px;
   }
 
   .navbar-nav .nav-link {
