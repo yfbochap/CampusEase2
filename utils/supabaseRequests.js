@@ -1,14 +1,12 @@
 import { supabase } from "./supabaseClient";
 
-// export const getEvents = async ({ userId, token }) => {
-//     const supabase = await supabase(token);
-//     console.log("this happens");
-//     const { data: event} = await supabase
-//         .from("event")
-//         .select("*")
-//         .eq("user_id", userId);
-//     return event;
-// }
+export const getEvents = async () => {
+    const { data, error } = await supabase
+        .from("event")
+        .select("*");
+    if (error) console.error("Error fetching events:", error);
+    return data;
+}
 
 // export const addEvent = async ({ userId, token, event}) => {
 //     const supabase = await supabase(token);

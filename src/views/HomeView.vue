@@ -1,38 +1,14 @@
 <script setup>
     import { ref } from 'vue';
     // import { addEvent } from '../../utils/supabaseRequests.js'
-    // import { supabaseClient } from '../../utils/supabaseClient.js';
+    import { supabase } from '../../utils/supabaseClient.js';
+    import { getEvents } from '../../utils/supabaseRequests.js';
 
-    const successMessage = ref('');
-    const errorMessage = ref('');
-
-    // const { isSignedIn, userId, getToken } = useAuth();
-
-    // const handleAddEvent = async () => {
-    //   console.log('Is Signed In:', isSignedIn.value); // This should be true
-    //   console.log('User ID:', userId.value); // This should show the user ID
-    //   // const token = await getToken.value();
-    //   // console.log('User', token);
-    //   // console.log(user)
-
-    //   if (isSignedIn.value) {
-    //     try {
-    //       // Call the getToken function properly
-    //       const token = await getToken.value(); // Await the token retrieval
-    //       console.log('Token:', token);
-
-    //       supabaseClient.auth.setAuth(token);
-    //       const event = await addEvent({ userId: userId.value, token });
-    //       successMessage.value = "Event added successfully!";
-    //       console.log("Added event:", event);
-    //     } catch (error) {
-    //       errorMessage.value = "Error adding event: " + error.message;
-    //       console.error("Error adding event:", error);
-    //     }
-    //   } else {
-    //     errorMessage.value = "User not authenticated.";
-    //   }
-    // }
+    const handleGetEvents = async () => {
+      const events = await getEvents();
+      console.log(events);
+    }
+    
     // Example placeholder function for handling "Get Started" button click
     const handleGetStarted = () => {
       // Navigate to the LoginPage
@@ -54,7 +30,7 @@
 
         <button class="get-started-btn" @click="goToLogin">Get Started</button>
 
-        <button v-on:click="handleAddEvent">
+        <button v-on:click="handleGetEvents">
         RAHHH
       </button>
       </div>
@@ -96,8 +72,8 @@ main{
 }
 
 .logo-placeholder img {
-  width: 30%;
-  height: 30%;
+  width: 60%;
+  height: 60%;
   transition: all 0.3s ease;
 }
 
@@ -110,8 +86,8 @@ main{
 }
 
 .tagline img {
-  width: 55%;
-  height: 55%;
+  width: 100%;
+  height: 100%;
   transition: all 0.3s ease;
 }
 
@@ -142,29 +118,41 @@ main{
 /* Media queries for responsive design */
 @media (max-width: 1200px) {
   .logo-placeholder img {
-    width: 30%;
-    height: 30%;
+    width: 55%;
+    height: 55%;
   }
 
   .tagline img {
-    width: 55%;
-    height: 55%;
+    width: 90%;
+    height: 90%;
   }
 }
 
 @media (max-width: 992px) {
   .logo-placeholder img {
-    width: 35%;
-    height: 35%;
+    width: 50%;
+    height: 50%;
   }
 
   .tagline img {
-    width: 70%;
-    height: 70%;
+    width: 80%;
+    height: 80%;
   }
 }
 
 @media (max-width: 768px) {
+  .logo-placeholder img {
+    width: 45%;
+    height: 45%;
+  }
+
+  .tagline img {
+    width: 80%;
+    height: 80%;
+  }
+}
+
+@media (max-width: 576px) {
   .logo-placeholder img {
     width: 40%;
     height: 40%;
@@ -173,18 +161,6 @@ main{
   .tagline img {
     width: 70%;
     height: 70%;
-  }
-}
-
-@media (max-width: 576px) {
-  .logo-placeholder img {
-    width: 35%;
-    height: 35%;
-  }
-
-  .tagline img {
-    width: 65%;
-    height: 65%;
   }
 
   .get-started-btn {
