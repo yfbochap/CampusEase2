@@ -72,8 +72,8 @@ main{
 }
 
 .logo-placeholder img {
-  width: 30%;
-  height: 30%;
+  width: 60%;
+  height: 60%;
   transition: all 0.3s ease;
 }
 
@@ -86,8 +86,8 @@ main{
 }
 
 .tagline img {
-  width: 55%;
-  height: 55%;
+  width: 100%;
+  height: 100%;
   transition: all 0.3s ease;
 }
 
@@ -118,29 +118,41 @@ main{
 /* Media queries for responsive design */
 @media (max-width: 1200px) {
   .logo-placeholder img {
-    width: 30%;
-    height: 30%;
+    width: 55%;
+    height: 55%;
   }
 
   .tagline img {
-    width: 55%;
-    height: 55%;
+    width: 90%;
+    height: 90%;
   }
 }
 
 @media (max-width: 992px) {
   .logo-placeholder img {
-    width: 35%;
-    height: 35%;
+    width: 50%;
+    height: 50%;
   }
 
   .tagline img {
-    width: 70%;
-    height: 70%;
+    width: 80%;
+    height: 80%;
   }
 }
 
 @media (max-width: 768px) {
+  .logo-placeholder img {
+    width: 45%;
+    height: 45%;
+  }
+
+  .tagline img {
+    width: 80%;
+    height: 80%;
+  }
+}
+
+@media (max-width: 576px) {
   .logo-placeholder img {
     width: 40%;
     height: 40%;
@@ -149,18 +161,6 @@ main{
   .tagline img {
     width: 70%;
     height: 70%;
-  }
-}
-
-@media (max-width: 576px) {
-  .logo-placeholder img {
-    width: 35%;
-    height: 35%;
-  }
-
-  .tagline img {
-    width: 65%;
-    height: 65%;
   }
 
   .get-started-btn {
