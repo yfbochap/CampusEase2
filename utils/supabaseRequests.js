@@ -8,22 +8,33 @@ export const getEvents = async () => {
     return data;
 }
 
-// export const addEvent = async ({ userId, token, event}) => {
-//     const supabase = await supabase(token);
-//     const { data, error} = await supabase
-//         .from("event")
-//         .insert(
-//             {
-//                 user_id: userId,
-//                 event_name: "HARDCODED TEST",
-//                 date_time: Date.now(),
-//                 place_name: "Hardcoded Location",
-//                 place_id: "Hardcoded ID"
-//             },
-//         );
-//     if (error){
-//         console.error("Error inserting event:", error);
-//         throw new Error(error.message);
-//     }
-//     return data;
-// }
+export async function addEvent(eventData) {
+    try {
+      const { data, error } = await supabase
+        .from('event') 
+        .insert([{
+          created_by: eventData.created_by,
+          event_name: eventData.name,
+          start_date_time: eventData.start_date_time,
+          end_date_time: eventData.end_date_time,
+          location: eventData.location,
+          venue: eventData.venue,
+          place_id: eventData.place_id,
+          place_lat: eventData.place_lat,
+          place_lng: eventData.place_lng,
+          description: eventData.description,
+          organisation: eventData.organisation,
+          external_url: eventData.external_url,
+          event_type: eventData.event_type,
+          photos: eventData.photos,
+        }]);
+  
+      if (error) {
+        throw error;
+      }
+      return data;
+    } catch (error) {
+      console.error('Error adding event:', error.message);
+      return null;
+    }
+  }

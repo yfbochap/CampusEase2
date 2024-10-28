@@ -1,133 +1,120 @@
-<template>
-  <nav class="navbar navbar-expand-lg navbar-light">
-    <div class="container-fluid">
-      
-      <!--image-->
-      <router-link class="navbar-brand" to="/">
-        <img src="@/assets/images/CE-LogoTransNW.png" alt="Logo" id="navbarLogo" style="width: 40px;"/> &nbspCampusEase
-      </router-link> 
-
-  
-      <!-- Collapsible button -->
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <router-link class="account-icon order-lg-last" to="/profile">
-            <i class="fas fa-user"></i>
-        </router-link>
-
-        <!-- Nav Links -->
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <RouterLink class="nav-link" to="/">HOME</RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink class="nav-link" to="/about">ABOUT</RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink class="nav-link" to="/dashboard">EVENTS</RouterLink>
-            </li>
-            <!-- <li class="nav-item">
-            </li> -->
-          </ul>
-        </div>
-      </div>
-  </nav>
-</template>
-
-<script setup>
-</script>
-
-<style scoped>
-  #navbarLogo {
-    height: 40px;
-    width: 40px;
-  }
-  
-  .navbar {
-    background-color: #f8f9fa;
-    width: 100%;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .navbar-toggler{
-    margin-left: auto;
-    margin-right: 10px;
-  }
-
-  .navbar-nav .nav-link {
-    color: #333;
-    transition: background-color 0.3s ease;
-  }
-
-  .navbar-nav .nav-link:hover {
-    background-color: #e2e6ea;
-    border-radius: 5px;
-  }
-
-  .navbar-brand {
-    display: inline-flex;
-    align-items: center;
-    width: auto;
-  }
-  
-  .container {
-    text-align: center;
-    margin-top: 50px;
-}
-
-  .nav-item {
-    padding-right: 20px;
-  }
-
-  .logo-placeholder {
-    height: 50px; /* Adjust as needed */
-    background-color: #e0e0e0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 200px;
-    margin-bottom: 150px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 50px; /* Adjust as needed */
-}
-
-.logo-placeholder img {
-    max-width: 300px; /* Adjust logo size as needed */
-    max-height: 300px; /* Adjust logo size as needed */
-}
-
-.tagline-top {
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    font-style: oblique;
-    font-size: 60px;
-}
-
-.tagline-bottom {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 40px;
-    margin-bottom: 50px;
-}
-
-.get-started-btn {
-    padding: 15px 25px;
-    font-size: 20px;
-    background-color: #14406c;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    margin: 50px;
-    cursor: pointer;
-}
-
-.account-icon {
-    font-size: 24px;
-    color: #333;
-    cursor: pointer;
-}
-
+<template> 
+  <nav class="navbar navbar-expand-sm navbar-light"> 
+    <div class="container-fluid"> 
+       
+      <!--image--> 
+      <router-link class="navbar-brand" to="/"> 
+        <img src="@/assets/images/CElogo1-1.png" alt="Logo" id="navbarLogo" style="width: 40px;"/> &nbsp  CampusEase 
+      </router-link>  
+ 
+   
+        <!-- Collapsible button for Navbar--> 
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> 
+          <span class="navbar-toggler-icon"></span> 
+        </button> 
+ 
+        <a class="btn account-icon order-lg-last order-md-last order-sm-last" data-bs-toggle="offcanvas" href="#sidebar" role="button" aria-controls="offcanvasExample"> 
+          <i class="fas fa-user"></i> 
+        </a> 
+ 
+        <!-- Nav Links --> 
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav"> 
+          <ul class="navbar-nav"> 
+            <li class="nav-item"> 
+              <router-link class="nav-link" to="/">HOME</router-link> 
+            </li> 
+            <li class="nav-item"> 
+              <router-link class="nav-link" to="/dashboard">EVENTS</router-link> 
+            </li> 
+            <li class="nav-item"> 
+              <router-link class="nav-link" to="/about">ABOUT</router-link> 
+            </li> 
+          </ul> 
+        </div> 
+      </div> 
+  </nav> 
+ 
+  <!-- SideBar Links --> 
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="sidebar" aria-labelledby="offcanvasRightLabel"> 
+    <div class="offcanvas-header justify-content-center pb-0"> 
+      <i class="fas fa-user" style="font-size: 24px;"></i> &nbsp 
+      <h5 id="sidebar" style="margin: 0px;">Profile Settings</h5> 
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button> 
+    </div> 
+    <hr> 
+    <div class="offcanvas-body" style="position: relative;"> 
+      <ul class="p-0"> 
+        <li class="sidebar_link"><router-link to="/edit_profile">Edit Profile</router-link></li> 
+        <li class="sidebar_link"><router-link to="/">Events Calender</router-link></li> 
+        <li class="sidebar_link"><router-link to="/">Notifications</router-link></li> 
+        <li class="sidebar_link"><router-link to="/">Past Events</router-link></li> 
+      </ul> 
+      <div class="btn btn-outline-danger" style="width:217px"> <!-- position:absolute;bottom: 20px; --> 
+        Log Out 
+      </div> 
+    </div> 
+  </div> 
+</template> 
+ 
+<script setup> 
+</script> 
+ 
+<style scoped> 
+  #navbarLogo { 
+    height: 40px; 
+    width: 40px; 
+  } 
+   
+  .navbar { 
+    background-color: #f8f9fa; 
+    width: 100%; 
+    justify-content: space-between; 
+    align-items: center; 
+  } 
+ 
+  .navbar-toggler{ 
+    margin-left: auto; 
+    margin-right: 10px; 
+  } 
+ 
+  .navbar-nav .nav-link { 
+    color: #333; 
+    transition: background-color 0.3s ease; 
+  } 
+ 
+  .navbar-nav .nav-link:hover { 
+    background-color: #e2e6ea; 
+    border-radius: 5px; 
+  } 
+ 
+  .navbar-brand { 
+    display: inline-flex; 
+    align-items: center; 
+    width: auto; 
+  } 
+   
+  .container { 
+    text-align: center; 
+    margin-top: 50px; 
+} 
+ 
+  .nav-item { 
+    padding-right: 20px; 
+  } 
+ 
+  .offcanvas{ 
+    width: 250px; 
+  } 
+  .sidebar_link{ 
+    list-style: none; 
+    font-size: 18px; 
+    padding-bottom: 10px; 
+  } 
+ 
+.account-icon { 
+    font-size: 24px; 
+    color: #333; 
+    cursor: pointer; 
+} 
+ 
 </style>

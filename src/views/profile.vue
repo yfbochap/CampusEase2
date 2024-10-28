@@ -1,7 +1,13 @@
 <template>
-  <div class="d-flex justify-content-center align-items-center vh-100 position-relative">
+  <div class="d-flex flex-column align-items-center vh-100 position-relative background-wrapper">
+    <!-- Header Section -->
+    <div class="header-section bg-black text-white py-3 w-100 text-center">
+      <h1>Welcome to Your Profile</h1>
+      <p>Manage your events, notifications, and settings here</p>
+    </div>
+    
     <!-- Profile Container -->
-    <div class="card profile-container shadow-lg border-0 position-relative">
+    <div class="card profile-container shadow-lg border-0">
       <!-- Profile Header -->
       <div class="profile-header text-center text-white p-3 position-relative">
         <button @click="goBack" class="btn btn-light position-absolute top-0 start-0 mt-2 ms-3">
@@ -43,7 +49,7 @@
           <a href="#" class="list-group-item d-flex justify-content-between align-items-center">
             <span><i class="fas fa-history me-3"></i> Past Events</span>
           </a>
-          <div class="text-center mb-3">
+          <div class="text-center">
             <RouterLink class="nav-link" to="/SignIn">
               <button class="btn btn-danger">Logout</button>
             </RouterLink>
@@ -70,8 +76,8 @@ export default {
     },
     initClient() {
       gapi.client.init({
-        apiKey: 'AIzaSyAdMutgjV2OcfJgxr8ywiyj3Z1smkAiMRM',  
-        clientId: '689557435886-91ofkj6r70cg7k3dsphhe54cn3s51ftj.apps.googleusercontent.com', 
+        apiKey: 'YOUR_API_KEY',  
+        clientId: 'YOUR_CLIENT_ID', 
         discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
         scope: "https://www.googleapis.com/auth/calendar"
       }).then(() => {
@@ -128,15 +134,26 @@ export default {
 <style scoped>
 @import '../assets/profile.css';
 
-.profile-container {
-  width: 60vw; 
+.background-wrapper {
+  background-image: url('@/assets/images/bg-3.jpg'); 
+  background-size: cover;
+  background-position: center;
   height: 100vh;
-  margin: auto; 
+  width: 100vw;
 }
 
-.d-flex.justify-content-center.align-items-center {
-  position: relative;
-  z-index: 1;
+.header-section {
+  background-color: black;
+  color: white;
+  width: 100%;
+}
+
+.profile-container {
+  width: 60vw; 
+  height: 100%;
+  margin-top: 0; 
+  background-color: rgba(255, 255, 255, 0.9); 
   border-radius: 15px;
+  overflow: hidden;
 }
 </style>
