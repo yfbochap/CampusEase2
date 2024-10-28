@@ -1,98 +1,120 @@
-<!-- <script setup>
-    import { SignedIn, SignedOut, SignOutButton } from 'vue-clerk'
-</script> -->
-
-<template>
-  <nav class="navbar navbar-expand-lg navbar-light">
-    <div class="container-fluid">
-      <!-- Logo and Brand Name -->
-      <router-link class="navbar-brand" to="/">
-        <img src="@/assets/images/CElogo1.1.png" alt="Logo" id="navbarLogo"/> &nbsp;CampusEase
-      </router-link> 
-
-      <!-- Collapsable button -->
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <!-- Profile Icon -->
-      <router-link class="account-icon order-lg-last" to="/profile">
-        <i class="fas fa-user"></i>
-      </router-link>
-
-      <!-- Navbar Links -->
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <RouterLink class="nav-link" to="/">HOME</RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink class="nav-link" to="/about">ABOUT</RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink class="nav-link" to="/dashboard">EVENTS</RouterLink>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-</template>
-
-<style setup>
-  /* Navbar Fixed Styling */
-  .navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: #f8f9fa;
-    z-index: 1000; /* Ensures navbar is above other content */
-    justify-content: space-between;
-    align-items: center;
-    display: flex;
-    transition: background-color 0.3s ease;
-    border-bottom: none;
-    box-shadow: none;
-  }
-
-  /* Logo Styling */
-  #navbarLogo {
-    height: 40px;
-    width: 40px;
-  }
-
-  /* Toggler Button Styling */
-  .navbar-toggler {
-    margin-left: auto;
-    margin-right: 10px;
-  }
-
-  /* Navbar Links Styling */
-  .navbar-nav .nav-link {
-    color: #333;
-    transition: background-color 0.3s ease;
-  }
-
-  .navbar-nav .nav-link:hover {
-    background-color: #e2e6ea;
-    border-radius: 5px;
-  }
-
-  .navbar-brand {
-    display: inline-flex;
-    align-items: center;
-    width: auto;
-  }
-
-  /* Account Icon Styling */
-  .account-icon {
-    font-size: 24px;
-    color: #333;
-    cursor: pointer;
-  }
-
-  /* Spacing Adjustment for Fixed Navbar */
-  body {
-    padding-top: 70px; /* Adjust based on navbar height */
-  }
+<template> 
+  <nav class="navbar navbar-expand-sm navbar-light"> 
+    <div class="container-fluid"> 
+       
+      <!--image--> 
+      <router-link class="navbar-brand" to="/"> 
+        <img src="@/assets/images/CElogo1-1.png" alt="Logo" id="navbarLogo" style="width: 40px;"/> &nbsp  CampusEase 
+      </router-link>  
+ 
+   
+        <!-- Collapsible button for Navbar--> 
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> 
+          <span class="navbar-toggler-icon"></span> 
+        </button> 
+ 
+        <a class="btn account-icon order-lg-last order-md-last order-sm-last" data-bs-toggle="offcanvas" href="#sidebar" role="button" aria-controls="offcanvasExample"> 
+          <i class="fas fa-user"></i> 
+        </a> 
+ 
+        <!-- Nav Links --> 
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav"> 
+          <ul class="navbar-nav"> 
+            <li class="nav-item"> 
+              <router-link class="nav-link" to="/">HOME</router-link> 
+            </li> 
+            <li class="nav-item"> 
+              <router-link class="nav-link" to="/dashboard">EVENTS</router-link> 
+            </li> 
+            <li class="nav-item"> 
+              <router-link class="nav-link" to="/about">ABOUT</router-link> 
+            </li> 
+          </ul> 
+        </div> 
+      </div> 
+  </nav> 
+ 
+  <!-- SideBar Links --> 
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="sidebar" aria-labelledby="offcanvasRightLabel"> 
+    <div class="offcanvas-header justify-content-center pb-0"> 
+      <i class="fas fa-user" style="font-size: 24px;"></i> &nbsp 
+      <h5 id="sidebar" style="margin: 0px;">Profile Settings</h5> 
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button> 
+    </div> 
+    <hr> 
+    <div class="offcanvas-body" style="position: relative;"> 
+      <ul class="p-0"> 
+        <li class="sidebar_link"><router-link to="/edit_profile">Edit Profile</router-link></li> 
+        <li class="sidebar_link"><router-link to="/">Events Calender</router-link></li> 
+        <li class="sidebar_link"><router-link to="/">Notifications</router-link></li> 
+        <li class="sidebar_link"><router-link to="/">Past Events</router-link></li> 
+      </ul> 
+      <div class="btn btn-outline-danger" style="width:217px"> <!-- position:absolute;bottom: 20px; --> 
+        Log Out 
+      </div> 
+    </div> 
+  </div> 
+</template> 
+ 
+<script setup> 
+</script> 
+ 
+<style scoped> 
+  #navbarLogo { 
+    height: 40px; 
+    width: 40px; 
+  } 
+   
+  .navbar { 
+    background-color: #f8f9fa; 
+    width: 100%; 
+    justify-content: space-between; 
+    align-items: center; 
+  } 
+ 
+  .navbar-toggler{ 
+    margin-left: auto; 
+    margin-right: 10px; 
+  } 
+ 
+  .navbar-nav .nav-link { 
+    color: #333; 
+    transition: background-color 0.3s ease; 
+  } 
+ 
+  .navbar-nav .nav-link:hover { 
+    background-color: #e2e6ea; 
+    border-radius: 5px; 
+  } 
+ 
+  .navbar-brand { 
+    display: inline-flex; 
+    align-items: center; 
+    width: auto; 
+  } 
+   
+  .container { 
+    text-align: center; 
+    margin-top: 50px; 
+} 
+ 
+  .nav-item { 
+    padding-right: 20px; 
+  } 
+ 
+  .offcanvas{ 
+    width: 250px; 
+  } 
+  .sidebar_link{ 
+    list-style: none; 
+    font-size: 18px; 
+    padding-bottom: 10px; 
+  } 
+ 
+.account-icon { 
+    font-size: 24px; 
+    color: #333; 
+    cursor: pointer; 
+} 
+ 
 </style>

@@ -1,12 +1,13 @@
 <script setup>
-    import { ref } from 'vue';
-    // import { addEvent } from '../../utils/supabaseRequests.js'
-    import { supabase } from '../../utils/supabaseClient.js';
+    import { ref, inject } from 'vue';
     import { getEvents } from '../../utils/supabaseRequests.js';
+
+    const user = inject("user");
 
     const handleGetEvents = async () => {
       const events = await getEvents();
       console.log(events);
+      console.log("Logged In: ", user);
     }
     
     // Example placeholder function for handling "Get Started" button click
@@ -21,7 +22,7 @@
   <main>
       <div class="container">
         <div class="logo-placeholder">
-          <img src="@/assets/images/CElogo1.1.png" alt="CampusEase Logo" />
+          <img src="@/assets/images/CElogo1-1.png" alt="CampusEase Logo" />
         </div>
 
         <div class="tagline">

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, inject } from "vue";
 import { supabase } from "../../utils/supabaseClient";
 import router from "../router/index";
 
