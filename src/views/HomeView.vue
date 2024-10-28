@@ -1,10 +1,13 @@
 <script setup>
-    import { ref } from 'vue';
+    import { ref, inject } from 'vue';
     import { getEvents } from '../../utils/supabaseRequests.js';
+
+    const user = inject("user");
 
     const handleGetEvents = async () => {
       const events = await getEvents();
       console.log(events);
+      console.log("Logged In: ", user);
     }
     
     // Example placeholder function for handling "Get Started" button click

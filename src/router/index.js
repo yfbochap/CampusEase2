@@ -5,6 +5,7 @@ import SignIn from '@/views/SignIn.vue'
 import SignUp from '@/views/SignUp.vue'
 import profile from '@/views/profile.vue'
 import edit_profile from '@/views/edit_profile.vue'
+import EventCreation from '@/views/EventCreation.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,6 +52,11 @@ const router = createRouter({
       path:'/event',
       name:'event',
       component: () => import('../views/Events.vue')
+    },
+    {
+      path:'/eventCreation',
+      name:'eventCreation',
+      component: EventCreation
     },
     {
       path: '/:pathMatch(.*)*', 
