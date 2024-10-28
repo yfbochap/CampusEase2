@@ -1,7 +1,5 @@
 <script setup>
     import { ref } from 'vue';
-    // import { addEvent } from '../../utils/supabaseRequests.js'
-    import { supabase } from '../../utils/supabaseClient.js';
     import { getEvents } from '../../utils/supabaseRequests.js';
 
     const handleGetEvents = async () => {
@@ -21,7 +19,7 @@
   <main>
       <div class="container">
         <div class="logo-placeholder">
-          <img src="@/assets/images/CElogo1.1.png" alt="CampusEase Logo" />
+          <img src="@/assets/images/CElogo1-1.png" alt="CampusEase Logo" />
         </div>
 
         <div class="tagline">
