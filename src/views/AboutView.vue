@@ -15,7 +15,7 @@
       <div class="row justify-content-center">
         <div class="col-md-7">
           <div class="about-section">
-            <img src="@/assets/images/CElogo1.1.png" alt="Campus Ease Logo" class="about-logo">
+            <img src="@/assets/images/CElogo1-1.png" alt="Campus Ease Logo" class="about-logo">
             <img src="@/assets/images/about-desc1.png" alt="Campus Ease Description" class="about-description">
           </div>
 
