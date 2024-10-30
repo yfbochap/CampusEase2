@@ -12,10 +12,17 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> 
           <span class="navbar-toggler-icon"></span> 
         </button> 
- 
-        <a class="btn account-icon order-lg-last order-md-last order-sm-last" data-bs-toggle="offcanvas" href="#sidebar" role="button" aria-controls="offcanvasExample"> 
-          <i class="fas fa-user"></i> 
+
+        <a v-if="user" class="btn account-icon order-lg-last order-md-last order-sm-last" data-bs-toggle="offcanvas" href="#sidebar"    role="button" aria-controls="offcanvasExample">
+            <i class="fas fa-user"></i> 
         </a> 
+
+        <router-link v-else to="/signin" class="order-lg-last order-md-last order-sm-last">
+          <button class="btn bg-dark text-white" data-bs-toggle="offcanvas" role="button" aria-controls="offcanvasExample">
+            <span>Sign In</span>
+          </button> 
+        </router-link>
+ 
  
         <!-- Nav Links --> 
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav"> 
@@ -44,12 +51,13 @@
     <hr> 
     <div class="offcanvas-body" style="position: relative;"> 
       <ul class="p-0"> 
+        <li class="sidebar_link"><router-link to="/profile">Profile</router-link></li> 
         <li class="sidebar_link"><router-link to="/edit_profile">Edit Profile</router-link></li> 
-        <li class="sidebar_link"><router-link to="/">Events Calender</router-link></li> 
-        <li class="sidebar_link"><router-link to="/">Notifications</router-link></li> 
+        <li class="sidebar_link"><router-link to="/">Events Calendar</router-link></li> 
+        <li class="sidebar_link"><router-link to="/eventCreation">Create New Event</router-link></li> 
         <li class="sidebar_link"><router-link to="/">Past Events</router-link></li> 
       </ul> 
-      <div class="btn btn-outline-danger" style="width:217px"> <!-- position:absolute;bottom: 20px; --> 
+      <div @click=logout class="btn btn-outline-danger" style="width:217px"> <!-- position:absolute;bottom: 20px; --> 
         Log Out 
       </div> 
     </div> 
@@ -57,6 +65,37 @@
 </template> 
  
 <script setup> 
+  import { ref, onMounted } from 'vue';
+  import { supabase } from '../../utils/supabaseClient';
+
+  const user = ref(null);
+
+  const fetchUser = async () => {
+    const { data } = await supabase.auth.getUser();
+    user.value = data.user; // Update the reactive user variable
+    console.log('User State', user.value);
+  };
+
+  supabase.auth.onAuthStateChange((event, session) => {
+    user.value = session?.user || null; // Update user state
+  });
+
+  onMounted(() => {
+    fetchUser(); // Call the function when the component is mounted
+  });
+
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.log('Logout error: ', error);
+    }
+    else {
+      user.value = null;
+      console.log('User logged out successfully')
+      window.location.reload()
+    }
+  };
+
 </script> 
  
 <style scoped> 
