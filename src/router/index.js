@@ -1,11 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import Dashboard from '@/views/Dashboard.vue'
-import SignIn from '@/views/SignIn.vue'
-import SignUp from '@/views/SignUp.vue'
-import profile from '@/views/profile.vue'
-import edit_profile from '@/views/edit_profile.vue'
-import EventCreation from '@/views/EventCreation.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,27 +21,27 @@ const router = createRouter({
     {
       path:'/dashboard',
       name:'dashboard',
-      component: Dashboard
+      component: import('@/views/Dashboard.vue') // do not lazy load
     },
     {
       path:'/profile',
       name:'profile',
-      component: profile
+      component: () => import('@/views/profile.vue')
     },
     {
       path:'/edit_profile',
       name:'edit_profile',
-      component: edit_profile
+      component: ()=>import('@/views/edit_profile.vue') 
     },
     {
       path:'/SignIn',
       name:'SignIn',
-      component: SignIn
+      component: ()=>import('@/views/SignIn.vue')
     },
     {
       path:'/SignUp',
       name:'SignUp',
-      component: SignUp
+      component: () => import('@/views/SignUp.vue')
     },
     {
       path:'/event',
@@ -56,7 +51,7 @@ const router = createRouter({
     {
       path:'/eventCreation',
       name:'eventCreation',
-      component: EventCreation
+      component: () => import('../views/EventCreation.vue')
     },
     {
       path: '/:pathMatch(.*)*', 
