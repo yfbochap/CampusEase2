@@ -76,8 +76,8 @@ export default {
     },
     initClient() {
       gapi.client.init({
-        apiKey: 'YOUR_API_KEY',  
-        clientId: 'YOUR_CLIENT_ID', 
+        apiKey: 'AIzaSyAdMutgjV2OcfJgxr8ywiyj3Z1smkAiMRM',  
+        clientId: '689557435886-91ofkj6r70cg7k3dsphhe54cn3s51ftj.apps.googleusercontent.com', 
         discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
         scope: "https://www.googleapis.com/auth/calendar"
       }).then(() => {
