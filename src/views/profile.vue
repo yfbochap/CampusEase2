@@ -23,9 +23,6 @@
           </RouterLink>
           <button class="btn btn-light">Share Profile</button>
         </div>
-        <button class="btn btn-light position-absolute top-0 end-0 mt-2 me-3">
-          <i class="fas fa-cog"></i> Settings
-        </button>
       </div>
 
       <!-- Profile Options -->
@@ -39,7 +36,13 @@
           <div v-if="events.length > 0" class="p-3">
             <h4>Your Upcoming Events</h4>
             <ul>
-              <li v-for="event in events" :key="event.id">{{ event.summary }} - {{ event.start.dateTime || event.start.date }}</li>
+              <li v-for="event in events" :key="event.id">
+                <strong>{{ event.summary }}</strong><br>
+                Date: {{ formatDate(event.start.dateTime || event.start.date) }}<br>
+                Day: {{ formatDay(event.start.dateTime || event.start.date) }}<br>
+                Start Time: {{ formatTime(event.start.dateTime) }}<br>
+                End Time: {{ formatTime(event.end.dateTime) }}
+              </li>
             </ul>
           </div>
           <hr class="my-0" />
@@ -89,80 +92,109 @@ export default {
         });
       });
     },
-    createCampusEaseCalendar() {
-      gapi.client.calendar.calendars.insert({
-        resource: {
-          summary: 'CampusEase Events',
-          timeZone: 'Asia/Singapore'
-        }
-      }).then((response) => {
-        console.log('CampusEase Calendar Created:', response);
-        this.campusEaseCalendarId = response.result.id;
-        this.insertEventsToCampusEase(); // Insert dummy events here
-        this.listUpcomingEvents(this.campusEaseCalendarId);
-      }).catch((error) => {
-        console.error('Error creating CampusEase Calendar:', error);
-      });
-    },
-    insertEventsToCampusEase() {
-      const dummyEvents = [
-        {
-          summary: 'Orientation Day',
-          description: 'Welcome event for new students',
-          start: { dateTime: '2024-11-01T09:00:00', timeZone: 'Asia/Singapore' },
-          end: { dateTime: '2024-11-01T12:00:00', timeZone: 'Asia/Singapore' }
-        },
-        {
-          summary: 'Tech Talk: AI in Business',
-          description: 'Exploring AI applications in business with guest speakers',
-          start: { dateTime: '2024-11-03T15:00:00', timeZone: 'Asia/Singapore' },
-          end: { dateTime: '2024-11-03T17:00:00', timeZone: 'Asia/Singapore' }
-        },
-        {
-          summary: 'Hackathon 2024',
-          description: '24-hour coding event with exciting prizes',
-          start: { dateTime: '2024-11-10T10:00:00', timeZone: 'Asia/Singapore' },
-          end: { dateTime: '2024-11-11T10:00:00', timeZone: 'Asia/Singapore' }
-        }
-      ];
+    async createCampusEaseCalendar() {
+  try {
+    const response = await gapi.client.calendar.calendars.insert({
+      resource: {
+        summary: 'CampusEase Events',
+        timeZone: 'Asia/Singapore'
+      }
+    });
+    console.log('CampusEase Calendar Created:', response);
+    this.campusEaseCalendarId = response.result.id;
 
-      dummyEvents.forEach(event => {
-        gapi.client.calendar.events.insert({
-          calendarId: this.campusEaseCalendarId,
-          resource: event
-        }).then((response) => {
-          console.log('Dummy event added:', response);
-        }).catch((error) => {
-          console.error('Error adding dummy event:', error);
-        });
-      });
+    // Insert dummy events after creating the calendar
+    await this.insertEventsToCampusEase(); // Make this method return a promise
+  } catch (error) {
+    console.error('Error creating CampusEase Calendar:', error);
+  }
+},
+
+async insertEventsToCampusEase() {
+  const dummyEvents = [
+    {
+      summary: 'Orientation Day',
+      description: 'Welcome event for new students',
+      start: { dateTime: '2024-11-01T09:00:00', timeZone: 'Asia/Singapore' },
+      end: { dateTime: '2024-11-01T12:00:00', timeZone: 'Asia/Singapore' }
     },
-    listUpcomingEvents(calendarId) {
-      gapi.client.calendar.events.list({
-        calendarId: calendarId,
-        timeMin: (new Date()).toISOString(),
-        showDeleted: false,
-        singleEvents: true,
-        maxResults: 10,
-        orderBy: 'startTime'
-      }).then((response) => {
-        const events = response.result.items;
-        if (events.length > 0) {
-          this.events = events;
-        } else {
-          console.log('No upcoming events found.');
-        }
-      });
+    {
+      summary: 'Tech Talk: AI in Business',
+      description: 'Exploring AI applications in business with guest speakers',
+      start: { dateTime: '2024-11-03T15:00:00', timeZone: 'Asia/Singapore' },
+      end: { dateTime: '2024-11-03T17:00:00', timeZone: 'Asia/Singapore' }
     },
-    fetchGoogleCalendar() {
-      gapi.load('client:auth2', () => {
-        this.initClient();
-        if (!this.campusEaseCalendarId) {
-          this.createCampusEaseCalendar();
-        } else {
-          this.listUpcomingEvents(this.campusEaseCalendarId);
-        }
-      });
+    {
+      summary: 'Hackathon 2024',
+      description: '24-hour coding event with exciting prizes',
+      start: { dateTime: '2024-11-10T10:00:00', timeZone: 'Asia/Singapore' },
+      end: { dateTime: '2024-11-11T10:00:00', timeZone: 'Asia/Singapore' }
+    }
+  ];
+
+  // Use Promise.all to wait for all event insertions to complete
+  const insertPromises = dummyEvents.map(event => {
+    return gapi.client.calendar.events.insert({
+      calendarId: this.campusEaseCalendarId,
+      resource: event
+    }).then(response => {
+      console.log('Dummy event added:', response);
+    }).catch(error => {
+      console.error('Error adding dummy event:', error);
+    });
+  });
+
+  await Promise.all(insertPromises); // Wait for all insertions to complete
+},
+
+fetchGoogleCalendar() {
+  gapi.load('client:auth2', async () => {
+    await this.initClient();
+
+    // Check if the CampusEase calendar ID is available
+    if (!this.campusEaseCalendarId) {
+      // Create a new calendar and wait for its creation
+      await this.createCampusEaseCalendar();
+    }
+
+    // After the calendar is created, list upcoming events
+    await this.listUpcomingEvents(this.campusEaseCalendarId);
+    
+    // Navigate to the Calendar page with the events data
+    this.$router.push({ name: 'calendar', query: { events: JSON.stringify(this.events) } });
+  });
+},
+
+
+  listUpcomingEvents(calendarId) {
+    return gapi.client.calendar.events.list({
+      calendarId: calendarId,
+      timeMin: new Date().toISOString(),
+      showDeleted: false,
+      singleEvents: true,
+      maxResults: 10,
+      orderBy: 'startTime'
+    }).then((response) => {
+      const events = response.result.items;
+      if (events.length > 0) {
+        this.events = events;
+      } else {
+        console.log('No upcoming events found.');
+      }
+    });
+    },
+    formatDate(dateTime) {
+      const date = new Date(dateTime);
+      return date.toLocaleDateString();
+    },
+    formatDay(dateTime) {
+      const date = new Date(dateTime);
+      return date.toLocaleDateString('en-US', { weekday: 'long' });
+    },
+    formatTime(dateTime) {
+      if (!dateTime) return 'N/A';
+      const time = new Date(dateTime);
+      return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
   }
 };

@@ -11,7 +11,7 @@
     </div>
 
     <!-- Edit Information Section -->
-    <div class="container mt-0">
+    <div class="container mt-0" style="width: 50%;">
       <div class="card shadow">
         <div class="card-body">
           <!-- Profile Picture Section -->
