@@ -61,7 +61,10 @@
 </template>
 
 <script>
+const calendar_api = import.meta.env.VITE_CALENDAR_API;
+const client_id = import.meta.env.VITE_CLIENT_ID;
 import { gapi } from 'gapi-script';
+
 export default {
   name: 'ProfilePage',
   data() {
@@ -72,12 +75,12 @@ export default {
   },
   methods: {
     goBack() {
-      this.$router.go(-1); 
+      this.$router.go(-1);
     },
     initClient() {
       gapi.client.init({
-        apiKey: 'AIzaSyAdMutgjV2OcfJgxr8ywiyj3Z1smkAiMRM',  
-        clientId: '689557435886-91ofkj6r70cg7k3dsphhe54cn3s51ftj.apps.googleusercontent.com', 
+        apiKey: "AIzaSyAdMutgjV2OcfJgxr8ywiyj3Z1smkAiMRM",
+        clientId: '689557435886-91ofkj6r70cg7k3dsphhe54cn3s51ftj.apps.googleusercontent.com',
         discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
         scope: "https://www.googleapis.com/auth/calendar"
       }).then(() => {
@@ -90,19 +93,53 @@ export default {
       gapi.client.calendar.calendars.insert({
         resource: {
           summary: 'CampusEase Events',
-          timeZone: 'Asia/Singapore' 
+          timeZone: 'Asia/Singapore'
         }
       }).then((response) => {
         console.log('CampusEase Calendar Created:', response);
         this.campusEaseCalendarId = response.result.id;
+        this.insertEventsToCampusEase(); // Insert dummy events here
         this.listUpcomingEvents(this.campusEaseCalendarId);
       }).catch((error) => {
         console.error('Error creating CampusEase Calendar:', error);
       });
     },
-    listUpcomingEvents(calendarId = 'primary') {
+    insertEventsToCampusEase() {
+      const dummyEvents = [
+        {
+          summary: 'Orientation Day',
+          description: 'Welcome event for new students',
+          start: { dateTime: '2024-11-01T09:00:00', timeZone: 'Asia/Singapore' },
+          end: { dateTime: '2024-11-01T12:00:00', timeZone: 'Asia/Singapore' }
+        },
+        {
+          summary: 'Tech Talk: AI in Business',
+          description: 'Exploring AI applications in business with guest speakers',
+          start: { dateTime: '2024-11-03T15:00:00', timeZone: 'Asia/Singapore' },
+          end: { dateTime: '2024-11-03T17:00:00', timeZone: 'Asia/Singapore' }
+        },
+        {
+          summary: 'Hackathon 2024',
+          description: '24-hour coding event with exciting prizes',
+          start: { dateTime: '2024-11-10T10:00:00', timeZone: 'Asia/Singapore' },
+          end: { dateTime: '2024-11-11T10:00:00', timeZone: 'Asia/Singapore' }
+        }
+      ];
+
+      dummyEvents.forEach(event => {
+        gapi.client.calendar.events.insert({
+          calendarId: this.campusEaseCalendarId,
+          resource: event
+        }).then((response) => {
+          console.log('Dummy event added:', response);
+        }).catch((error) => {
+          console.error('Error adding dummy event:', error);
+        });
+      });
+    },
+    listUpcomingEvents(calendarId) {
       gapi.client.calendar.events.list({
-        calendarId: calendarId, 
+        calendarId: calendarId,
         timeMin: (new Date()).toISOString(),
         showDeleted: false,
         singleEvents: true,
@@ -128,7 +165,7 @@ export default {
       });
     }
   }
-}
+};
 </script>
 
 <style scoped>
@@ -157,3 +194,4 @@ export default {
   overflow: hidden;
 }
 </style>
+
