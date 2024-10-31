@@ -55,10 +55,10 @@ const handleGoogleSignIn = async () => {
     </video>
   <div class="d-flex align-items-center justify-content-center min-vh-100 background-image">
     <div class="w-full max-w-md p-4 bg-white shadow rounded">
-      <h2 class="text-center mb-4">Sign In</h2>
+      <h2 class="text-center text-black mb-4">Sign In</h2>
       <form @submit.prevent="handleSignIn">
         <div class="mb-3">
-          <label class="form-label" for="email">Email</label>
+          <label class="form-label text-black" for="email">Email</label>
           <input
             class="form-control"
             id="email"
@@ -69,7 +69,7 @@ const handleGoogleSignIn = async () => {
           />
         </div>
         <div class="mb-3">
-          <label class="form-label" for="password">Password</label>
+          <label class="form-label text-black" for="password">Password</label>
           <input
             class="form-control"
             id="password"
@@ -89,7 +89,7 @@ const handleGoogleSignIn = async () => {
         </div>
       </form>
 
-      <div class="mt-3 text-center">
+      <div class="mt-3 text-center text-black">
         <p>
           Don't have an account? 
           <router-link to="/SignUp" class="text-primary">Sign Up</router-link>
@@ -167,4 +167,6 @@ const handleGoogleSignIn = async () => {
 .separator:not(:empty)::after {
   margin-left: 0.75em;
 }
+
+
 </style>
