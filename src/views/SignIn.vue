@@ -47,6 +47,12 @@ const handleGoogleSignIn = async () => {
 </script>
 
 <template>
+<div class="video-background">
+    <!-- Video Background -->
+    <video autoplay loop muted playsinline class="background-video">
+      <source src="@/assets/images/bg-video5.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
   <div class="d-flex align-items-center justify-content-center min-vh-100 background-image">
     <div class="w-full max-w-md p-4 bg-white shadow rounded">
       <h2 class="text-center mb-4">Sign In</h2>
@@ -107,12 +113,29 @@ const handleGoogleSignIn = async () => {
 
     </div>
   </div>
+</div>
 
 
 
 </template>
 
 <style scoped>
+.video-background {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.background-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1; /* Place behind other content */
+}
+
 .bg-light {
   background-color: #f8f9fa !important;
 }
