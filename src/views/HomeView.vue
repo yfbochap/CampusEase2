@@ -1,37 +1,35 @@
 <script setup>
-    import { ref, inject } from 'vue';
-    import { getEvents } from '../../utils/supabaseRequests.js';
+import { ref, inject } from 'vue';
+import { useRouter } from 'vue-router';
+import { getEvents } from '../../utils/supabaseRequests.js';
 
-    const handleGetEvents = async () => {
-      const events = await getEvents();
-      console.log(events);
-    }
-    
-    // Example placeholder function for handling "Get Started" button click
-    const handleGetStarted = () => {
-      // Navigate to the LoginPage
-      window.location.href = 'LoginPage.html';
-    };
+const router = useRouter();
+
+const handleGetEvents = async () => {
+  const events = await getEvents();
+  console.log(events);
+};
+
+const handleGetStarted = () => {
+  // Navigate to Dashboard by route name
+  router.push({ name: 'dashboard' });
+};
 
 </script>
 
 <template>
   <main>
-      <div class="container">
-        <div class="logo-placeholder">
-          <img src="@/assets/images/CElogo1-1.png" alt="CampusEase Logo" />
-        </div>
-
-        <div class="tagline">
-          <img src="@/assets/images/Tagline1.png" alt="Tagline" />
-        </div>
-
-        <button class="get-started-btn" @click="goToLogin">Get Started</button>
-
-        <button v-on:click="handleGetEvents">
-        RAHHH
-      </button>
+    <div class="container">
+      <div class="logo-placeholder">
+        <img src="@/assets/images/CElogo1-1.png" alt="CampusEase Logo" />
       </div>
+
+      <div class="tagline">
+        <img src="@/assets/images/Tagline1.png" alt="Tagline" />
+      </div>
+
+      <button class="get-started-btn" @click="handleGetStarted">Get Started</button>
+    </div>
   </main>
 </template>
 
