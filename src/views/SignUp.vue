@@ -114,6 +114,14 @@ const handleSignup = async () => {
               </button>
             </div>
           </form>
+          <div class="d-flex justify-content-center mt-3">
+              <button
+                class="btn btn-secondary text-white"
+                @click="router.push('/SignIn')"
+              >
+                Back to Sign In
+              </button>
+            </div>
         </div>
       </div>
     </div>
