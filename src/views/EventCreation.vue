@@ -14,8 +14,9 @@
         <label for="eventPhotos" class="form-label">Additional Photos (Optional)</label>
         <div class="small-photo-wrapper">
           <div class="small-photo-box" v-for="(photo, index) in 3" :key="index" style="border-radius: 7px;">
-            <input type="file" class="form-control" :id="'eventPhotos' + (index + 1)" @change="handlePhotos" accept="image/*">
+            <input type="file" class="form-control" :id="'eventPhotos' + (index + 1)" @change="handlePhotos(index)" accept="image/*">
             <div class="plus-icon">+</div>
+            <img v-if="eventPhotosPreview[index]" :src="eventPhotosPreview[index]" alt="Event Photo" class="small-photo-preview">
           </div>
         </div>
       </div>
@@ -135,7 +136,10 @@
   })
 
   const thumbnailPreview = ref('');
+  const eventPhotosPreview = ref(Array(3).fill(''));
+
   const handleThumbnailPhoto = (event) => {
+    console.log("happens");
     thumbnailPhoto.value = event.target.files[0];
     if (thumbnailPhoto.value) {
       thumbnailPreview.value = URL.createObjectURL(thumbnailPhoto.value);
@@ -143,6 +147,19 @@
       thumbnailPreview.value = '';
     }
   };
+
+  const handlePhotos = (index) => (event) => {
+    console.log(`File input change triggered for index: ${index}`);
+    const file = event.target.files[0];
+    console.log("Selected photo:", file); // This should log the selected file
+    if (file) {
+      eventPhotos.value[index] = file; // Store the file
+      eventPhotosPreview.value[index] = URL.createObjectURL(file); // Create preview URL
+    } else {
+      eventPhotosPreview.value[index] = ''; // Clear the preview if no file is selected
+    }
+  };
+
 
   const selectedLocation = ref('');
   const place_lat = ref(null);
@@ -154,7 +171,7 @@
   const eventDescription = ref('');
   const eventOrganisation = ref('');
   const eventSignUp = ref('');
-  const eventPhotos = ref([]);
+  const eventPhotos = ref(Array(3).fill(null));
   const thumbnailPhoto = ref(null);
   const otherLocation = ref('');
   const eventType = ref('');
@@ -272,6 +289,14 @@ nav a {
   height: 100%;
   object-fit: cover; 
   border-radius: 10px;
+  position: absolute;
+}
+
+.small-photo-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 7px;
   position: absolute;
 }
 
