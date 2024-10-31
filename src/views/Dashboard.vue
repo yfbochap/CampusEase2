@@ -165,6 +165,7 @@
 
 <script>
   import { getEvents } from '../../utils/supabaseRequests.js';
+  import { MarkerClusterer } from "@googlemaps/markerclusterer";
   import { searchEvents } from '../../utils/supabaseRequests.js';
 
   
@@ -388,7 +389,7 @@
         async searchForEvents(){
             const data = await searchEvents('event_name',this.searchTerm)
             const category = this.selectedCategory
-            let events_criteria = data.filter(event =>  
+            let events_criteria = data.filter(event =>  // filter according to events which meet the 
                 this.selectedCategory === "All" || event.event_type === this.selectedCategory
             );
 
