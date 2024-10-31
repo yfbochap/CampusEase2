@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import Dashboard from '../views/Dashboard.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,7 +21,7 @@ const router = createRouter({
     {
       path:'/dashboard',
       name:'dashboard',
-      component: import('@/views/Dashboard.vue') // do not lazy load
+      component: Dashboard
     },
     {
       path:'/profile',
@@ -43,9 +44,10 @@ const router = createRouter({
       component: () => import('@/views/SignUp.vue')
     },
     {
-      path:'/event',
+      path:'/event/:id',
       name:'event',
-      component: () => import('../views/Events.vue')
+      component: () => import('../views/Events.vue'),
+      props: true
     },
     {
       path:'/eventCreation',
