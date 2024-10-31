@@ -5,10 +5,10 @@ import { getEvents } from '../../utils/supabaseRequests.js';
 
 const router = useRouter();
 
-const handleGetEvents = async () => {
-  const events = await getEvents();
-  console.log(events);
-};
+// const handleGetEvents = async () => {
+//   const events = await getEvents();
+//   console.log(events);
+// };
 
 const handleGetStarted = () => {
   // Navigate to Dashboard by route name
@@ -27,9 +27,8 @@ const handleGetStarted = () => {
       <div class="tagline">
         <img src="@/assets/images/Tagline1.png" alt="Tagline" />
       </div>
-
-      <button class="get-started-btn" @click="handleGetStarted">Get Started</button>
-    </div>
+        <button class="get-started-btn" @click="handleGetStarted">Get Started</button>
+      </div>
   </main>
 </template>
 
