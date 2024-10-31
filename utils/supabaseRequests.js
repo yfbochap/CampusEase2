@@ -8,11 +8,11 @@ export const getEvents = async () => {
     return data;
 }
 
-export async function searchEvents(search_term) {
+export async function searchEvents(field, search_term) {
   const { data, error } = await supabase
       .from('event')
       .select()
-      .ilike('event_name', `%${search_term}%`);
+      .ilike(field, `%${search_term}%`);
     if (error){
        console.error("Error fetching events:", error);
     }
