@@ -38,9 +38,13 @@ export async function uploadImage(file, type, eventName, index) {
 
 export async function uploadFiles(thumbnailFile, additionalFiles, eventName) {
     const thumbnailPath = await uploadImage(thumbnailFile, 'thumbnail', eventName);
-    const additionalImagePaths = await Promise.all(
-        additionalFiles.map((file, index) => uploadImage(file, 'additional', eventName, index))
-    );
+    
+    // Check if additionalFiles is an empty array
+    const additionalImagePaths = additionalFiles.length > 0 
+        ? await Promise.all(
+            additionalFiles.map((file, index) => uploadImage(file, 'additional', eventName, index))
+          )
+        : []; // Return an empty array if no additional files
 
     return { thumbnailPath, additionalImagePaths };
 }
@@ -48,10 +52,6 @@ export async function uploadFiles(thumbnailFile, additionalFiles, eventName) {
 
 export async function addEvent(eventData, thumbnailPath, additionalImagePaths) {
     try {
-
-    // const thumbnailPath = await uploadImage(thumbnailFile, 'thumbnail', eventName);
-    // const additionalImagePaths = await Promise.all(additionalFiles.map((file, index) => uploadImage(file, 'additional', eventName, index)));
-  
 
       const { data, error } = await supabase
         .from('event') 
@@ -69,13 +69,13 @@ export async function addEvent(eventData, thumbnailPath, additionalImagePaths) {
           organisation: eventData.organisation,
           external_url: eventData.external_url,
           event_type: eventData.event_type,
-          photos: [thumbnailPath, ...additionalImagePaths.filter(path => path != null)],
+          photos: [thumbnailPath, ...additionalImagePaths],
         }]);
   
       if (error) {
         throw error;
       }
-      return data;
+      return true;
     } catch (error) {
         console.error('Error adding event:', error.message);
         return null;

@@ -190,7 +190,7 @@
     if (locationData) {
       place_lat.value = locationData.lat;
       place_lng.value = locationData.lng;
-      location_short = locationData.location_short;
+      location_short.value = locationData.location_short;
     } else {
       place_lat.value = null;
       place_lng.value = null;
@@ -229,10 +229,13 @@
 
     const { thumbnailPath, additionalImagePaths } = await uploadFiles(thumbnailPhoto.value, eventPhotos.value.filter(photo => photo !== null), eventName.value);
 
-    if (thumbnailPath && additionalImagePaths.length > 0) {
+    if (!thumbnailPath) {
+        alert('Please upload a thumbnail image before creating the event.');
+        return;
+    }
 
-      const createdEvent = await addEvent(newEvent, thumbnailPath, additionalImagePaths);
-      
+    const createdEvent = await addEvent(newEvent, thumbnailPath, additionalImagePaths || []);
+            
       if (createdEvent) {
           console.log('Event added successfully:', createdEvent);
 
@@ -250,10 +253,10 @@
           selectedLocation.value = '';
           otherLocation.value = '';
       }
-    }
+
     else {
-        console.error('Error: Upload failed. Thumbnail or additional images are missing.');
-        alert('Please ensure that the thumbnail and at least one additional image are uploaded before creating the event.');
+        console.error('Error: Failure to create event.');
+        alert('Error: Failure to create event.');
     }
 
 
