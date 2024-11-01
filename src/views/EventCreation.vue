@@ -9,14 +9,16 @@
           <input type="file" id="thumbnailPhoto" @change="handleThumbnailPhoto" accept="image/*" required>
           <div class="plus-icon">+</div>
           <img v-if="thumbnailPhoto" :src="thumbnailPreview" alt="Thumbnail" class="thumbnail-preview">
+          <button v-if="thumbnailPhoto" @click="removeThumbnail" class="remove-icon">X</button>
         </div>
 
-        <label for="eventPhotos" class="form-label">Additional Photos (Optional)</label>
+        <label for="eventPhotos1" class="form-label">Additional Photos (Optional)</label>
         <div class="small-photo-wrapper">
           <div class="small-photo-box" v-for="(photo, index) in 3" :key="index" style="border-radius: 7px;">
-            <input type="file" class="form-control" :id="'eventPhotos' + (index + 1)" @change="handlePhotos(index)" accept="image/*">
+            <input type="file" class="form-control" :id="'eventPhotos' + (index + 1)" @change="(e) => { handlePhotos(index)(e); }" accept="image/*">
             <div class="plus-icon">+</div>
             <img v-if="eventPhotosPreview[index]" :src="eventPhotosPreview[index]" alt="Event Photo" class="small-photo-preview">
+            <button v-if="eventPhotosPreview[index]" @click="removePhoto(index)" class="remove-icon">X</button>
           </div>
         </div>
       </div>
@@ -95,7 +97,7 @@
           <input type="url" class="form-control" id="eventSignUp" v-model="eventSignUp" placeholder="https://example.com/sign-up">
         </div>
 
-        <button @click="submitEvent" class="btn text-white" id="submitButton">Create Event</button>
+        <button type="button" @click="submitEvent" class="btn text-white" id="submitButton">Create Event</button>
       </div>
     </form>
   </div>
@@ -104,7 +106,7 @@
 <script setup>
   import { ref, reactive, watch, onMounted } from 'vue';
   import { supabase } from '../../utils/supabaseClient';
-  import { addEvent } from '../../utils/supabaseRequests';
+  import { addEvent, uploadFiles } from '../../utils/supabaseRequests';
 
   const user = ref(null);
 
@@ -119,19 +121,18 @@
   });
 
   const locations = reactive({
-      "Administration Building": { lat: 1.2960323, lng: 103.8472966 },
-      "Campus Green": { lat: 1.29698, lng: 103.8496 },
-      "Concourse - Room/Lab": { lat: 1.2903, lng: 103.8472 }, 
-      "Lee Kong Chian School of Business": { lat: 1.295172, lng: 103.8505 },
-      "Li Ka Shing Library": { lat: 1.2964100987760936, lng: 103.85004366519945 },
-      "Prinsep Street Residences": { lat: 1.3021338939464382, lng: 103.8513315958835 },
-      "School of Accountancy": { lat: 1.2961631509838585, lng: 103.84984088054155 }, 
-      "School of Computing & Information Systems 1": { lat: 1.2977150530105908, lng: 103.84942902287054 }, 
-      "School of Economics/School of Computing & Information Systems 2": { lat: 1.2976677192242823, lng: 103.84897900703378 },
-      "School of Social Sciences/College of Integrative Studies": { lat: 1.294767, lng: 103.8485 },
-      "SMU Connexion": { lat: 1.295547, lng: 103.8493 },
-      "Yong Pung How School of Law/Kwa Geok Choo Law Library": { lat: 1.295057, lng: 103.849 },
-      "T-Junction": { lat: 1.296684, lng: 103.8504 },
+      "Administration Building": { lat: 1.2960323, lng: 103.8472966, location_short: "Admin Building" },
+      "Campus Green": { lat: 1.29698, lng: 103.8496, location_short: "Campus Green" },
+      "Lee Kong Chian School of Business": { lat: 1.295172, lng: 103.8505, location_short: "SOB" },
+      "Li Ka Shing Library": { lat: 1.2964100987760936, lng: 103.85004366519945, location_short: "LKS Library" },
+      "Prinsep Street Residences": { lat: 1.3021338939464382, lng: 103.8513315958835, location_short: "Prinsep Street Residences" },
+      "School of Accountancy": { lat: 1.2961631509838585, lng: 103.84984088054155, location_short: "SOA" }, 
+      "School of Computing & Information Systems 1": { lat: 1.2977150530105908, lng: 103.84942902287054, location_short: "SCIS1" }, 
+      "School of Economics/School of Computing & Information Systems 2": { lat: 1.2976677192242823, lng: 103.84897900703378, location_short: "SOE/SCIS2" },
+      "School of Social Sciences/College of Integrative Studies": { lat: 1.294767, lng: 103.8485, location_short: "SOSS/CIS" },
+      "SMU Connexion": { lat: 1.295547, lng: 103.8493, location_short: "SMU Connex" },
+      "Yong Pung How School of Law/Kwa Geok Choo Law Library": { lat: 1.295057, lng: 103.849, location_short: "YPHSOL" },
+      "T-Junction": { lat: 1.296684, lng: 103.8504, location_short: "T-Junction" },
       "Other": { lat: null, lng: null } // For custom locations
   })
 
@@ -139,31 +140,39 @@
   const eventPhotosPreview = ref(Array(3).fill(''));
 
   const handleThumbnailPhoto = (event) => {
-    console.log("happens");
     thumbnailPhoto.value = event.target.files[0];
     if (thumbnailPhoto.value) {
       thumbnailPreview.value = URL.createObjectURL(thumbnailPhoto.value);
     } else {
-      thumbnailPreview.value = '';
+      thumbnailPreview.value = null;
     }
   };
 
   const handlePhotos = (index) => (event) => {
-    console.log(`File input change triggered for index: ${index}`);
     const file = event.target.files[0];
-    console.log("Selected photo:", file); // This should log the selected file
     if (file) {
       eventPhotos.value[index] = file; // Store the file
       eventPhotosPreview.value[index] = URL.createObjectURL(file); // Create preview URL
     } else {
-      eventPhotosPreview.value[index] = ''; // Clear the preview if no file is selected
+      eventPhotosPreview.value[index] = null; // Clear the preview if no file is selected
     }
+  };
+
+  const removeThumbnail = () => {
+    thumbnailPhoto.value = null;
+    thumbnailPreview.value = ''; // Clear preview
+  };
+
+  const removePhoto = (index) => {
+    eventPhotos.value[index] = null; // Clear the file
+    eventPhotosPreview.value[index] = ''; // Clear the preview
   };
 
 
   const selectedLocation = ref('');
   const place_lat = ref(null);
   const place_lng = ref(null);
+  const location_short = ref(null);
   const eventName = ref('');
   const eventVenue = ref('');
   const eventStartDateTime = ref('');
@@ -181,54 +190,75 @@
     if (locationData) {
       place_lat.value = locationData.lat;
       place_lng.value = locationData.lng;
+      location_short = locationData.location_short;
     } else {
       place_lat.value = null;
       place_lng.value = null;
+      location_short.value = null;
     }
   });
 
-  // const handlePhotos = (event) => {
-  //   eventPhotos.value = Array.from(event.target.files);
-  // };
+  const submitEvent = async (event) => {
+    event.preventDefault();
 
-  // const handleThumbnailPhoto = (event) => {
-  //   thumbnailPhoto.value = event.target.files[0];
-  // };
+    // const eventExists = await checkEventExists(eventName.value);
+  
+    // if (eventExists) {
+    //   alert('An event with this name already exists. Please choose a different name.');
+    //   return; // Stop the submission if the event exists
+    // }
 
-  const submitEvent = () => {
     const newEvent = {
-      created_by: user.value.id, // Update this as needed
+      created_by: user.value.id,
       name: eventName.value,
       venue: eventVenue.value,
       place_lat: place_lat.value,
       place_lng: place_lng.value,
+      location_short: location_short.value,
       start_date_time: eventStartDateTime.value,
       end_date_time: eventEndDateTime.value,
       description: eventDescription.value,
       organisation: eventOrganisation.value,
       external_url: eventSignUp.value,
-      photos: eventPhotos.value,
       location: selectedLocation.value === 'Other' ? otherLocation.value : selectedLocation.value,
       event_type: eventType.value,
     };
 
     console.log('New event created:', newEvent);
-    alert('Event Created: ' + newEvent.name);
+    // alert('Event Created: ' + newEvent.name);
 
-    // Clear form fields
-    eventName.value = '';
-    eventVenue.value = '';
-    eventStartDateTime.value = '';
-    eventEndDateTime.value = '';
-    eventDescription.value = '';
-    eventOrganisation.value = '';
-    eventSignUp.value = '';
-    eventPhotos.value = [];
-    thumbnailPhoto.value = null;
-    selectedLocation.value = '';
-    otherLocation.value = '';
+    const { thumbnailPath, additionalImagePaths } = await uploadFiles(thumbnailPhoto.value, eventPhotos.value.filter(photo => photo !== null), eventName.value);
 
-    addEvent(newEvent);
+    if (thumbnailPath && additionalImagePaths.length > 0) {
+
+      const createdEvent = await addEvent(newEvent, thumbnailPath, additionalImagePaths);
+      
+      if (createdEvent) {
+          console.log('Event added successfully:', createdEvent);
+
+          // Clear form fields
+          eventName.value = '';
+          eventVenue.value = '';
+          eventStartDateTime.value = '';
+          eventEndDateTime.value = '';
+          eventDescription.value = '';
+          eventOrganisation.value = '';
+          eventSignUp.value = '';
+          eventPhotos.value = Array(3).fill(null);
+          eventPhotosPreview.value = Array(3).fill('');
+          thumbnailPhoto.value = null;
+          selectedLocation.value = '';
+          otherLocation.value = '';
+      }
+    }
+    else {
+        console.error('Error: Upload failed. Thumbnail or additional images are missing.');
+        alert('Please ensure that the thumbnail and at least one additional image are uploaded before creating the event.');
+    }
+
+
+
+
   };
 
 </script>
@@ -309,6 +339,28 @@ nav a {
 .small-photo-box:hover .plus-icon {
   color: #007bff;
 }
+
+.remove-icon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bolder;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.remove-icon:hover {
+    background: darkred;
+}
+
 
 .left-column {
   width: 40%;
