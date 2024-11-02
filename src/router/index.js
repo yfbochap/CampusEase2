@@ -68,6 +68,11 @@ const router = createRouter({
       name:'eventTest',
       component: () => import('../views/EventTest.vue')
     },
+    {
+      path: '/edit_event',
+      name: 'edit_event',
+      component: () => import('../views/edit_event.vue')
+    },
   ],
   scrollBehavior(to, from, savedPosition) {
     // Always scroll to top when navigating
