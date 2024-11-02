@@ -6,9 +6,9 @@
 
 
     <div class="row d-flex justify-content-center">
-        <button class="col-3 btn text-light" v-on:click="switchView('mapView')">Map View</button>
+        <button class="col-3 btn " v-on:click="switchView('mapView')">Map View</button>
         <div class="col-1"></div>
-        <button class="col-3 btn text-light" v-on:click="switchView('otherView')">All Events</button>
+        <button class="col-3 btn " v-on:click="switchView('otherView')">All Events</button>
     </div>
     <br>
 
@@ -445,8 +445,9 @@
   }
   
   #eventMapTitle {
+    margin-top: 60px;
     text-align: center;
-    color: grey;
+    color: rgb(14, 14, 14);
   }
   
   #map {

@@ -1,4 +1,5 @@
 <template> 
+  
   <nav class="navbar navbar-expand-sm navbar-light"> 
     <div class="container-fluid"> 
        
@@ -39,7 +40,8 @@
           </ul> 
         </div> 
       </div> 
-  </nav> 
+  </nav>
+
  
   <!-- SideBar Links --> 
   <div class="offcanvas offcanvas-end" tabindex="-1" id="sidebar" aria-labelledby="offcanvasRightLabel"> 
@@ -103,12 +105,18 @@
     height: 40px; 
     width: 40px; 
   } 
-   
+
+  
+
   .navbar { 
     background-color: #f8f9fa; 
     width: 100%; 
     justify-content: space-between; 
     align-items: center; 
+    position: fixed !important;
+    top: 0 !important;
+    z-index: 9000;
+    
   } 
  
   .navbar-toggler{ 

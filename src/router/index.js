@@ -63,6 +63,11 @@ const router = createRouter({
       name: 'calendar',
       component: () => import('../views/calendar.vue')
     },
+    {
+      path:'/eventTest',
+      name:'eventTest',
+      component: () => import('../views/EventTest.vue')
+    },
   ],
   scrollBehavior(to, from, savedPosition) {
     // Always scroll to top when navigating
