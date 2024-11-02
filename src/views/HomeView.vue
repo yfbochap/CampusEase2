@@ -63,7 +63,7 @@ main{
   justify-content: center;
   align-items: center;
   margin-bottom: 10px;
-  margin-top: 50px;
+  margin-top: 150px;
 }
 
 .logo-placeholder img {
