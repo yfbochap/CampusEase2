@@ -31,7 +31,7 @@
 
         <div class="mb-3">
           <label for="eventType" class="form-label">Event Category</label>
-          <select id="eventType" class="form-control" v-model="eventType">
+          <select id="eventType" class="form-control" v-model="eventType" required>
             <option value="Academic">Academic</option>
             <option value="Sports">Sports</option>
             <option value="Arts">Arts</option>
@@ -39,12 +39,13 @@
             <option value="Charity">Charity</option>
             <option value="Community">Community</option>
             <option value="Welfare">Welfare</option>
+            <option value="Others">Others</option>
           </select>
         </div>
 
         <div class="mb-3">
           <label for="location" class="form-label">Location</label>
-          <select id="location" class="form-control" v-model="selectedLocation">
+          <select id="location" class="form-control" v-model="selectedLocation" required>
             <option value="Administration Building">Administration Building</option>
             <option value="Campus Green">Campus Green</option>
             <option value="Concourse - Room/Lab">Concourse - Room/Lab</option>
@@ -64,7 +65,7 @@
 
         <div v-if="selectedLocation === 'Other'" class="mb-3">
           <label for="otherLocation" class="form-label">Google Maps Address</label>
-          <input type="text" id="otherLocation" v-model="otherLocation" class="form-control" placeholder="Specify location">
+          <input type="text" id="otherLocation" v-model="otherLocation" class="form-control" placeholder="Specify location" required>
         </div>
 
         <div class="mb-3">
@@ -106,7 +107,7 @@
 <script setup>
   import { ref, reactive, watch, onMounted } from 'vue';
   import { supabase } from '../../utils/supabaseClient';
-  import { addEvent, uploadFiles } from '../../utils/supabaseRequests';
+  import { addEvent, uploadFiles, checkEventExists } from '../../utils/supabaseRequests';
 
   const user = ref(null);
 
@@ -201,12 +202,18 @@
   const submitEvent = async (event) => {
     event.preventDefault();
 
-    // const eventExists = await checkEventExists(eventName.value);
+    const form = document.querySelector('form'); 
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    const eventExists = await checkEventExists(eventName.value);
   
-    // if (eventExists) {
-    //   alert('An event with this name already exists. Please choose a different name.');
-    //   return; // Stop the submission if the event exists
-    // }
+    if (eventExists) {
+      alert('An event with this name already exists. Please choose a different name.');
+      return; // Stop the submission if the event exists
+    }
 
     const newEvent = {
       created_by: user.value.id,
