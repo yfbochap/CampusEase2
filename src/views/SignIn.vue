@@ -50,7 +50,7 @@ const handleGoogleSignIn = async () => {
 <div class="video-background">
     <!-- Video Background -->
     <video autoplay loop muted playsinline class="background-video">
-      <source src="@/assets/images/bg-video5.mp4" type="video/mp4" />
+      <source src="@/assets/images/bg-video13.mp4" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
   <div class="d-flex align-items-center justify-content-center min-vh-100 background-image">
