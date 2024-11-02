@@ -82,12 +82,12 @@ export async function addEvent(eventData, thumbnailPath, additionalImagePaths) {
     }
 }
 
-// export async function checkEventExists (eventName){
-//     const { data, error } = await supabase
-//       .from('event')
-//       .select('id') // Column selected doesn't matter
-//       .eq('event_name', eventName)
-//       .single(); // Use .single() if you expect only one result
+export async function checkEventExists (eventName){
+    const { data, error } = await supabase
+      .from('event')
+      .select('id') // Column selected doesn't matter
+      .eq('event_name', eventName)
+      .single(); // Use .single() if you expect only one result
   
-//       return !!data; // Return true if an event exists, otherwise false
-// };
+      return !!data; // Return true if an event exists, otherwise false
+};
