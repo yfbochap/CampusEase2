@@ -1,7 +1,7 @@
 <template>
-  <div class="container">
+  <div class="container-fluid">
 
-    <h2>Create Event</h2>
+    
     <form class="mt-4 d-flex">
       <div class="left-column">
         <label for="thumbnailPhoto" class="form-label">Thumbnail Photo (Mandatory)</label>
@@ -24,12 +24,13 @@
       </div>
 
       <div class="right-column ms-4">
-        <div class="mb-3">
+        <div class="mb-3 d-flex location-venue-container">
+          <div class="flex-half">
           <label for="eventName" class="form-label">Event Name</label>
           <input type="text" class="form-control" id="eventName" v-model="eventName" required>
         </div>
 
-        <div class="mb-3">
+        <div class="flex-half ms-2">
           <label for="eventType" class="form-label">Event Category</label>
           <select id="eventType" class="form-control" v-model="eventType" required>
             <option value="Academic">Academic</option>
@@ -42,8 +43,10 @@
             <option value="Others">Others</option>
           </select>
         </div>
+        </div>
 
-        <div class="mb-3">
+        <div class="mb-3 d-flex location-venue-container">
+          <div class="flex-half">
           <label for="location" class="form-label">Location</label>
           <select id="location" class="form-control" v-model="selectedLocation" required>
             <option value="Administration Building">Administration Building</option>
@@ -62,16 +65,17 @@
             <option value="Other">Other</option>
           </select>
         </div>
-
+        &nbsp;&nbsp;
         <div v-if="selectedLocation === 'Other'" class="mb-3">
           <label for="otherLocation" class="form-label">Google Maps Address</label>
           <input type="text" id="otherLocation" v-model="otherLocation" class="form-control" placeholder="Specify location" required>
         </div>
 
-        <div class="mb-3">
+        <div class="flex-half ms-2">
           <label for="eventVenue" class="form-label">Venue</label>
           <input type="text" class="form-control" id="eventVenue" v-model="eventVenue" required>
         </div>
+      </div>
 
         <div class="mb-3">
           <label for="eventStartDateTime" class="form-label">Start Date</label>
@@ -274,33 +278,29 @@
 </script>
 
 <style scoped>
-/* Styling for the navigation bar */
-nav {
-  background-color: darkblue;
-  padding: 1rem;
-  position: fixed;
-  width: 100%;
-  top: 0;
-  z-index: 1000;
-}
-nav .navbar-brand {
-  color: white;
-  font-weight: bold;
-}
-nav a {
-  color: white;
-  text-decoration: none;
-  padding: 0 1rem;
-}
 
 /* Adjusting top margin for the app container */
-.container {
-  margin-top: 10px;
+.container-fluid {
+  color: white;
+  width: 100%;
+  padding-top: 100px;
+  padding-bottom: 25px;
+  background-color: #1e1d1d;
+}
+
+input[type="text"],input[type="datetime-local"],input[type="url"], select, textarea {
+  background-color: #6e6868;
+  color: #fafefb;
+  border-color: #777676;
+}
+
+textarea:focus{
+  background-color: #6e6868;
+  color: #fafefb;
 }
 
 .thumbnail-box,
 .small-photo-box {
-  border: 2px dashed #ccc;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -308,7 +308,10 @@ nav a {
   cursor: pointer;
   position: relative;
   margin-bottom: 1rem;
+  border: 1px dashed #e4dede;
+  
 }
+
 
 .thumbnail-box:hover,
 .small-photo-box:hover {
@@ -402,6 +405,12 @@ nav a {
 }
 .links {
   color: rgb(249, 234, 27);
+}
+.location-venue-container {
+  display: flex;
+}
+.flex-half {
+  flex: 1;
 }
 </style>
 
