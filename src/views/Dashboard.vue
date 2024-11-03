@@ -6,15 +6,29 @@
 
 
     <div class="row d-flex justify-content-center">
+      <button class="col-3 btn " v-on:click="switchView('otherView')">All Events</button>
+      <div class="col-1"></div>
         <button class="col-3 btn " v-on:click="switchView('mapView')">Map View</button>
-        <div class="col-1"></div>
-        <button class="col-3 btn " v-on:click="switchView('otherView')">All Events</button>
     </div>
     <br>
 
-    <!-- Map View -->
-    <div v-if="view == 'map'">
-        <div id="mapDimensions">
+    <!-- All Events View -->
+    <div v-if="view == 'other'" class="mt-2 mb-2">
+        <h1 class="category-title">Upcoming Events</h1>
+        <!-- add buttons for 3: week, month and next month -->
+        <div class="d-flex row align-items-center " id="otherView">
+            <div class="col-2"></div>
+            <div class="col-4">
+                <h1>{{ all_events[0].event_name }}</h1>
+                <hr style="width:100px">
+                <p>{{ getFirstTwoSentences(all_events[0].description) }}</p>
+            </div>
+            <div class="col-2"></div>
+        </div>
+    </div>
+
+    <div v-else>
+      <div id="mapDimensions">
             <div id="map"></div>
         </div>
 
@@ -67,24 +81,7 @@
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Next</span>
                 </button>
-
             </div>
-
-        </div>
-    </div>
-
-    <!-- Other View -->
-    <div v-else class="mt-2 mb-2">
-        <h1 class="category-title">Upcoming Events</h1>
-        <!-- add buttons for 3: week, month and next month -->
-        <div class="d-flex row align-items-center " id="otherView">
-            <div class="col-2"></div>
-            <div class="col-4">
-                <h1>{{ all_events[0].event_name }}</h1>
-                <hr style="width:100px">
-                <p>{{ getFirstTwoSentences(all_events[0].description) }}</p>
-            </div>
-            <div class="col-2"></div>
         </div>
     </div>
 
@@ -173,7 +170,7 @@
   export default {
     data() {
       return {
-        view: "map",
+        view: "other", //
         events: [], //change this to change events shown on the carousel 
         all_events: [], // keeping track of all events shown
         numEventsGroup: 3,
@@ -205,7 +202,8 @@
 
 
     },
-    created() {
+    async created() {
+      await this.fetchEvents()
     },
 
 
@@ -253,19 +251,20 @@
         console.error("Error fetching events:", error);
             }
         },
-      switchView(current_view){
-            if(this.view == "map" && current_view == "otherView"){
-                this.view = "other"
-            }else if (this.view == "other" && current_view == "mapView"){
-                this.initMap()
-                this.view = "map"
+      switchView(button_pressed){
+            if(this.view === "other" && button_pressed === "mapView"){
+              this.initMap()
+              this.view = "map"  
+              
+            }else if (this.view === "map" && button_pressed === "otherView"){
+              this.view = "other"
             }
         },
 
       async  initMap() { // map initialisation data, including centerpoint, marker placement and debouncing 
             const position = { lat: 1.2963, lng: 103.8502 };
             const { Map } = await google.maps.importLibrary("maps");
-            const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+            // const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
             const allowedBounds = { //map dimensions
                 // north:;
@@ -427,9 +426,6 @@
         v: "weekly",
       });
       // -------- END CODE TO INITIALISE GOOGLE MAPS ---------
-
-    this.initMap();
-    this.fetchEvents(); 
     this.searchForEvents(); //initial population
 
     },
