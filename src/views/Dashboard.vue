@@ -21,7 +21,6 @@
             <div class="col-4">
                 <h1>{{ all_events[0].event_name }}</h1>
                 <hr style="width:100px">
-                <p>{{ getFirstTwoSentences(all_events[0].description) }}</p>
             </div>
             <div class="col-2"></div>
         </div>
@@ -49,7 +48,7 @@
                         <div class="card mb-4 shadow-sm">
                         <img :src="event.image" class="card-img-top" :alt="event.name" />
                         <div class="card-body">
-                            <h5 class="card-title">{{ event.event_name }}</h5>
+                            <h1 class="card-title">{{ event.event_name }}</h1>
                             <hr>
                             <h6 class="card-subtitle">{{ event.location }}</h6>
                             <p class="card-text">
@@ -108,51 +107,24 @@
                     <h1 class="category-title">
                         {{ selectedCategory }} Events Around Campus
                     </h1>
-                    <div class="row d-flex p-5 justify-content-center">
-                        <div class="col-sm-8 col-md-5 col-lg-3" v-for="event in searchedEvents" :key="event.id">
-                                <div class="card mb-4">
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ event.event_name }}</h5>
-                                        <hr>
-                                        <h6 class="card-subtitle">{{ event.location }}</h6>
-                                        <p class="card-text">
-                                        {{ truncateDescription(event.description) }}
-                                            <span v-if="event.description.length > 100">
-                                                    <a @click="showModal(event)"><u>Read More</u></a>
-                                            </span>
-                                        </p>
-                                        <div class="card-footer">
-                                            <button @click="goToEvent(event)">View Event</button>
-                                            <span v-if="event.external_url" >
-                                                <a :href="event.external_url" target="__blank">Signup Here!</a>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                        </div>
+                    <div v-if="searchedEvents.length != 0" class="row d-flex p-5 justify-content-center">
+                          <div class="col-sm-8 col-md-5 col-lg-4" v-for="event in searchedEvents" :key="event.id">
+                              <div class="card mb-4">
+                                  <div class="card-body">
+                                    <img :src=event.external_url>
+                                      <h4 class="card-title">{{ event.event_name }}</h4>
+                                      <hr>
+                                      <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
+                                      <h6 class="card-subtitle text-muted">{{ event.location_short}}</h6>
+                                  </div>
+                              </div>
+                          </div>
+                    </div>
+                    <div class="p-5" v-else>
+                      <h1 style="text-align: center;height: 200px;">There are currently no events matching your search</h1> <!-- to tell that there are no events happening according to search -->
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-
-    <!-- Modal Information -->
-    <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title">{{ selectedEvent?.event_name }}</h5>
-            <button type="button" class="btn-close" aria-label="Close" @click="closeModal"></button>
-            </div>
-            <div class="modal-body">
-            <h6>Event Details:</h6>
-            <p style="white-space: pre-line">{{ selectedEvent?.description }}</p>
-            </div>
-            <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
-            </div>
-        </div>
         </div>
     </div>
 </template>
@@ -208,21 +180,6 @@
 
 
     methods: {  
-      // Show Modal
-      showModal(event) {
-        this.selectedEvent = event; 
-        const modalElement = new bootstrap.Modal(document.getElementById('eventModal'));
-        modalElement.show(); 
-      },
-  
-      // Close Modal
-      closeModal() {
-        const modalElement = bootstrap.Modal.getInstance(document.getElementById('eventModal'));
-        modalElement.hide(); 
-        delay(0.3) //needed so that fade animation works properly   
-        this.selectedEvent = null;
-      },
-
       //Card Display Changes due to different breakpoints 
       setNumEventsGroup() {
         const width = window.innerWidth;
@@ -235,11 +192,6 @@
             } 
         },
   
-      // Reduce Description Size
-      truncateDescription(description) {
-        const maxLength = 99;
-        return description.length > maxLength ? description.substring(0, maxLength) + '...' : description;
-      },
 
       async fetchEvents() {
         try {
@@ -251,6 +203,7 @@
         console.error("Error fetching events:", error);
             }
         },
+
       switchView(button_pressed){
             if(this.view === "other" && button_pressed === "mapView"){
               this.initMap()
@@ -326,7 +279,7 @@
             };
         },
 
-       showEvents(){
+       showEvents(){ // on search function
                 const dimensions = this.map.getBounds() //fi : lo left hi right, Jh: lo bottom hi top
                 const all_events = this.all_events
                 let events_shown = []
@@ -379,17 +332,11 @@
         },
 
 
-        getFirstTwoSentences(inputText) {
-            const sentences = inputText.split('.').map(sentence => sentence.trim()).filter(sentence => sentence.length > 0);
-      
-            return sentences.slice(0, 2).join('. ') + (sentences.length > 2 ? '.' : '');
-        },
-
-        async searchForEvents(){
+        async searchForEvents(){ // by search term
             const data = await searchEvents('event_name',this.searchTerm)
             const category = this.selectedCategory
             let events_criteria = data.filter(event =>  // filter according to events which meet the 
-                this.selectedCategory === "All" || event.event_type === this.selectedCategory
+                category === "All" || event.event_type === category
             );
 
             return this.searchedEvents = events_criteria
@@ -399,6 +346,48 @@
             this.selectedCategory = category
             this.searchForEvents()
         },
+        getDates(start,end){
+          let start_time = start.substring(11,)
+          let end_time = end.substring(11,)
+          let start_date = new Date(start.substring(0,10))
+          let end_date = new Date(end.substring(0,10))
+
+          // format both times
+          const [start_hour, start_minute] = start_time.split(':').map(Number);
+          const start_period = start_hour >= 12 ? 'pm' : 'am';
+          const start_hour12 = start_hour % 12 || 12; 
+          let start_time_formatted = `${start_hour12}:${start_minute.toString().padStart(2, '0')}${start_period}`
+          
+          const [end_hour, end_minute] = end_time.split(':').map(Number);
+          const end_period = end_hour >= 12 ? 'pm' : 'am';
+          const end_hour12 = end_hour % 12 || 12; 
+          let end_time_formatted = `${end_hour12}:${end_minute.toString().padStart(2, '0')}${end_period}`
+
+          let time = `${start_time_formatted} - ${end_time_formatted}` // if you want to add time
+
+          // format both dates
+          const days = ["Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"]
+          const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+          let start_day = days[start_date.getDay()]
+          let start_date_day = start_date.getDay()
+          let start_month = months[start_date.getMonth()];
+          let start_year = String(start_date.getFullYear()).substring(2,); // if want to drop the year, delete this and edit below line
+          let displayed_start_date = `${start_date_day} ${start_month} ${start_year} (${start_day}.)`
+
+          let end_day = days[end_date.getDay()]
+          let end_date_day = end_date.getDay()
+          let end_month = months[end_date.getMonth()];
+          let end_year = String(end_date.getFullYear()).substring(2,); // if want to drop the year, delete this and edit below line
+          let displayed_end_date = `${end_date_day} ${end_month} ${end_year} (${end_day}.)`
+          console.log( displayed_end_date, displayed_start_date)
+
+          if (displayed_start_date == displayed_end_date){
+            return `${displayed_start_date}`
+          }
+            
+          return `${displayed_start_date} - ${displayed_end_date}`
+        }
     },
 
     mounted() {
@@ -462,7 +451,7 @@
   }
 
   .card-body {
-    height: 400px; /* fixed height for cards */
+    height: 200px; /* fixed height for cards */
   }
 
   #otherView{
