@@ -10,10 +10,9 @@
       <div class="col-1"></div>
         <button class="col-3 btn " v-on:click="switchView('mapView')">Map View</button>
     </div>
-    <br>
 
     <!-- All Events View -->
-    <div v-if="view == 'other'" class="mt-2 mb-2">
+    <div v-if="view === 'other'" class="mt-2 mb-2">
         <h1 class="category-title">Upcoming Events</h1>
         <!-- add buttons for 3: week, month and next month -->
         <div class="d-flex row align-items-center " id="otherView">
@@ -44,28 +43,17 @@
                     :key="index">
 
                     <div class="row d-flex justify-content-center">
-                    <div class="col-sm-8 col-md-5 col-lg-3" v-for="event in eventGroup" :key="event.id">
-                        <div class="card mb-4 shadow-sm">
-                        <img :src="event.image" class="card-img-top" :alt="event.name" />
-                        <div class="card-body">
-                            <h1 class="card-title">{{ event.event_name }}</h1>
-                            <hr>
-                            <h6 class="card-subtitle">{{ event.location }}</h6>
-                            <p class="card-text">
-                            {{ truncateDescription(event.description) }}
-                                <span v-if="event.description.length > 100">
-                                        <a @click="showModal(event)"><u>Read More</u></a>
-                                </span>
-                            </p>
-                        <div class="card-footer">
-                            <button @click="goToEvent(event)">View Event</button>
-                            <span v-if="event.external_url" >
-                                <a :href="event.external_url" target="__blank">Signup Here!</a>
-                            </span>
+                      <div class="col-sm-8 col-md-5 col-lg-3" v-for="event in eventGroup" :key="event.id">
+                        <div class="card mb-4">
+                          <div class="card-body">
+                            <img :src=event.external_url alt="Event Image"/>
+                              <h4 class="card-title">{{ event.event_name }}</h4>
+                              <hr>
+                              <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
+                              <h6 class="card-subtitle text-muted">{{ event.location_short}}</h6>
+                          </div>
                         </div>
-                        </div>
-                        </div>
-                    </div>
+                      </div>
                     </div>
                 </div>
                 </div>
@@ -92,6 +80,7 @@
             </div>
             <br>
             <div class="d-flex justify-content-center">
+              <div>
                 <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'All' }" @click="selectCategory('All')">All</button>&nbsp;&nbsp;
                 <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Academic' }" @click="selectCategory('Academic')">Academic</button>&nbsp;&nbsp;
                 <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Sports' }" @click="selectCategory('Sports')">Sports</button>&nbsp;&nbsp;
@@ -100,6 +89,7 @@
                 <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Charity' }" @click="selectCategory('Charity')">Charity</button>&nbsp;&nbsp;
                 <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Community' }" @click="selectCategory('Community')">Community</button>&nbsp;&nbsp;
                 <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Welfare' }" @click="selectCategory('Welfare')">Welfare</button>
+              </div>
             </div>
             <br>
             <div>
@@ -111,7 +101,7 @@
                           <div class="col-sm-8 col-md-5 col-lg-4" v-for="event in searchedEvents" :key="event.id">
                               <div class="card mb-4">
                                   <div class="card-body">
-                                    <img :src=event.external_url>
+                                    <img :src=event.external_url alt="Event Image"/>
                                       <h4 class="card-title">{{ event.event_name }}</h4>
                                       <hr>
                                       <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
@@ -206,11 +196,13 @@
 
       switchView(button_pressed){
             if(this.view === "other" && button_pressed === "mapView"){
+              this.view = "map"
               this.initMap()
-              this.view = "map"  
+              console.log("Map View")  
               
             }else if (this.view === "map" && button_pressed === "otherView"){
               this.view = "other"
+              console.log("Other View")  
             }
         },
 
