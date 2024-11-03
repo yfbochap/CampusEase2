@@ -37,7 +37,7 @@ const handleGetStarted = () => {
 
 } */
 main{
-  background-image: url("@/assets/images/bg-1.jpeg"); /* Adjusted path */
+  background-image: url("@/assets/images/SMU_bg2.webp"); /* Adjusted path */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

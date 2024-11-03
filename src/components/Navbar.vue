@@ -5,7 +5,7 @@
        
       <!--image--> 
       <router-link class="navbar-brand" to="/"> 
-        <img src="@/assets/images/CElogo1-1.png" alt="Logo" id="navbarLogo" style="width: 40px;"/> &nbsp  CampusEase 
+        <img src="@/assets/images/CElogo1-1.png" alt="Logo" id="navbarLogo" style="width: 40px;"/> &nbsp CampusEase
       </router-link>  
  
    
@@ -59,7 +59,7 @@
         <li class="sidebar_link"><router-link to="/eventCreation">Create New Event</router-link></li> 
         <li class="sidebar_link"><router-link to="/">Edit Events</router-link></li> 
       </ul> 
-      <div @click=logout class="btn btn-outline-danger" style="width:217px"> <!-- position:absolute;bottom: 20px; --> 
+      <div @click=logout class="btn" id="logout" style="width:217px"> <!-- position:absolute;bottom: 20px; --> 
         Log Out 
       </div> 
     </div> 
@@ -109,7 +109,7 @@
   
 
   .navbar { 
-    background-color: #f8f9fa; 
+    background-color: white; 
     width: 100%; 
     justify-content: space-between; 
     align-items: center; 
@@ -117,7 +117,9 @@
     top: 0 !important;
     z-index: 9000;
     
+    
   } 
+
  
   .navbar-toggler{ 
     margin-left: auto; 
@@ -125,7 +127,7 @@
   } 
  
   .navbar-nav .nav-link { 
-    color: #333; 
+    color: rgb(56, 53, 53); 
     transition: background-color 0.3s ease; 
   } 
  
@@ -152,16 +154,41 @@
   .offcanvas{ 
     width: 250px; 
   } 
+  #sidebar{
+    background-color: #434242;
+    
+  }
   .sidebar_link{ 
     list-style: none; 
     font-size: 18px; 
-    padding-bottom: 10px; 
+    padding-bottom: 10px;
   } 
+
+  .sidebar_link a {
+  color: #c4c0c0;
+  text-decoration: none;
+  
+  }
+
+  .sidebar_link a:hover {
+    color: #007bff;
+    background-color: transparent;
+  }
+
  
-.account-icon { 
-    font-size: 24px; 
-    color: #333; 
-    cursor: pointer; 
-} 
+  .account-icon { 
+      font-size: 24px; 
+      color: rgb(56, 53, 53); 
+      cursor: pointer; 
+  } 
+  #logout{
+    background-color: #c4c0c0 ;
+
+  }
+  #logout:hover {
+  background-color: rgb(183, 42, 42); /* Background color on hover */
+  color: white; /* Text color on hover */
+}
+
  
 </style>
