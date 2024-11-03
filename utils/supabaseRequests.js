@@ -80,7 +80,40 @@ export async function addEvent(eventData, thumbnailPath, additionalImagePaths) {
         console.error('Error adding event:', error.message);
         return null;
     }
-}
+};
+
+export async function updateEvent(eventData, thumbnailPath, additionalImagePaths, eventId) {
+    try {
+
+      const { data, error } = await supabase
+        .from('event') 
+        .update([{
+          created_by: eventData.created_by,
+          event_name: eventData.name,
+          start_date_time: eventData.start_date_time,
+          end_date_time: eventData.end_date_time,
+          location: eventData.location,
+          venue: eventData.venue,
+          place_lat: eventData.place_lat,
+          place_lng: eventData.place_lng,
+          location_short: eventData.location_short,
+          description: eventData.description,
+          organisation: eventData.organisation,
+          external_url: eventData.external_url,
+          event_type: eventData.event_type,
+          photos: [thumbnailPath, ...additionalImagePaths],
+        }])
+        .eq('id', eventId)
+  
+      if (error) {
+        throw error;
+      }
+      return true;
+    } catch (error) {
+        console.error('Error adding event:', error.message);
+        return null;
+    }
+};
 
 export async function checkEventExists (eventName){
     const { data, error } = await supabase
@@ -90,4 +123,35 @@ export async function checkEventExists (eventName){
       .single(); // Use .single() if you expect only one result
   
       return !!data; // Return true if an event exists, otherwise false
+};
+
+export async function getEventByEventId(eventId) {
+    try {
+      const { data, error } = await supabase
+        .from('event')
+        .select('*')
+        .eq('id', eventId)
+        .single(); // Assumes 'id' is the event's primary key
+      
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error fetching event:', error);
+      return null;
+    }
+};
+
+export async function getEventsByUserId(userId) {
+    try {
+      const { data, error } = await supabase
+        .from('event')
+        .select('*')
+        .eq('created_by', userId);
+      
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error fetching event:', error);
+      return null;
+    }
 };
