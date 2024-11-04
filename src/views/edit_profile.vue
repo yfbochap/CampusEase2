@@ -1,17 +1,17 @@
 <template>
   <div class="background-wrapper">
     <!-- Header Section -->
-    <div class="container-fluid text-white p-2 w-100" style="background-color: black; margin: 0;">
+    <div class="container-fluid text-white p-2 w-100 mb-5" style="background-color: black; margin: 0;">
       <div class="d-flex justify-content-between align-items-center">
         <RouterLink class="nav-link" to="/profile">
-          <button class="btn btn-light btn-sm"><i class="fas fa-arrow-left"></i> Back</button>
+          <button class="btn btn-light btn-sm">Back</button>
         </RouterLink>
         <h2 style="margin: auto;">Edit Profile</h2>
       </div>
     </div>
 
     <!-- Edit Information Section -->
-    <div class="container mt-0" style="width: 50%;">
+    <div class="container mt-0">
       <div class="card shadow">
         <div class="card-body">
           <!-- Profile Picture Section -->
@@ -68,7 +68,7 @@ export default {
 @import '../assets/edit_profile.css';
 
 .background-wrapper {
-  background-image: url('@/assets/images/bg-3.jpg'); 
+  background-image: url('@/assets/images/bg-9.png'); 
   background-size: cover;
   background-position: center;
   min-height: 100vh;
@@ -83,6 +83,7 @@ export default {
 
 .container {
   margin-top: 0; 
+  width: 40vw;
 }
 
 .card {

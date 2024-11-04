@@ -1,20 +1,24 @@
 <template>
   <div class="background-wrapper d-flex justify-content-center align-items-center">
-    <div class="calendar-card p-4 shadow" style="width: 50%;">
-      <h2 class="text-center">Your CampusEase Events</h2>
-      <div v-if="events.length">
-        <ul class="list-unstyled">
-          <li v-for="event in events" :key="event.id" class="event-card mb-3 p-3">
-            <strong class="card-title">{{ event.summary }}</strong><br>
-            Date: {{ formatDate(event.start.dateTime || event.start.date) }}<br>
-            Day: {{ formatDay(event.start.dateTime || event.start.date) }}<br>
-            Start Time: {{ formatTime(event.start.dateTime) }}<br>
-            End Time: {{ formatTime(event.end.dateTime) }}
-          </li>
-        </ul>
+    <div class="calendar-card p-4 shadow">
+      <div class="calendar-header">
+        <h2 class="text-center">Your CampusEase Events</h2>
       </div>
-      <div v-else>
-        <p class="text-center">No upcoming events found.</p>
+      <div class="calendar-content">
+        <div v-if="events.length">
+          <ul class="list-unstyled">
+            <li v-for="event in events" :key="event.id" class="event-card mb-3 p-3">
+              <strong class="card-title">{{ event.summary }}</strong><br>
+              Date: {{ formatDate(event.start.dateTime || event.start.date) }}<br>
+              Day: {{ formatDay(event.start.dateTime || event.start.date) }}<br>
+              Start Time: {{ formatTime(event.start.dateTime) }}<br>
+              End Time: {{ formatTime(event.end.dateTime) }}
+            </li>
+          </ul>
+        </div>
+        <div v-else>
+          <p class="text-center">No upcoming events found.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -54,22 +58,41 @@ export default {
 
 <style scoped>
 .background-wrapper {
-  background-image: url('@/assets/images/bg-3.jpg'); 
+  background-image: url('@/assets/images/bg-7.png'); 
   background-size: cover;
   background-position: center;
   height: 100vh;
   width: 100vw;
+  overflow: hidden; 
 }
 
 .calendar-card {
+  max-height: 80vh; 
+  width: 40vw;
   border-radius: 10px;
   background-color: #f8f9fa;
+  overflow: hidden; 
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-header {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  z-index: 10; 
+  padding-bottom: 8px;
+}
+
+.calendar-content {
+  flex: 1;
+  overflow-y: auto; 
 }
 
 .event-card {
   border-radius: 8px;
   border: 1px solid #ddd;
-  background-color: #ffffff; 
+  background-color: #ffffff;
 }
 
 .card-title {
