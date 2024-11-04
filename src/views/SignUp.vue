@@ -49,6 +49,12 @@ const handleSignup = async () => {
 </script>
 
 <template>
+<div class="video-background">
+  <!-- Video Background -->
+  <video autoplay loop muted playsinline class="background-video">
+    <source src="@/assets/images/bg-video11.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
   <div class="d-flex align-items-center justify-content-center min-vh-100 background-image">
     <div class="col-md-6">
       <div class="card shadow">
@@ -108,20 +114,44 @@ const handleSignup = async () => {
               </button>
             </div>
           </form>
+          <div class="d-flex justify-content-center mt-3">
+              <button
+                class="btn btn-secondary text-white"
+                @click="router.push('/SignIn')"
+              >
+                Back to Sign In
+              </button>
+            </div>
         </div>
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <style scoped>
+.video-background {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.background-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1; /* Place behind other content */
+}
+
+.overlay {
+  position: relative;
+  z-index: 1; /* Ensure it sits above the video */
+}
+
 .card {
   border-radius: 1rem;
-}
-.background-image {
-  background-image: url('../assets/images/community-service.jpg');
-  background-size: cover;
-  background-position: center;
-  height: 100vh; /* Full height to cover the screen */
 }
 </style>

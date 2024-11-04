@@ -1,36 +1,33 @@
 <script setup>
-    import { ref, inject } from 'vue';
-    import { getEvents } from '../../utils/supabaseRequests.js';
+import { ref, inject } from 'vue';
+import { useRouter } from 'vue-router';
+import { getEvents } from '../../utils/supabaseRequests.js';
 
-    const handleGetEvents = async () => {
-      const events = await getEvents();
-      console.log(events);
-    }
-    
-    // Example placeholder function for handling "Get Started" button click
-    const handleGetStarted = () => {
-      // Navigate to the LoginPage
-      window.location.href = 'LoginPage.html';
-    };
+const router = useRouter();
+
+// const handleGetEvents = async () => {
+//   const events = await getEvents();
+//   console.log(events);
+// };
+
+const handleGetStarted = () => {
+  // Navigate to Dashboard by route name
+  router.push({ name: 'dashboard' });
+};
 
 </script>
 
 <template>
   <main>
-      <div class="container">
-        <div class="logo-placeholder">
-          <img src="@/assets/images/CElogo1-1.png" alt="CampusEase Logo" />
-        </div>
+    <div class="container">
+      <div class="logo-placeholder">
+        <img src="@/assets/images/CElogo1-1.png" alt="CampusEase Logo" />
+      </div>
 
-        <div class="tagline">
-          <img src="@/assets/images/Tagline1.png" alt="Tagline" />
-        </div>
-
-        <button class="get-started-btn" @click="goToLogin">Get Started</button>
-
-        <button v-on:click="handleGetEvents">
-        RAHHH
-      </button>
+      <div class="tagline">
+        <img src="@/assets/images/Tagline1.png" alt="Tagline" />
+      </div>
+        <button class="get-started-btn" @click="handleGetStarted">Get Started</button>
       </div>
   </main>
 </template>
@@ -40,7 +37,7 @@
 
 } */
 main{
-  background-image: url("@/assets/images/bg-1.jpeg"); /* Adjusted path */
+  background-image: url("@/assets/images/SMU_bg2.webp"); /* Adjusted path */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -66,7 +63,7 @@ main{
   justify-content: center;
   align-items: center;
   margin-bottom: 10px;
-  margin-top: 50px;
+  margin-top: 150px;
 }
 
 .logo-placeholder img {

@@ -1,11 +1,15 @@
 <template>
   <div class="d-flex flex-column align-items-center vh-100 position-relative background-wrapper">
     <!-- Header Section -->
+<<<<<<< HEAD
     <div class="header-section bg-black text-white py-3 w-100 mb-5 text-center">
+=======
+    <div class="header-section py-3 w-100 text-center">
+>>>>>>> 51095f77998384705768da3f76ba7134f464130d
       <h1>Welcome to Your Profile</h1>
-      <p>Manage your events, notifications, and settings here</p>
+      <h5>Manage your events, notifications, and settings here</h5>
     </div>
-    
+    </div>
     <!-- Profile Container -->
     <div class="card profile-container shadow-lg border-0">
       <!-- Profile Header -->
@@ -219,10 +223,11 @@ fetchGoogleCalendar() {
 }
 
 .header-section {
-  background-color: black;
-  color: white;
+  background-color: transparent; /* Make the background transparent */
+  color: black; /* Change text color to black */
   width: 100%;
 }
+
 
 .profile-container {
   width: 40vw; 

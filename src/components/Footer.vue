@@ -1,7 +1,7 @@
 <template>
     <!-- Breakpoints need to be added -->
-    <div class="container"> 
-    <footer class="d-flex justify-content-between align-items-center py-3 mt-4 border-top border-secondary">
+    <div class="container-fluid" id="navbar"> 
+    <footer class="d-flex justify-content-between align-items-center py-3 border-top border-secondary">
         <p class="mb-0 col-4 text-secondary">Copyright &#169 IS211</p> 
         <ul class="nav col-8 justify-content-end">
             <li class="nav-item">
@@ -21,6 +21,10 @@
 
 <style scoped>
 /* Are there already set colours for the links? */
+    #navbar{
+      background-color: #1e1d1d;
+      padding: 0 20px;
+    }
     .nav-link {
         color: #696969;
         transition: background-color 0.3s ease;

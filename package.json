@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.6.0",
+    "@googlemaps/markerclusterer": "^2.5.3",
     "@supabase/supabase-js": "^2.45.6",
     "gapi-script": "^1.2.0",
     "pinia": "^2.1.7",
