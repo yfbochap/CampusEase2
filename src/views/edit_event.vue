@@ -1,12 +1,12 @@
 <template>
   <div class="container">
 
-    <h2>Create Event</h2>
+    <h2>Update Event</h2>
     <form class="mt-4 d-flex">
       <div class="left-column">
         <label for="thumbnailPhoto" class="form-label">Thumbnail Photo (Mandatory)</label>
         <div class="thumbnail-box" style="border-radius: 10px;">
-          <input type="file" id="thumbnailPhoto" @change="handleThumbnailPhoto" accept="image/*" required>
+          <input type="file" id="thumbnailPhoto" @change="handleThumbnailPhoto" accept="image/*">
           <div class="plus-icon">+</div>
           <img v-if="thumbnailPhoto" :src="thumbnailPreview" alt="Thumbnail" class="thumbnail-preview">
           <button v-if="thumbnailPhoto" @click="removeThumbnail" class="remove-icon">X</button>
@@ -98,7 +98,7 @@
           <input type="url" class="form-control" id="eventSignUp" v-model="eventSignUp" placeholder="https://example.com/sign-up">
         </div>
 
-        <button type="button" @click="submitEvent" class="btn text-white" id="submitButton">Create Event</button>
+        <button type="button" @click="submitEvent" class="btn text-white" id="submitButton">Update Event</button>
       </div>
     </form>
   </div>
@@ -107,10 +107,11 @@
 <script setup>
   import { ref, reactive, watch, onMounted } from 'vue';
   import { supabase } from '../../utils/supabaseClient';
-  import { addEvent, uploadFiles, getEventByEventId } from '../../utils/supabaseRequests';
+  import { updateEvent, deleteImage, uploadFiles, getEventByEventId, uploadImage } from '../../utils/supabaseRequests';
+import { RouterLink } from 'vue-router';
 
   const user = ref(null);
-  const eventId = '53';
+  const eventId = '63';
   const eventData = ref(null);
 
   const fetchUser = async () => {
@@ -119,11 +120,11 @@
     console.log('User Details', user.value.id);
   };
 
+
   const fetchEventData = async () => {
     eventData.value = await getEventByEventId(eventId);
     const eventDetails = eventData.value;
     console.log("Fetched event data:", eventDetails);
-    
 
     if(eventDetails){
       selectedLocation.value = eventDetails.location;
@@ -137,10 +138,38 @@
       eventDescription.value = eventDetails.description;
       eventOrganisation.value = eventDetails.organisation;
       eventSignUp.value = eventDetails.external_url;
-      eventPhotos.value = eventDetails.photos;
-      thumbnailPhoto.value = eventDetails.photos[0];
+      thumbnailPhoto.value = eventDetails.thumbnail;
+      eventPhotos.value = [...eventDetails.photos];
+
       otherLocation.value = ref(''); // Change this if you're fixing up other location option on event creation
       eventType.value = eventDetails.event_type;
+
+      const thumbnailUrl = await supabase.storage.from('eventPhotos').getPublicUrl(thumbnailPhoto.value);
+      console.log("thumbnailUrl", thumbnailUrl.data.publicUrl);
+
+      const imageUrls = [];
+
+      for (const photoPath of eventDetails.photos) {
+        if (photoPath != null){
+          const { data, error } = supabase.storage.from('eventPhotos').getPublicUrl(photoPath);
+            if (error) {
+                console.error('Error fetching public URL for', photoPath, error);
+            } else {
+                imageUrls.push(data.publicUrl); // Push the public URL to the array
+                console.log(imageUrls);
+            }
+        }
+      }
+
+
+      imageUrls.forEach((url, index) => {
+            // eventPhotos.value[index] = url;
+            eventPhotosPreview.value[index] = url; // Create preview URL
+      });
+
+      thumbnailPhoto.value = thumbnailUrl.data.publicUrl;
+      thumbnailPreview.value = thumbnailUrl.data.publicUrl;
+
     }
 };
 
@@ -172,11 +201,13 @@
   const eventPhotosPreview = ref(Array(3).fill(''));
 
   const handleThumbnailPhoto = (event) => {
-    thumbnailPhoto.value = event.target.files[0];
-    if (thumbnailPhoto.value) {
+    const file = event.target.files[0];
+    if (file) {
+      thumbnailPhoto.value = file;
       thumbnailPreview.value = URL.createObjectURL(thumbnailPhoto.value);
     } else {
-      thumbnailPreview.value = null;
+      thumbnailPhoto.value = null;
+      thumbnailPreview.value = '';
     }
   };
 
@@ -230,20 +261,127 @@
     }
   });
 
+  function compareAndUpdateImages(arrayA, arrayB, imagesToUpload, imagesToDelete) {
+    const maxLength = Math.max(arrayA.length, arrayB.length);
+
+    // Iterate through both arrays to find differences
+    for (let i = 0; i < maxLength; i++) {
+      const itemA = arrayA[i];
+      const itemB = arrayB[i];
+
+      console.log("Original Image: ", itemA);
+      console.log("New Image: ", itemB);
+
+      // Case 1: New item added in B (item exists in B but not in A)
+      if (itemB !== null && itemA === null) {
+          // This means the user has added an image in the input box
+          imagesToUpload.push(itemB); // This image should be uploaded
+      }
+      
+      // Case 2: Item removed from B (item exists in A but not in B)
+      if (itemA !== null && itemB === null) {
+          // This means the user has removed the image
+          imagesToDelete.push(itemA); // This image should be deleted from storage
+      }
+
+      // Case 3: Item changed in B (item exists in both but is different)
+      if (itemB !== null && itemA !== null && itemB !== itemA) {
+          // This means the user has replaced an image in the input box
+          imagesToDelete.push(itemA); // Delete the old image
+          imagesToUpload.push(itemB); // Upload the new image
+      }
+    }
+  };
+
+
   const submitEvent = async (event) => {
     event.preventDefault();
+    // await fetchEventData();
 
     const form = document.querySelector('form'); 
     if (!form.checkValidity()) {
       form.reportValidity();
+      alert("Missing Field!");
       return;
     }
 
-    const eventExists = await checkEventExists(eventName.value);
-  
-    if (eventExists) {
-      alert('An event with this name already exists. Please choose a different name.');
-      return; // Stop the submission if the event exists
+    if (!thumbnailPhoto.value){
+      alert("Missing Thumbnail Photo!");
+      return;
+    }
+    
+    const updateThumbnail = ref(false);
+
+    const existingThumbnailPath = eventData.value.thumbnail; // e.g., 'thumbnails/Last Friday Nite!/soundfoundry_event.jpg'
+    console.log("Existing Thumbnail Path: ", existingThumbnailPath);
+    const existingThumbnailName = existingThumbnailPath ? existingThumbnailPath.split('/').pop() : null;
+
+
+    let newThumbnailName;
+
+    // Determine if thumbnailPhoto is a File object or an existing URL
+    if (thumbnailPhoto.value instanceof File) {
+        newThumbnailName = thumbnailPhoto.value.name; // Use the name property of File
+        console.log("Thumbnail has changed. ", newThumbnailName, existingThumbnailName);
+        updateThumbnail.value = true;
+    } else {
+        console.log("No change in thumbnail");
+    }
+
+    const imagesToDelete = [];
+    const imagesToUpload = [];
+    const remainingImages = ref([...eventData.value.photos]);
+    const thumbnailPath = ref(eventData.value.thumbnail);
+    const additionalImagePaths = ref([null, null, null]);
+
+    console.log("Before compare & update images: ", eventData.value.photos, eventPhotos.value, imagesToUpload, imagesToDelete);
+    await compareAndUpdateImages(eventData.value.photos, eventPhotos.value, imagesToUpload, imagesToDelete);
+    console.log("After compare & update images: ", imagesToUpload, imagesToDelete);
+
+    if(updateThumbnail){
+      await deleteImage(eventData.value.thumbnail);
+      thumbnailPath.value = await uploadImage(thumbnailPhoto.value, 'thumbnail', eventName.value) //here
+      console.log('New thumbnail uploaded:', thumbnailPath);
+    }
+    
+    if(imagesToDelete.length > 0){
+      for (const item of imagesToDelete){
+        await deleteImage(item);
+        console.log('Deleted image:', item);
+        remainingImages.value = eventData.value.photos.filter(photo => !imagesToDelete.includes(photo));
+      }
+      while (remainingImages.value.length < 3) {
+        remainingImages.value.push(null);
+      }
+    }
+    console.log("Remaining Images: ", remainingImages.value);
+
+    if(imagesToUpload.length > 0){
+      const uploadedImages = []; 
+
+      for (const [index, item] of imagesToUpload.entries()){
+        const uploadedPath = await uploadImage(item, 'additional', eventName.value, index);
+        uploadedImages.push(uploadedPath);
+      }
+
+      console.log("Uploaded images: ", uploadedImages)
+      // Now create an array with the non-null values at the front and nulls at the end
+      additionalImagePaths.value = [
+        ...remainingImages.value.filter(image => image != null),
+        ...uploadedImages // Add the newly-uploaded images last
+      ];
+
+
+      console.log("File path checks 1: ", remainingImages, uploadedImages, additionalImagePaths);
+
+      while (additionalImagePaths.value.length < 3) {
+        additionalImagePaths.value.push(null);
+      }
+
+      additionalImagePaths.value = additionalImagePaths.value.slice(0, 3);
+    }
+    else{
+      additionalImagePaths.value = [...remainingImages.value];
     }
 
     const newEvent = {
@@ -262,43 +400,23 @@
       event_type: eventType.value,
     };
 
-    console.log('New event created:', newEvent);
-    // alert('Event Created: ' + newEvent.name);
+    console.log('New Event Information: ', newEvent);
+    console.log("Original Image Array: ", remainingImages, additionalImagePaths);
+    console.log("New Image Array: ", additionalImagePaths);
+    console.log("Thumbnail Path: ", thumbnailPath.value);
 
-    const { thumbnailPath, additionalImagePaths } = await uploadFiles(thumbnailPhoto.value, eventPhotos.value.filter(photo => photo !== null), eventName.value);
-
-    if (!thumbnailPath) {
-        alert('Please upload a thumbnail image before creating the event.');
-        return;
-    }
-
-    const createdEvent = await addEvent(newEvent, thumbnailPath, additionalImagePaths || []);
+    const updatedEvent = await updateEvent(newEvent, thumbnailPath.value, additionalImagePaths.value, eventId);
             
-      if (createdEvent) {
-          console.log('Event added successfully:', createdEvent);
-
-          // Clear form fields
-          eventName.value = '';
-          eventVenue.value = '';
-          eventStartDateTime.value = '';
-          eventEndDateTime.value = '';
-          eventDescription.value = '';
-          eventOrganisation.value = '';
-          eventSignUp.value = '';
-          eventPhotos.value = Array(3).fill(null);
-          eventPhotosPreview.value = Array(3).fill('');
-          thumbnailPhoto.value = null;
-          selectedLocation.value = '';
-          otherLocation.value = '';
+      if (updatedEvent) {
+          console.log('Event updated successfully:', updatedEvent);
+          alert('Event updated successfully!');
+          window.location.reload();
       }
 
-    else {
-        console.error('Error: Failure to create event.');
-        alert('Error: Failure to create event.');
-    }
-
-
-
+      else {
+          console.error('Error: Failure to update event.');
+          alert('Error: Failure to update event.');
+      }
 
   };
 

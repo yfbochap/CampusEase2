@@ -238,12 +238,12 @@
     console.log('New event created:', newEvent);
     // alert('Event Created: ' + newEvent.name);
 
-    const { thumbnailPath, additionalImagePaths } = await uploadFiles(thumbnailPhoto.value, eventPhotos.value.filter(photo => photo !== null), eventName.value);
-
-    if (!thumbnailPath) {
+    if (!thumbnailPhoto) {
         alert('Please upload a thumbnail image before creating the event.');
         return;
     }
+
+    const { thumbnailPath, additionalImagePaths } = await uploadFiles(thumbnailPhoto.value, eventPhotos.value, eventName.value);
 
     const createdEvent = await addEvent(newEvent, thumbnailPath, additionalImagePaths || []);
             

@@ -37,16 +37,32 @@ export async function uploadImage(file, type, eventName, index) {
 }
 
 export async function uploadFiles(thumbnailFile, additionalFiles, eventName) {
-    const thumbnailPath = await uploadImage(thumbnailFile, 'thumbnail', eventName);
+    let thumbnailPath;
+    if (typeof thumbnailFile === 'string') {
+        // If it's a URL, use it directly
+        thumbnailPath = thumbnailFile;
+        console.log('Using existing thumbnail path:', thumbnailPath);
+    } else {
+        // If it's a File object, upload it
+        thumbnailPath = await uploadImage(thumbnailFile, 'thumbnail', eventName);
+    }
     
-    // Check if additionalFiles is an empty array
-    const additionalImagePaths = additionalFiles.length > 0 
+    const nonNullAdditionalFiles = additionalFiles.filter(file => file !== null);
+
+    // Upload additional files
+    const additionalImagePaths = nonNullAdditionalFiles.length > 0 
         ? await Promise.all(
-            additionalFiles.map((file, index) => uploadImage(file, 'additional', eventName, index))
+            nonNullAdditionalFiles.map((file, index) => uploadImage(file, 'additional', eventName, index))
           )
         : []; // Return an empty array if no additional files
 
-    return { thumbnailPath, additionalImagePaths };
+    // Now create an array with the non-null values at the front and nulls at the end
+    const fullAdditionalImagePaths = [
+        ...additionalImagePaths, // Add all the uploaded images first
+        ...additionalFiles.filter(file => file === null) // Add the nulls at the end
+    ];
+
+    return { thumbnailPath, additionalImagePaths: fullAdditionalImagePaths };
 }
 
 
@@ -69,7 +85,8 @@ export async function addEvent(eventData, thumbnailPath, additionalImagePaths) {
           organisation: eventData.organisation,
           external_url: eventData.external_url,
           event_type: eventData.event_type,
-          photos: [thumbnailPath, ...additionalImagePaths],
+          thumbnail: thumbnailPath,
+          photos: [...additionalImagePaths],
         }]);
   
       if (error) {
@@ -84,6 +101,10 @@ export async function addEvent(eventData, thumbnailPath, additionalImagePaths) {
 
 export async function updateEvent(eventData, thumbnailPath, additionalImagePaths, eventId) {
     try {
+
+        console.log("Updating event with ID:", eventId); // Log the event ID
+        console.log("Event data to update:", eventData); // Log the event data
+
 
       const { data, error } = await supabase
         .from('event') 
@@ -101,16 +122,23 @@ export async function updateEvent(eventData, thumbnailPath, additionalImagePaths
           organisation: eventData.organisation,
           external_url: eventData.external_url,
           event_type: eventData.event_type,
-          photos: [thumbnailPath, ...additionalImagePaths],
+          thumbnail: thumbnailPath,
+          photos: [...additionalImagePaths],
         }])
         .eq('id', eventId)
+        .select('venue');
   
       if (error) {
         throw error;
       }
-      return true;
+      if(data) {
+        console.log(data);
+        console.log("Success! Event Updated!");
+        return true;
+      }
+
     } catch (error) {
-        console.error('Error adding event:', error.message);
+        console.error('Error updating event:', error.message);
         return null;
     }
 };
@@ -154,4 +182,14 @@ export async function getEventsByUserId(userId) {
       console.error('Error fetching event:', error);
       return null;
     }
+};
+
+export async function deleteImage(filePath) {
+    const { error } = await supabase.storage.from('eventPhotos').remove([filePath]);
+
+    if (error) {
+        console.error('Error deleting image:', error);
+        return false;
+    }
+    return true;
 };
