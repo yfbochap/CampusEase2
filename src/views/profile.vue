@@ -1,16 +1,18 @@
 <template>
   <div class="d-flex flex-column align-items-center vh-100 position-relative background-wrapper">
     <!-- Header Section -->
+    <div class="header-section bg-black text-white py-3 w-100 mb-5 text-center">
     <div class="header-section py-3 w-100 text-center">
       <h1>Welcome to Your Profile</h1>
       <h5>Manage your events, notifications, and settings here</h5>
+    </div>
     </div>
     <!-- Profile Container -->
     <div class="card profile-container shadow-lg border-0">
       <!-- Profile Header -->
       <div class="profile-header text-center text-white p-3 position-relative">
         <button @click="goBack" class="btn btn-light position-absolute top-0 start-0 mt-2 ms-3">
-          <i class="fas fa-arrow-left"></i> Back
+          Back
         </button>
         <div class="profile-picture mb-3">
           <img src="" alt="Profile Picture" class="rounded-circle border border-white" style="width: 165px; height: 170px;">
@@ -102,8 +104,7 @@ export default {
     console.log('CampusEase Calendar Created:', response);
     this.campusEaseCalendarId = response.result.id;
 
-    // Insert dummy events after creating the calendar
-    await this.insertEventsToCampusEase(); // Make this method return a promise
+    await this.insertEventsToCampusEase(); 
   } catch (error) {
     console.error('Error creating CampusEase Calendar:', error);
   }
@@ -112,26 +113,38 @@ export default {
 async insertEventsToCampusEase() {
   const dummyEvents = [
     {
-      summary: 'Orientation Day',
-      description: 'Welcome event for new students',
-      start: { dateTime: '2024-11-01T09:00:00', timeZone: 'Asia/Singapore' },
-      end: { dateTime: '2024-11-01T12:00:00', timeZone: 'Asia/Singapore' }
-    },
-    {
       summary: 'Tech Talk: AI in Business',
       description: 'Exploring AI applications in business with guest speakers',
-      start: { dateTime: '2024-11-03T15:00:00', timeZone: 'Asia/Singapore' },
-      end: { dateTime: '2024-11-03T17:00:00', timeZone: 'Asia/Singapore' }
+      start: { dateTime: '2024-11-20T15:00:00', timeZone: 'Asia/Singapore' },
+      end: { dateTime: '2024-11-20T17:00:00', timeZone: 'Asia/Singapore' }
     },
     {
       summary: 'Hackathon 2024',
       description: '24-hour coding event with exciting prizes',
-      start: { dateTime: '2024-11-10T10:00:00', timeZone: 'Asia/Singapore' },
-      end: { dateTime: '2024-11-11T10:00:00', timeZone: 'Asia/Singapore' }
+      start: { dateTime: '2024-11-15T10:00:00', timeZone: 'Asia/Singapore' },
+      end: { dateTime: '2024-11-15T10:00:00', timeZone: 'Asia/Singapore' }
+    },
+    {
+      summary: 'Orientation Day',
+      description: 'Welcome event for new students',
+      start: { dateTime: '2024-11-12T09:00:00', timeZone: 'Asia/Singapore' },
+      end: { dateTime: '2024-11-12T12:00:00', timeZone: 'Asia/Singapore' }
+    },
+    {
+      summary: 'Career Talk',
+      description: 'Network with potential employees',
+      start: { dateTime: '2024-11-30T09:00:00', timeZone: 'Asia/Singapore' },
+      end: { dateTime: '2024-11-30T12:00:00', timeZone: 'Asia/Singapore' }
+    },
+    {
+      summary: 'Pitch It competition',
+      description: 'Showcase the best design',
+      start: { dateTime: '2024-11-09T09:00:00', timeZone: 'Asia/Singapore' },
+      end: { dateTime: '2024-11-09T12:00:00', timeZone: 'Asia/Singapore' }
     }
+
   ];
 
-  // Use Promise.all to wait for all event insertions to complete
   const insertPromises = dummyEvents.map(event => {
     return gapi.client.calendar.events.insert({
       calendarId: this.campusEaseCalendarId,
@@ -143,23 +156,19 @@ async insertEventsToCampusEase() {
     });
   });
 
-  await Promise.all(insertPromises); // Wait for all insertions to complete
+  await Promise.all(insertPromises); 
 },
 
 fetchGoogleCalendar() {
   gapi.load('client:auth2', async () => {
     await this.initClient();
 
-    // Check if the CampusEase calendar ID is available
     if (!this.campusEaseCalendarId) {
-      // Create a new calendar and wait for its creation
       await this.createCampusEaseCalendar();
     }
 
-    // After the calendar is created, list upcoming events
     await this.listUpcomingEvents(this.campusEaseCalendarId);
     
-    // Navigate to the Calendar page with the events data
     this.$router.push({ name: 'calendar', query: { events: JSON.stringify(this.events) } });
   });
 },
@@ -203,7 +212,7 @@ fetchGoogleCalendar() {
 @import '../assets/profile.css';
 
 .background-wrapper {
-  background-image: url('@/assets/images/bg-3.jpg'); 
+  background-image: url('@/assets/images/bg-8.png'); 
   background-size: cover;
   background-position: center;
   height: 100vh;
@@ -218,10 +227,10 @@ fetchGoogleCalendar() {
 
 
 .profile-container {
-  width: 60vw; 
-  height: 100%;
+  width: 40vw; 
+  height: 70%;
   margin-top: 0; 
-  background-color: rgba(255, 255, 255, 0.9); 
+  background-color: rgba(255, 255, 255, 0.8); 
   border-radius: 15px;
   overflow: hidden;
 }
