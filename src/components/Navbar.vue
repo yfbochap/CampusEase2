@@ -57,7 +57,7 @@
         <li class="sidebar_link"><router-link to="/edit_profile">Edit Profile</router-link></li> 
         <li class="sidebar_link"><router-link to="/">Events Calendar</router-link></li> 
         <li class="sidebar_link"><router-link to="/eventCreation">Create New Event</router-link></li> 
-        <li class="sidebar_link"><router-link to="/">Edit Events</router-link></li> 
+        <li class="sidebar_link"><router-link to="/">Edit Your Events</router-link></li> 
       </ul> 
       <div @click=logout class="btn" id="logout" style="width:217px"> <!-- position:absolute;bottom: 20px; --> 
         Log Out 
