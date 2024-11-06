@@ -135,26 +135,28 @@
 
 
 <script>
-import { getEvents } from '../../utils/supabaseRequests.js';
-import { searchEvents } from '../../utils/supabaseRequests.js';
-import { supabase } from '../../utils/supabaseClient';
+  import { getEvents } from '../../utils/supabaseRequests.js';
+  // import { MarkerClusterer } from "@googlemaps/markerclusterer";
+  import { searchEvents } from '../../utils/supabaseRequests.js';
 
-export default {
-  data() {
-    return {
-      view: "other", //
-      events: [], //change this to change events shown on the carousel 
-      all_events: [], // keeping track of shown
-      numEventsGroup: 3,
-      selectedEvent: null, // Variable to hold the selected event details
-      map:null, // Google Map holder
-      debounceTimeout: null,
-      markerCluster: null,
-      searchTerm: "", //Search term input by user
-      searchedEvents: [],
-      selectedCategory: "All"
-    };
-  },
+  
+  
+  export default {
+    data() {
+      return {
+        view: "other", //
+        events: [], //change this to change events shown on the carousel 
+        all_events: [], // keeping track of all events shown
+        numEventsGroup: 3,
+        selectedEvent: null, // Variable to hold the selected event details
+        map:null, // Google Map holder
+        debounceTimeout: null,
+        markerCluster: null,
+        searchTerm: "", //Search term input by user
+        searchedEvents: [],
+        selectedCategory: "All"
+      };
+    },
 
 
   computed: {

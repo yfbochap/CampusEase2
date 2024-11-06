@@ -4,14 +4,14 @@
     <div class="container-fluid text-white p-2 w-100 mb-5" style="background-color: black; margin: 0;">
       <div class="d-flex justify-content-between align-items-center">
         <RouterLink class="nav-link" to="/profile">
-          <button class="btn btn-light btn-sm">Back</button>
+          <button class="btn btn-light btn-sm"><i class="fas fa-arrow-left"></i> Back</button>
         </RouterLink>
         <h2 style="margin: auto;">Edit Profile</h2>
       </div>
     </div>
 
     <!-- Edit Information Section -->
-    <div class="container mt-0">
+    <div class="container mt-0" style="width:40vw;">
       <div class="card shadow">
         <div class="card-body">
           <!-- Profile Picture Section -->
@@ -83,7 +83,6 @@ export default {
 
 .container {
   margin-top: 0; 
-  width: 40vw;
 }
 
 .card {
