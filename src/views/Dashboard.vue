@@ -19,7 +19,7 @@
           <div class="carousel-inner">
               <div class="carousel-item" :class="{ active: index === 0 }" v-for="(event, index) in all_events" :key="event.id">
                   <div class="d-flex justify-content-center">
-                      <img :src=getPhotoURL(event) alt="Card image cap" style="width:200px;height:282px">
+                      <img :src=getPhotoURL(event) alt="Card image cap" style="width:200px;height:282px"> {{event.event_name}}
                   </div>
               </div>
           </div>
@@ -136,8 +136,8 @@
 
 <script>
   import { getEvents } from '../../utils/supabaseRequests.js';
-  // import { MarkerClusterer } from "@googlemaps/markerclusterer";
   import { searchEvents } from '../../utils/supabaseRequests.js';
+  import { supabase } from '../../utils/supabaseClient.js'
 
   
   
