@@ -275,7 +275,7 @@ export default {
 
       getPhotoURL(event){
           console.log(event)
-          const { data, error } = supabase.storage.from('eventPhotos').getPublicUrl(event.photos[0]);
+          const { data, error } = supabase.storage.from('eventPhotos').getPublicUrl(event.thumbnail);
           if (error) {
               console.error('Error fetching public URL for', event.photos, error);
           } else {
