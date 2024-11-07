@@ -48,7 +48,6 @@
           <select id="location" class="form-control" v-model="selectedLocation" required>
             <option value="Administration Building">Administration Building</option>
             <option value="Campus Green">Campus Green</option>
-            <option value="Concourse - Room/Lab">Concourse - Room/Lab</option>
             <option value="Lee Kong Chian School of Business">Lee Kong Chian School of Business</option>
             <option value="Li Ka Shing Library">Li Ka Shing Libraryy</option>
             <option value="Prinsep Street Residences">Prinsep Street Residences</option>
