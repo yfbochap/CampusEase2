@@ -139,9 +139,9 @@
   import { getEvents } from '../../utils/supabaseRequests.js';
   import { searchEvents, checkUserLike, addUserLike, removeUserLike} from '../../utils/supabaseRequests.js';
   import { supabase } from '../../utils/supabaseClient.js';
-  import { useUserStore } from '@/stores/counter.js';
+  import { useUserStore } from '@/stores/counter.ts';
 
-  const userStore = useUserStore();
+  
   
   export default {
     data() {
@@ -159,7 +159,7 @@
         selectedCategory: "All",
         heartColor: "black",
         likedEvents: [],
-        user_id: userStore.getAuthToken()
+        user_id: ''
       };
     },
 
@@ -404,9 +404,15 @@
       isBetween(value, min, max){
           return value >= min && value <= max
       },
+
+      getUserID(){
+        const userStore = useUserStore();
+        this.user_id = userStore.getAuthToken()
+      }
   },
 
   mounted() {
+
       this.setNumEventsGroup(); // Set initial value based on current viewport
       window.addEventListener('resize', this.setNumEventsGroup); // Update on resize
 
