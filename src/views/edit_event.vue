@@ -107,17 +107,22 @@
   import { ref, reactive, watch, onMounted } from 'vue';
   import { supabase } from '../../utils/supabaseClient';
   import { updateEvent, deleteImage, uploadFiles, getEventByEventId, uploadImage } from '../../utils/supabaseRequests';
-import { RouterLink } from 'vue-router';
+  import router from '@/router';
 
-  const user = ref(null);
-  const eventId = '63';
+  import { useUserStore } from '@/stores/counter';
+
+  const userStore = useUserStore()
+  const user = userStore.getAuthToken();
+  const eventId = userStore.getEventID();
   const eventData = ref(null);
 
-  const fetchUser = async () => {
-    const { data } = await supabase.auth.getUser();
-    user.value = data.user; // Update the reactive user variable
-    console.log('User Details', user.value.id);
-  };
+  const checkAccess = () => {
+    if(eventId == null){
+      console.log("here")
+      router.push("/your_events")
+    }
+  }
+
 
 
   const fetchEventData = async () => {
@@ -173,7 +178,7 @@ import { RouterLink } from 'vue-router';
 };
 
   onMounted( async () => {
-    await fetchUser();
+    checkAccess()
     await fetchEventData();
   });
 
