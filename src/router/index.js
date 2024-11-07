@@ -64,9 +64,9 @@ const router = createRouter({
       component: () => import('../views/calendar.vue')
     },
     {
-      path:'/eventTest',
-      name:'eventTest',
-      component: () => import('../views/EventTest.vue')
+      path: '/your_events',
+      name: 'your_events',
+      component: () => import('../views/list_user_event.vue')
     },
     {
       path: '/edit_event',
