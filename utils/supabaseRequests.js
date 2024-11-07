@@ -193,3 +193,61 @@ export async function deleteImage(filePath) {
     }
     return true;
 };
+
+export async function getProfile(userId){
+  try {
+    const {data, error} = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId);
+    if (error) throw error;
+    return data;
+  } catch (error){
+    console.error('Error fetching profile:', error);
+    return null;
+  }
+    
+}
+
+export async function checkUserLike(profile_id){
+  try{
+    const {data, error} = await supabase
+    .from('participants')
+    .select('event_id')
+    .eq('profile_id', profile_id);
+    if (error) throw error;
+    return data.map(item => item.event_id);
+  } catch (error){
+    console.log("Error checking user like", error)
+  }
+}
+
+export async function addUserLike(event_id, profile_id){
+  try{
+    const {data, error} = await supabase
+    .from('participants')
+    .insert([{
+      event_id: event_id,
+      profile_id: profile_id
+    }]);
+    if (error) throw error;
+    return data;
+  } catch (error){
+    console.log("Error liking event", error)
+  }
+}
+
+export async function removeUserLike(event_id, profile_id){
+  try{
+    const {data, error} = await supabase
+    .from('participants')
+    .delete()
+    .eq('event_id', event_id)
+    .eq('profile_id', profile_id);
+    if (error) throw error;
+    return data;
+  } catch (error){
+    console.log("Error un-liking event", error)
+  }
+}
+

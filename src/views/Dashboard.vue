@@ -118,6 +118,7 @@
                                     <hr>
                                     <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
                                     <h6 class="card-subtitle text-muted">{{ event.location_short}}</h6>
+                                    <button v-on:click="toggleLikeStatus(event)" v-bind:style="{color: isLiked(event) ? 'red' : 'grey'}">♡</button>
                                 </div>
                             </div>
                         </div>
@@ -136,10 +137,11 @@
 
 <script>
   import { getEvents } from '../../utils/supabaseRequests.js';
-  import { searchEvents } from '../../utils/supabaseRequests.js';
-  import { supabase } from '../../utils/supabaseClient.js'
+  import { searchEvents, checkUserLike, addUserLike, removeUserLike} from '../../utils/supabaseRequests.js';
+  import { supabase } from '../../utils/supabaseClient.js';
+  import { useUserStore } from '@/stores/counter.js';
 
-  
+  const userStore = useUserStore();
   
   export default {
     data() {
@@ -154,7 +156,10 @@
         markerCluster: null,
         searchTerm: "", //Search term input by user
         searchedEvents: [],
-        selectedCategory: "All"
+        selectedCategory: "All",
+        heartColor: "black",
+        likedEvents: [],
+        user_id: userStore.getAuthToken()
       };
     },
 
@@ -172,11 +177,41 @@
 
   },
   async created() {
-      this.fetchEvents()
+      this.fetchEvents();
+      this.fetchLikedEvents();
   },
 
 
   methods: {
+
+      // Like Functionality
+      async fetchLikedEvents(){
+        try{
+          this.likedEvents = checkUserLike(user.id);
+        } catch(error){
+          console.error("Errorfetching liked events:", error);
+        }
+      },
+      isLiked(event){
+        return this.likedEvents.includes(event.id);
+      },
+      async toggleLikeStatus(event){
+        const eventId = event.id;
+        const isLiked = this.likedEvents.includes(eventId);
+
+        try{
+          if(isLiked){
+            await removeUserLike(eventId, this.user_id);
+            this.likedEvents = this.likedEvents.filter(id => id !== eventId);
+          }
+          else{
+            await addUserLike(eventId, this.user_id);
+            this.likedEvents.push(eventId);
+          }
+        } catch (error){
+          console.error("Error toggling like:", error);
+        }
+      },
       // View related functions:
       switchView(button_pressed){
           if(this.view === "other" && button_pressed === "mapView"){

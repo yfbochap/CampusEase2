@@ -171,7 +171,7 @@
             eventPhotosPreview.value[index] = url; // Create preview URL
       });
 
-      thumbnailPhoto.value = thumbnailUrl.data.publicUrl;
+      // thumbnailPhoto.value = thumbnailUrl.data.publicUrl;
       thumbnailPreview.value = thumbnailUrl.data.publicUrl;
 
     }
@@ -330,6 +330,7 @@
         updateThumbnail.value = true;
     } else {
         console.log("No change in thumbnail");
+        updateThumbnail.value = false;
     }
 
     const imagesToDelete = [];
@@ -342,7 +343,7 @@
     await compareAndUpdateImages(eventData.value.photos, eventPhotos.value, imagesToUpload, imagesToDelete);
     console.log("After compare & update images: ", imagesToUpload, imagesToDelete);
 
-    if(updateThumbnail){
+    if(updateThumbnail.value){
       await deleteImage(eventData.value.thumbnail);
       thumbnailPath.value = await uploadImage(thumbnailPhoto.value, 'thumbnail', eventName.value) //here
       console.log('New thumbnail uploaded:', thumbnailPath);
