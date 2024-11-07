@@ -233,48 +233,35 @@
           this.searchForEvents()
       },
 
-      getDates(start,end){
-          let start_time = start.substring(11,)
-          let end_time = end.substring(11,)
-          let start_date = new Date(start.substring(0,10))
-          let end_date = new Date(end.substring(0,10))
+      getDates(start, end) {
+        const formatTime = (isoString) => {
+          const [hour, minute] = isoString.substring(11, 16).split(':').map(Number);
+          const period = hour >= 12 ? 'pm' : 'am';
+          const hour12 = hour % 12 || 12;
+          return `${hour12}:${minute.toString().padStart(2, '0')}${period}`;
+        };
 
-          const [start_hour, start_minute] = start_time.split(':').map(Number);
-          const start_period = start_hour >= 12 ? 'pm' : 'am';
-          const start_hour12 = start_hour % 12 || 12; 
-          let start_time_formatted = `${start_hour12}:${start_minute.toString().padStart(2, '0')}${start_period}`
-          
-          const [end_hour, end_minute] = end_time.split(':').map(Number);
-          const end_period = end_hour >= 12 ? 'pm' : 'am';
-          const end_hour12 = end_hour % 12 || 12; 
-          let end_time_formatted = `${end_hour12}:${end_minute.toString().padStart(2, '0')}${end_period}`
-
-          let time = `${start_time_formatted} - ${end_time_formatted}` // if you want to add time
-
-          // format both dates
-          const days = ["Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"]
+        const formatDate = (isoString) => {
+          const date = new Date(isoString.substring(0, 10));
+          const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
           const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          return `${date.getDate()} ${months[date.getMonth()]} ${String(date.getFullYear()).substring(2)} (${days[date.getDay()]})`;
+        };
 
-          let start_day = days[start_date.getDay()]
-          let start_date_day = start_date.getDay()
-          let start_month = months[start_date.getMonth()];
-          let start_year = String(start_date.getFullYear()).substring(2,); // if want to drop the year, delete this and edit below line
-          let displayed_start_date = `${start_date_day} ${start_month} ${start_year} (${start_day}.)`
+        const start_time_formatted = formatTime(start);
+        const end_time_formatted = formatTime(end);
+        const time = `${start_time_formatted} - ${end_time_formatted}`;
 
-          let end_day = days[end_date.getDay()]
-          let end_date_day = end_date.getDay()
-          let end_month = months[end_date.getMonth()];
-          let end_year = String(end_date.getFullYear()).substring(2,); // if want to drop the year, delete this and edit below line
-          let displayed_end_date = `${end_date_day} ${end_month} ${end_year} (${end_day}.)`
-          // console.log( displayed_end_date, displayed_start_date)
+        const displayed_start_date = formatDate(start);
+        const displayed_end_date = formatDate(end);
 
-          if (displayed_start_date == displayed_end_date){
-              return `${displayed_start_date}`
-          }
-              
-          return `${displayed_start_date} - ${displayed_end_date}`
+        if (displayed_start_date === displayed_end_date) {
+          return `${displayed_start_date} ${time}`;
+        }
+        
+        return `${displayed_start_date} - ${displayed_end_date} ${time}`;
       },
-
+          
       getPhotoURL(event){
           // console.log(event)
           const { data, error } = supabase.storage.from('eventPhotos').getPublicUrl(event.thumbnail);
