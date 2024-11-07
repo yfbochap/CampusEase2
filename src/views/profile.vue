@@ -43,7 +43,7 @@
             </ul>
           </div>
           <hr class="my-0" />
-          <a href="#" class="list-group-item d-flex justify-content-between align-items-center">
+          <a href="#" @click="goToLikedEvents" class="list-group-item d-flex justify-content-between align-items-center">
             <span><i class="fas fa-heart me-3"></i> Liked Events</span>
           </a>
           <div class="text-center">
@@ -73,6 +73,9 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
+    goToLikedEvents() {
+      this.$router.push('/LikedEvents');
+    },
     initClient() {
       return gapi.client.init({
         apiKey: "AIzaSyAdMutgjV2OcfJgxr8ywiyj3Z1smkAiMRM",
@@ -87,7 +90,6 @@ export default {
         const authInstance = gapi.auth2.getAuthInstance();
         await authInstance.signIn();
 
-        // Retrieve signed-in user's email
         this.userEmail = authInstance.currentUser.get().getBasicProfile().getEmail();
 
         const calendarExists = await this.checkCampusEaseCalendar();
@@ -96,8 +98,6 @@ export default {
         }
 
         await this.insertOrUpdateEvents();
-
-        // Redirect to Google Calendar with the signed-in user's email
         window.open(`https://calendar.google.com/calendar/u/0/r?cid=${this.userEmail}`, "_blank");
       });
     },
@@ -160,6 +160,7 @@ export default {
           start: { dateTime: '2024-11-09T09:00:00', timeZone: 'Asia/Singapore' },
           end: { dateTime: '2024-11-09T12:00:00', timeZone: 'Asia/Singapore' }
         }
+
 
       ];
 
