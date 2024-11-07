@@ -132,7 +132,7 @@ async insertEventsToCampusEase() {
     },
     {
       summary: 'Career Talk',
-      description: 'Network with potential employees',
+      description: 'Network with potential employees ',
       start: { dateTime: '2024-11-30T09:00:00', timeZone: 'Asia/Singapore' },
       end: { dateTime: '2024-11-30T12:00:00', timeZone: 'Asia/Singapore' }
     },

@@ -136,8 +136,8 @@
 
 <script>
   import { getEvents } from '../../utils/supabaseRequests.js';
-  // import { MarkerClusterer } from "@googlemaps/markerclusterer";
   import { searchEvents } from '../../utils/supabaseRequests.js';
+  import { supabase } from '../../utils/supabaseClient';
 
   
   
