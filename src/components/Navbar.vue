@@ -57,7 +57,7 @@
         <li class="sidebar_link"><router-link to="/edit_profile">Edit Profile</router-link></li> 
         <li class="sidebar_link"><router-link to="/">Events Calendar</router-link></li> 
         <li class="sidebar_link"><router-link to="/eventCreation">Create New Event</router-link></li> 
-        <li class="sidebar_link"><router-link to="/">Edit Your Events</router-link></li> 
+        <li class="sidebar_link"><router-link to="/your_events">Edit Your Events</router-link></li> 
       </ul> 
       <div @click=logout class="btn" id="logout" style="width:217px"> <!-- position:absolute;bottom: 20px; --> 
         Log Out 
@@ -69,8 +69,10 @@
 <script setup> 
   import { ref, onMounted } from 'vue';
   import { supabase } from '../../utils/supabaseClient';
+  import { useUserStore } from '@/stores/counter';
 
   const user = ref(null);
+  const userStorage = useUserStore()
 
   const fetchUser = async () => {
     const { data } = await supabase.auth.getUser();
@@ -94,6 +96,7 @@
     else {
       user.value = null;
       console.log('User logged out successfully')
+      userStorage.setAuthToken(null)
       window.location.reload()
     }
   };
@@ -106,8 +109,6 @@
     width: 40px; 
   } 
 
-  
-
   .navbar { 
     background-color: white; 
     width: 100%; 
@@ -119,7 +120,6 @@
     
     
   } 
-
  
   .navbar-toggler{ 
     margin-left: auto; 

@@ -2,8 +2,12 @@
 import { ref, inject } from 'vue';
 import { useRouter } from 'vue-router';
 import { getEvents } from '../../utils/supabaseRequests.js';
+import { useUserStore } from '@/stores/counter.ts';
+import { supabase } from '../../utils/supabaseClient';
+
 
 const router = useRouter();
+const userStore = useUserStore()
 
 // const handleGetEvents = async () => {
 //   const events = await getEvents();
@@ -15,6 +19,13 @@ const handleGetStarted = () => {
   router.push({ name: 'dashboard' });
 };
 
+const fetchUser = async () => {
+    const { data } = await supabase.auth.getUser();
+    userStore.getAuthToken()
+    userStore.setAuthToken(data.user.id)
+  };
+
+fetchUser()
 </script>
 
 <template>

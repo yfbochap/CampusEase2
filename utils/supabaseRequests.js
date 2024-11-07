@@ -159,7 +159,7 @@ export async function getEventByEventId(eventId) {
         .from('event')
         .select('*')
         .eq('id', eventId)
-        .single(); // Assumes 'id' is the event's primary key
+        .single(); 
       
       if (error) throw error;
       return data;
