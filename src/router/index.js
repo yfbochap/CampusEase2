@@ -59,14 +59,14 @@ const router = createRouter({
       redirect: '/' 
     },
     {
-      path: '/calendar',
-      name: 'calendar',
-      component: () => import('../views/calendar.vue')
+      path: '/LikedEvents',
+      name: 'LikedEvents',
+      component: () => import('../views/LikedEvents.vue')
     },
     {
-      path:'/eventTest',
-      name:'eventTest',
-      component: () => import('../views/EventTest.vue')
+      path: '/your_events',
+      name: 'your_events',
+      component: () => import('../views/list_user_event.vue')
     },
     {
       path: '/edit_event',

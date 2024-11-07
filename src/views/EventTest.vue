@@ -71,12 +71,7 @@
           </div>
           <button id="calendaradd" class="btn text-white">Add to Calendar</button>
         </div>
-      </div>
-    </div>
-
-    <div v-if="isLightboxOpen" class="lightbox" @click="closeLightbox">
-      <span class="close" @click.stop="closeLightbox">&times;</span>
-      <img class="lightbox-content" :src="lightboxImage" />
+      
     </div>
   </section>
 </template>

@@ -16,7 +16,7 @@ const handleSignIn = async () => {
     if (error) throw error;
 
     const { user } = data;
-    console.log(data)
+    // console.log(data)
 
     if (!user?.email_confirmed_at) {
       throw new Error("Please verify your email before signing in.");

@@ -2,7 +2,7 @@
   <div class="background-wrapper d-flex justify-content-center align-items-center">
     <div class="calendar-card p-4 shadow">
       <div class="calendar-header">
-        <h2 class="text-center">Your CampusEase Events</h2>
+        <h2 class="text-center">Your Liked Events</h2>
       </div>
       <div class="calendar-content">
         <div v-if="events.length">

@@ -48,7 +48,6 @@
           <select id="location" class="form-control" v-model="selectedLocation" required>
             <option value="Administration Building">Administration Building</option>
             <option value="Campus Green">Campus Green</option>
-            <option value="Concourse - Room/Lab">Concourse - Room/Lab</option>
             <option value="Lee Kong Chian School of Business">Lee Kong Chian School of Business</option>
             <option value="Li Ka Shing Library">Li Ka Shing Libraryy</option>
             <option value="Prinsep Street Residences">Prinsep Street Residences</option>
@@ -108,17 +107,22 @@
   import { ref, reactive, watch, onMounted } from 'vue';
   import { supabase } from '../../utils/supabaseClient';
   import { updateEvent, deleteImage, uploadFiles, getEventByEventId, uploadImage } from '../../utils/supabaseRequests';
-import { RouterLink } from 'vue-router';
+  import router from '@/router';
 
-  const user = ref(null);
-  const eventId = '63';
+  import { useUserStore } from '@/stores/counter';
+
+  const userStore = useUserStore()
+  const user = userStore.getAuthToken();
+  const eventId = userStore.getEventID();
   const eventData = ref(null);
 
-  const fetchUser = async () => {
-    const { data } = await supabase.auth.getUser();
-    user.value = data.user; // Update the reactive user variable
-    console.log('User Details', user.value.id);
-  };
+  const checkAccess = () => {
+    if(eventId == null){
+      console.log("here")
+      router.push("/your_events")
+    }
+  }
+
 
 
   const fetchEventData = async () => {
@@ -167,14 +171,14 @@ import { RouterLink } from 'vue-router';
             eventPhotosPreview.value[index] = url; // Create preview URL
       });
 
-      thumbnailPhoto.value = thumbnailUrl.data.publicUrl;
+      // thumbnailPhoto.value = thumbnailUrl.data.publicUrl;
       thumbnailPreview.value = thumbnailUrl.data.publicUrl;
 
     }
 };
 
   onMounted( async () => {
-    await fetchUser();
+    checkAccess()
     await fetchEventData();
   });
 
@@ -326,6 +330,7 @@ import { RouterLink } from 'vue-router';
         updateThumbnail.value = true;
     } else {
         console.log("No change in thumbnail");
+        updateThumbnail.value = false;
     }
 
     const imagesToDelete = [];
@@ -338,7 +343,7 @@ import { RouterLink } from 'vue-router';
     await compareAndUpdateImages(eventData.value.photos, eventPhotos.value, imagesToUpload, imagesToDelete);
     console.log("After compare & update images: ", imagesToUpload, imagesToDelete);
 
-    if(updateThumbnail){
+    if(updateThumbnail.value){
       await deleteImage(eventData.value.thumbnail);
       thumbnailPath.value = await uploadImage(thumbnailPhoto.value, 'thumbnail', eventName.value) //here
       console.log('New thumbnail uploaded:', thumbnailPath);
@@ -385,7 +390,7 @@ import { RouterLink } from 'vue-router';
     }
 
     const newEvent = {
-      created_by: user.value.id,
+      created_by: user,
       name: eventName.value,
       venue: eventVenue.value,
       place_lat: place_lat.value,
