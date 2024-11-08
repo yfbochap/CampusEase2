@@ -6,26 +6,26 @@
 
 
   <div class="row d-flex justify-content-center">
-    <button class="col-3 btn " v-on:click="switchView('otherView')">All Events</button>
-    <div class="col-1"></div>
-      <button class="col-3 btn " v-on:click="switchView('mapView')">Map View</button>
+    <button class="col-3 btn viewbutton" v-on:click="switchView('otherView')">All Events</button>
+    <!-- <div class="col-1"></div> -->
+      <button class="col-3 btn viewbutton" v-on:click="switchView('mapView')">Map View</button>
   </div>
 
   <!-- All Events View -->
   <div v-if="view === 'other'" class="mt-2 mb-2">
       <h1 class="category-title">Upcoming Events</h1>
       <!-- add buttons for 3: week, month and next month -->
-      <div id="carouselAllEvents" class="carousel slide" data-bs-ride="carousel">
+      <!-- <div id="carouselAllEvents" class="carousel slide" data-bs-ride="carousel">
           <div class="carousel-inner">
               <div class="carousel-item" :class="{ active: index === 0 }" v-for="(event, index) in all_events" :key="event.id">
                   <div class="d-flex justify-content-center">
                       <img :src=getPhotoURL(event) alt="Card image cap" style="width:200px;height:282px"> {{event.event_name}}
                   </div>
               </div>
-          </div>
+          </div> -->
 
               <!-- Carousel controls -->
-          <button class="carousel-control-prev" type="button" data-bs-target="#carouselAllEvents" data-bs-slide="prev">
+          <!-- <button class="carousel-control-prev" type="button" data-bs-target="#carouselAllEvents" data-bs-slide="prev">
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Previous</span>
           </button>
@@ -33,9 +33,9 @@
           <button class="carousel-control-next" type="button" data-bs-target="#carouselAllEvents" data-bs-slide="next">
           <span class="carousel-control-next-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Next</span>
-          </button>
+          </button> -->
       </div>
-  </div>
+  <!-- </div> -->
 
   <div v-else>
     <div id="mapDimensions">
@@ -88,7 +88,7 @@
   <div>
       <div>
           <div class="d-flex justify-content-center">
-              <input id="searchbar" class="input-size input-lg " v-model="searchTerm" @input="searchForEvents" type="text" placeholder="Search events..." aria-label="Search">
+              <input id="searchbar" class="i" v-model="searchTerm" @input="searchForEvents" type="text" placeholder="Search events..." aria-label="Search">
           </div>
           <br>
           <div class="d-flex justify-content-center">
@@ -446,6 +446,36 @@
 
 
 <style scoped>
+.viewbutton{
+  /* color: white; */
+  border: solid 1px black;
+  margin: 30px;
+  width: 200px;
+  transition: background-color 0.3s ease;
+}
+.viewbutton:hover{
+  background-color: #29292a;
+}
+
+/* Styling for the input */
+.i {
+  width: 100%;
+  max-width: 600px; /* Adjust width as needed */
+  height: 40px; /* Adjust height as needed */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px; /* Make corners rounded */
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none; /* Remove default browser styles */
+  -moz-appearance: none;
+  outline: none; /* Remove default outline */
+}
+
+div{
+  /* background-color: #29292a; */
+  /* color: white; */
+}
 .carousel-control-prev,
 .carousel-control-next {
   width: 80px;
