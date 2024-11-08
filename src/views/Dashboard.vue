@@ -188,10 +188,10 @@
 
 
   methods: {
-      async goToEventPage(eventId) {
+       goToEventPage(eventId) {
         // Trigger the setEventID function and navigate to the event details page
         const userStore = useUserStore();
-        await userStore.setEventID(eventId);
+        userStore.setEventID(eventId);
         this.$router.push(`/event/${eventId}`);
       },
       // Like Functionality

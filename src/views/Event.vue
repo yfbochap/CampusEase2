@@ -1,302 +1,222 @@
 <template>
-  <section class="section about">
-    <div id="top" class="container">
-      <div class="about-content">
-        <div class="about-image">
-          <img 
-            id="thumbnail" 
-            src="./test_photo.jpg" 
-            alt="About Lviv Conference"
-          >
+  <div class="main container-fluid">
+    <div class="row align-items-center">
+      <!-- Photos Section -->
+      <div class="col-md-6 photos">
+        <img :src=thumbnail :alt=eventTitle  id="thumbnail" class="img-fluid" />
 
-          <div class="gallery" v-if="photos">
-            
-            <div 
-               v-for="(photo, index) in photos" 
-              :key="index" 
-
-              class="photo-container"
-            >
-              <img 
-                :src="photo.src" 
-                :alt="photo.alt"
-                class="small-photo" 
-                @click="openLightbox(photo.src)"
-              >
-            </div>
-          </div>
-
-      
+        <div class="gallery d-flex flex-wrap mt-3">
+          <img
+            v-for="(photo, index) in galleryPhotos"
+            :key="index"
+            :src="photo.src"
+            :alt="photo.alt"
+            class="small-photo"
+            @click="openLightbox(photo.src)"
+          />
         </div>
+      </div>
 
-        <div class="container details">
-          <h2 id="titlename" 
-                style="display: inline-block; margin-right: 30px;"> 
-              Walking on Sunshine Event
-            </h2>
-            <!-- HeartIcon Component* -->
-            <!-- <button class="heart-btn" 
-                    :aria-label="isLiked ? 'Unlike' : 'Like'" 
-                    @click="toggleLike">
-              <svg 
-                class="heart-icon" 
-                :class="{ 'filled': isLiked }"
-                viewBox="0 0 24 24" 
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-              </svg>
-            </button> -->
-            <div v-if="event">
-              <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
-            </div>
-          <div id="details">
-            <h2>Location</h2>
-            <p>SMU Connex</p>  <!-- HARDCODED *TO REPLACE* -->
-
-            <h2>Venue</h2>
-            <p>Meeting Pod1</p>  <!-- HARDCODED *TO REPLACE* -->
-
-            <h2>Description</h2>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis
-              provident hic cupiditate, atque aliquid sint enim minima esse, dolores,
-              soluta quaerat mollitia explicabo sequi reprehenderit facilis laborum
-              beatae impedit odit? 
-            </p>  <!-- HARDCODED *TO REPLACE* -->
-
-            <h2>Time</h2>
-            <p>25 November 10AM to 26 November 12PM</p>  <!-- HARDCODED *TO REPLACE* -->
-
-            <h2>Sign-up Link</h2>
-            <p>www.apple.com</p>  <!-- HARDCODED *TO REPLACE* -->
-
-          </div>
-          <button id="calendaradd" class="btn text-white">Add to Calendar</button>
-        </div>
-
+      <!-- Event Details Section -->
+      <div class="col-md-6 details">
+        <h2 id="eventTitle" class="d-inline-block mr-3">{{ eventTitle }}</h2>
         
+        <button class="heart-btn" @click="toggleLike" :aria-label="isLiked ? 'Unlike' : 'Like'">
+          <svg class="heart-icon" :class="{ filled: isLiked }" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </button>
+
+        <h3>Event Details</h3>
+        <p>{{ description }}</p>
+
+        <h3>Location</h3>
+        <p>{{ location }}</p>
+
+        <h3>Venue</h3>
+        <p>{{ venue }}</p>
+
+        <h3>Time</h3>
+        <p>{{ time }}</p>
+
+        <h4>
+          <u style="color: green;"><a :href="signUpLink" target="_blank">Sign Up here!</a></u>
+        </h4>
+      </div>
     </div>
+
+    <!-- Lightbox -->
+    <div v-if="lightboxVisible" id="lightbox" class="lightbox align-items-center justify-content-center" @click.self="closeLightbox">
+      <span class="close" @click="closeLightbox">&times;</span>
+      <img class="lightbox-content" :src="lightboxImage" />
     </div>
-    <div v-if="isLightboxOpen" class="lightbox" @click="closeLightbox">
-          <span class="close" @click.stop="closeLightbox">&times;</span>
-          <img class="lightbox-content" :src="lightboxImage" />
-    </div>
-  </section>
+  </div>
 </template>
 
 <script>
-// Import all images
-import photo1 from '../assets/images/photo_2024-10-16 13.47.32.jpeg'; // <!-- HARDCODED *TO REPLACE* -->
-import photo2 from '../assets/images/earth.jpeg';
-import photo3 from '../assets/images/bg-1.jpeg';
-import "../assets/base.css";
+import '../assets/base.css'
+import { useUserStore } from '@/stores/counter';
+import { getEventByEventId, checkUserLike, addUserLike, removeUserLike } from '../../utils/supabaseRequests';
+import { supabase } from '../../utils/supabaseClient';
 import HeartIcon from '@/components/HeartIcon.vue';
-import { useUserStore } from '@/stores/counter.ts';
-import { getEventByEventId, checkUserLike, addUserLike, removeUserLike} from '../../utils/supabaseRequests.js';
-
 
 export default {
-  name: 'EventDetail',
   data() {
     return {
-      isLightboxOpen: false,
+      eventTitle: "",
+      isLiked: false,
+      location: "",
+      venue: "",
+      description: "",
+      signUpLink: "",
+      thumbnail: '',
+      galleryPhotos: [],
+      lightboxVisible: false,
       lightboxImage: "",
-      photos: [
-        {
-          src: photo1,
-          alt: 'Photo 1'
-        },
-        {
-          src: photo2,
-          alt: 'Photo 2'
-        },
-        {
-          src: photo3,
-          alt: 'Photo 3'
-        },
-      ],
-      selectedCategory: "All",
-      likedEvents: [],
-      user_id: '',
-      event_id: '', 
-      event: null
-    }
+      time: "",
+      user_id: "",
+      likedEvents: "",
+      eventID: "" // Store the specific event ID for reference
+    };
+  },
+  methods: {
+    async getEvent(){
+      const userStore = useUserStore()
+      let event = await getEventByEventId(userStore.getEventID())
+      this.user_id = userStore.getAuthToken()
+      this.eventID = event.id // Assuming `event.id` is the unique event ID
+      this.eventTitle = event.event_name
+      this.location = event.location
+      this.venue = event.venue
+      this.description = event.description
+      this.thumbnail = this.getPhotoURL(event)
+      this.time = this.getDates(event.start_date_time, event.end_date_time)
+      this.signUpLink = event.external_url
+      this.galleryPhotos = this.getGalleryPhotos(event)
+      await this.fetchLikedEvents(); // Check if the event is liked
+    },
+    async fetchLikedEvents(){
+      try {
+        this.likedEvents = await checkUserLike(this.user_id);
+        this.isLiked = this.likedEvents.includes(this.eventID);
+      } catch(error) {
+        console.error("Error fetching liked events:", error);
+      }
+    },
+    async toggleLikeStatus(){
+      const isLiked = this.isLiked;
+      try {
+        if (isLiked) {
+          await removeUserLike(this.eventID, this.user_id);
+        } else {
+          await addUserLike(this.eventID, this.user_id);
+        }
+        this.isLiked = !isLiked; // Toggle the liked status in the UI
+      } catch (error) {
+        console.error("Error toggling like:", error);
+      }
+    },
+    openLightbox(src) {
+      this.lightboxImage = src;
+      this.lightboxVisible = true;
+    },
+    closeLightbox() {
+      this.lightboxVisible = false;
+      this.lightboxImage = "";
+    },
+    getDates(start, end) {
+      const formatTime = (isoString) => {
+        const [hour, minute] = isoString.substring(11, 16).split(':').map(Number);
+        const period = hour >= 12 ? 'pm' : 'am';
+        const hour12 = hour % 12 || 12;
+        return `${hour12}:${minute.toString().padStart(2, '0')}${period}`;
+      };
+
+      const formatDate = (isoString) => {
+        const date = new Date(isoString.substring(0, 10));
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        return `${date.getDate()} ${months[date.getMonth()]} ${String(date.getFullYear()).substring(2)} (${days[date.getDay()]})`;
+      };
+
+      const start_time_formatted = formatTime(start);
+      const end_time_formatted = formatTime(end);
+      const time = `${start_time_formatted} - ${end_time_formatted}`;
+
+      const displayed_start_date = formatDate(start);
+      const displayed_end_date = formatDate(end);
+
+      if (displayed_start_date === displayed_end_date) {
+        return `${displayed_start_date} ${time}`;
+      }
+      
+      return `${displayed_start_date} - ${displayed_end_date} ${time}`;
+    },
+    getPhotoURL(event) {
+      const { data, error } = supabase.storage.from('eventPhotos').getPublicUrl(event.thumbnail);
+      if (error) {
+        console.error('Error fetching public URL for', event.photos, error);
+      } else {
+        return data.publicUrl;
+      }
+    },
+    getGalleryPhotos(event){
+      let gallery = []
+      event.photos.forEach(photo => {
+        if (photo != null){
+          const {data} = supabase.storage.from('eventPhotos').getPublicUrl(photo);
+          gallery.push({src: data.publicUrl, alt: photo})
+        }
+      });
+      return gallery
+    },
+  },
+  mounted(){
+    this.getEvent()
   },
   components: {
     HeartIcon
   },
-  async created() {
-      this.getUserID();
-      this.getEventID();
-      console.log("Event ID:", this.event_id)
-      this.fetchEventData();
-      this.fetchLikedEvents();
-  },
-  async mounted() {
-    // Log all photo sources when component mounts
-    console.log('All photos array:', this.photos);
-    this.photos.forEach((photo, index) => {
-      console.log(`Photo ${index + 1} source:`, photo.src);
-    });
-  },
-  computed: {
-
-  },
-  methods: {
-    // Fetch event data by event ID
-    async fetchEventData() {
-      try {
-        if (!this.event_id) {
-          console.error("Event ID is missing.");
-          return;
-        }
-        const eventData = await getEventByEventId(this.event_id);
-        this.event = eventData; // Set the fetched event data
-        console.log("Fetched Event Data: ", eventData);
-      } catch (error) {
-        console.error("Error fetching event data:", error);
-      }
-    },
-    // Like Functionality
-    async fetchLikedEvents(){
-      try{
-        console.log("Checking Profile ID: ", this.user_id)
-        this.likedEvents = await checkUserLike(this.user_id);
-        console.log("Liked Events: ", this.likedEvents);
-      } catch(error){
-        console.error("Error fetching liked events:", error);
-      }
-    },
-    isLiked(event){
-      return this.likedEvents.includes(event.id);
-    },
-    async toggleLikeStatus(event){
-      console.log('Toggling Like for event:', event);
-      // const eventId = event.id;
-      const isLiked = this.likedEvents.includes(event);
-
-      try{
-        console.log("Event ID: ", event);
-        console.log("Profile ID: ", this.user_id);
-        if(isLiked){
-          await removeUserLike(event, this.user_id);
-          this.likedEvents = this.likedEvents.filter(id => id !== event);
-        }
-        else{
-          await addUserLike(event, this.user_id);
-          this.likedEvents = [...this.likedEvents, event];
-        }
-      } catch (error){
-        console.error("Error toggling like:", error);
-      }
-    },
-    getUserID(){
-        const userStore = useUserStore();
-        this.user_id = userStore.getAuthToken()
-    },
-    getEventID(){
-        const userStore = useUserStore();
-        this.event_id = userStore.getEventID()
-    },
-    // Lightbox Functionality
-    openLightbox(src) {
-      this.lightboxImage = src;     // Set the image source for the lightbox
-      this.isLightboxOpen = true;    // Display the lightbox
-    },
-    closeLightbox() {
-      this.isLightboxOpen = false;   // Hide the lightbox
-      this.lightboxImage = "";       // Clear the image source
-    },
-    toggleLike() {
-      this.isLiked = !this.isLiked;
-    }
-  },
-  beforeUnmount() {
-    // Cleanup: ensure body scroll is restored when component is destroyed
-    document.body.style.overflow = '';
-  }
-}
+};
 </script>
 
+
 <style scoped>
-
-
-.section{
-  /* Add your section styling */
-  font-family: 'Nunito Sans', 'Times New Roman', Times, serif;
-  font-size: 15px;
-}
-
-h2{
-  font-weight: 800;
-  font-size: larger;
-}
-
-
-
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-.about {
-  padding: 150px 0;
+body {
   background-color: #29292a;
+  font-family: 'Nunito Sans';
 }
-
-.about-content {
-  display: flex;
-  align-items: center;
+h2{
+  margin-bottom: 30px;
   color: white;
 }
-
-.about-image {
-  margin-right: 50px;
-}
-
-#thumbnail {
+.photos > img#thumbnail {
   width: 400px;
   height: auto;
+  margin-top: 70px;
 }
-
 .gallery {
-      display: flex;
-      margin-top: 10px;
-    }
-
-.small-photo {
-      width: auto;
-      max-width: 100px;
-      height: 80px;
-      margin-right:10px;
-      margin-bottom: 10px;
-      object-fit: cover;
-      border: 2px solid #ddd;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-.small-photo:hover {
-  transform: scale(1.1);
+  display: flex;
+  margin-top: 10px;
 }
-
+.small-photo {
+  width: 80px;
+  height: auto;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  object-fit: cover;
+  border: 2px solid #ddd;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
 .heart-btn {
   background: none;
   border: none;
   cursor: pointer;
   padding: 8px;
-  transition: transform 0.2s;
   position: relative;
   bottom: 10px;
 }
-
-.heart-btn:hover {
-  transform: scale(1.1);
-}
-
 .heart-icon {
   width: 30px;
   height: 30px;
@@ -304,64 +224,116 @@ h2{
   stroke: #666;
   stroke-width: 2;
   transition: all 0.2s;
+  margin-left: 10px;
 }
-
 .heart-icon.filled {
   fill: #ff3040;
   stroke: #ff3040;
 }
-
 .lightbox {
   display: flex;
   position: fixed;
-  z-index: 1000;
-  left: 0;
   top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
   justify-content: center;
   align-items: center;
 }
-
-.lightbox-content {
+.lightbox img {
   max-width: 80%;
   max-height: 80%;
   border: 3px solid white;
   border-radius: 10px;
 }
-
 .close {
   position: absolute;
   top: 20px;
   right: 35px;
   color: white;
   font-size: 40px;
-  font-weight: bold;
   cursor: pointer;
 }
-.details{
-      align-items: left;
-      margin-left: 20px;
-      position: relative;
-      bottom: 100px;
+.details > *,
+.photos > img,
+.galler > img {
+  opacity: 0;
+  animation: fadeIn 0.6s forwards;
 }
-#titlename{
-  font-size: 40px;
-  margin-bottom: 30px;
-  
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-#calendaradd{
-  position: relative;
-  left: 400px;
-  top: 100px;
-  background-color: #666;
-  transition: background-color 0.3s;
-}
-
-#calendaradd:hover{
+.main{
   background-color: #29292a;
-  border-color: #ddd;
+  padding-top: 100px;
+  padding-bottom: 100px;
+  padding-left: 50px;
+  padding-right: 50px;
+  color: #ddd;
+}
+/* Apply animation delays dynamically for each child element */
+.details > *:nth-child(1) {
+    animation-delay: 0.2s;
+}
+.details > *:nth-child(2) {
+    animation-delay: 0.4s;
+}
+.details > *:nth-child(3) {
+    animation-delay: 0.6s;
+}
+.details > *:nth-child(4) {
+    animation-delay: 0.8s;
+}
+.details > *:nth-child(5) {
+    animation-delay: 1s;
+}
+.details > *:nth-child(6) {
+    animation-delay: 1.2s;
+}
+.details > *:nth-child(7) {
+    animation-delay: 1.4s;
+}
+.details > *:nth-child(8) {
+    animation-delay: 1.6s;
+}
+.details > *:nth-child(9) {
+    animation-delay: 1.8s;
+}
+.details > *:nth-child(10) {
+    animation-delay: 2s;
+}
+.details > *:nth-child(11) {
+    animation-delay: 2.2s;
+}
+.details > *:nth-child(12) {
+    animation-delay: 2.2s;
+}
+/* Sequential delay for the thumbnail and gallery images */
+.photos > img#thumbnail {
+    animation-delay: 0.2s; /* Thumbnail fades in first */
 }
 
+.gallery > img:nth-child(1) {
+    animation-delay: 0.5s; /* First small photo */
+}
+
+.gallery > img:nth-child(2) {
+    animation-delay: 0.6s; /* Second small photo */
+}
+
+.gallery > img:nth-child(3) {
+    animation-delay: 0.8s; /* Third small photo */
+}
+p{
+  margin-bottom: 25px;
+        }
 </style>
