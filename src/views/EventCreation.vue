@@ -1,6 +1,6 @@
 <template>
+  <div class="background-wrapper">
   <div class="container-fluid">
-
     
     <form class="mt-4 d-flex">
       <div class="left-column">
@@ -105,6 +105,7 @@
       </div>
     </form>
   </div>
+</div>
 </template>
 
 <script setup>
@@ -278,13 +279,33 @@
 
 <style scoped>
 
-/* Adjusting top margin for the app container */
+.background-wrapper {
+  background-image: url('@/assets/images/bg-11.jpg'); /* Background image applied here */
+  background-size: cover;
+  background-position: center;
+  height: 100vh; /* Full height to cover the viewport */
+  width: 100vw; /* Full width to cover the viewport */
+  display: flex;
+  justify-content: center; /* Center the container horizontally */
+  align-items: center; /* Center the container vertically */
+}
+
 .container-fluid {
   color: white;
-  width: 100%;
   padding-top: 100px;
   padding-bottom: 25px;
-  background-color: #1e1d1d;
+  background-color: rgb(0, 0, 0, 0.7); /* Slight opacity for contrast */
+  width: 100%;
+  max-width: 1000px; /* Limit scaling */
+  margin: auto; /* Center the form content */
+}
+
+/* Limit scaling to 1000px for large screens */
+@media (min-width: 1000px) {
+  .container-fluid {
+    max-width: 1000px;
+    margin: auto;
+  }
 }
 
 input[type="text"],input[type="datetime-local"],input[type="url"], select, textarea {
