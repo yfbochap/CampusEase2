@@ -19,24 +19,33 @@
 
       <!-- Event Details Section -->
       <div class="col-md-6 details">
-        <h2 id="eventTitle" class="d-inline-block mr-3">{{ eventTitle }}
+        <h2 id="eventTitle" class="d-inline-block mr-3">
+          {{ eventTitle }}
           <button class="heart-btn" @click="toggleLike" :aria-label="isLiked ? 'Unlike' : 'Like'">
-          <svg class="heart-icon" :class="{ filled: isLiked }" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-          </svg>
-        </button>
+            <svg class="heart-icon" :class="{ filled: isLiked }" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </button>
         </h2>
+        <hr>
         
 
 
-        <h3>Event Details</h3>
-        <p>{{ description }}</p>
+        <br>
+        <p style="white-space: pre-line">{{ description }}</p>
 
-        <h3>Location</h3>
-        <p>{{ location }}</p>
+        <div class="row">
+          <div class="col-6">
+            <h3>Location</h3>
+          <p>{{ location }}</p>
+          </div>
+          <div class="col-6">
+            <h3>Venue</h3>
+            <p>{{ venue }}</p>
+          </div>
 
-        <h3>Venue</h3>
-        <p>{{ venue }}</p>
+        </div>
+
 
         <h3>Time</h3>
         <p>{{ time }}</p>
@@ -227,7 +236,7 @@ h2{
   cursor: pointer;
   /* padding: 8px; */
   position: relative;
-  /* bottom: 10px; */
+  bottom: 2px;
 }
 .heart-icon {
   width: 30px;
