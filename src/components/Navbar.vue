@@ -53,11 +53,11 @@
     <hr> 
     <div class="offcanvas-body" style="position: relative;"> 
       <ul class="p-0"> 
-        <li class="sidebar_link"><router-link to="/profile">Profile</router-link></li> 
-        <li class="sidebar_link"><router-link to="/edit_profile">Edit Profile</router-link></li> 
-        <li class="sidebar_link"><router-link to="/">Events Calendar</router-link></li> 
-        <li class="sidebar_link"><router-link to="/eventCreation">Create New Event</router-link></li> 
-        <li class="sidebar_link"><router-link to="/your_events">Edit Your Events</router-link></li> 
+        <li class="sidebar_link" @click="closeSidebar"><router-link to="/profile">Profile</router-link></li> 
+        <li class="sidebar_link" @click="closeSidebar"><router-link to="/edit_profile">Edit Profile</router-link></li> 
+        <li class="sidebar_link" @click="closeSidebar"><router-link to="/">Events Calendar</router-link></li> 
+        <li class="sidebar_link" @click="closeSidebar"><router-link to="/eventCreation">Create New Event</router-link></li> 
+        <li class="sidebar_link" @click="closeSidebar"><router-link to="/your_events">Edit Your Events</router-link></li> 
       </ul> 
       <div @click=logout class="btn" id="logout" style="width:217px"> <!-- position:absolute;bottom: 20px; --> 
         Log Out 
@@ -77,8 +77,9 @@
   const fetchUser = async () => {
     const { data } = await supabase.auth.getUser();
     user.value = data.user; // Update the reactive user variable
-    console.log('User State', user.value);
+    // console.log('User State', user.value);
   };
+  
 
   supabase.auth.onAuthStateChange((event, session) => {
     user.value = session?.user || null; // Update user state
@@ -101,6 +102,13 @@
     }
   };
 
+  const closeSidebar = () => {
+    const sidebarElement = document.getElementById('sidebar');
+    const offcanvas = bootstrap.Offcanvas.getInstance(sidebarElement);
+    if (offcanvas) {
+      offcanvas.hide();
+    }
+  };
 </script> 
  
 <style scoped> 
