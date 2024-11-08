@@ -1,9 +1,9 @@
 <template>
   <div class="d-flex flex-column align-items-center vh-100 position-relative background-wrapper">
     <!-- Header Section -->
-    <div class="header-section bg-black text-white py-3 w-100 mt-5 mb-3 text-center">
-      <h1>Welcome to Your Profile</h1>
-      <h3>Manage your events, notifications, and settings here</h3>
+    <div class="header-section w-100 text-center">
+      <h2>Welcome to Your Profile</h2>
+      <h5>Manage your events, notifications, and settings here</h5>
     </div>
     
     <!-- Profile Container -->
@@ -263,15 +263,20 @@ export default {
 }
 
 .header-section {
-  background-color: black;
+  background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent black */
   color: white;
-  width: 100%;
+  padding: 30px;
+  margin-top: 50px;
+  margin-bottom: 10px;
+  text-align: center;
+  border-radius: 5px;
 }
+
 
 .profile-container {
   width: 40vw;
   height: 70%;
-  margin-top: 0;
+  margin-top: 20px;
   background-color: rgba(255, 255, 255, 0.8);
   border-radius: 15px;
   overflow: hidden;
