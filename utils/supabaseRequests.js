@@ -212,7 +212,7 @@ export async function getProfile(userId){
 export async function checkUserLike(profile_id){
   try{
     const {data, error} = await supabase
-    .from('participants')
+    .from('participant')
     .select('event_id')
     .eq('profile_id', profile_id);
     if (error) throw error;
