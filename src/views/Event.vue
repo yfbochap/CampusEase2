@@ -64,6 +64,12 @@ import { supabase } from '../../utils/supabaseClient';
 import HeartIcon from '@/components/HeartIcon.vue';
 
 export default {
+  props: {
+    id: {
+      type: String,
+      required: true
+    }
+  },
   data() {
     return {
       eventTitle: "",
@@ -85,9 +91,11 @@ export default {
   methods: {
     async getEvent(){
       const userStore = useUserStore()
-      let event = await getEventByEventId(userStore.getEventID())
+      console.log(userStore.getEventID(), this.id)
+      this.eventID = userStore.getEventID() || this.id;
+      console.log(this.eventID)
+      let event = await getEventByEventId(this.eventID)
       this.user_id = userStore.getAuthToken()
-      this.eventID = event.id // Assuming `event.id` is the unique event ID
       this.eventTitle = event.event_name
       this.location = event.location
       this.venue = event.venue
@@ -176,6 +184,7 @@ export default {
   },
   mounted(){
     this.getEvent()
+    console.log(this.id)
   },
   components: {
     HeartIcon
