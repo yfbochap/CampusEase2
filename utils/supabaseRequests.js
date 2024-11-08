@@ -225,7 +225,7 @@ export async function checkUserLike(profile_id){
 export async function addUserLike(event_id, profile_id){
   try{
     const {data, error} = await supabase
-    .from('participants')
+    .from('participant')
     .insert([{
       event_id: event_id,
       profile_id: profile_id
@@ -240,7 +240,7 @@ export async function addUserLike(event_id, profile_id){
 export async function removeUserLike(event_id, profile_id){
   try{
     const {data, error} = await supabase
-    .from('participants')
+    .from('participant')
     .delete()
     .eq('event_id', event_id)
     .eq('profile_id', profile_id);

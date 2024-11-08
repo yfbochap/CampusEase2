@@ -114,11 +114,11 @@
                             <div class="card mb-4">
                                 <div class="card-body">
                                   <img :src=getPhotoURL(event) alt="Event Image" style="width:200px;height:282px"/>
-                                    <h4 class="card-title">{{ event.event_name }}</h4>
+                                    <h4 class="card-title" @click="goToEventPage(event.id)" style="cursor: pointer;">{{ event.event_name }}</h4>
                                     <hr>
                                     <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
                                     <h6 class="card-subtitle text-muted">{{ event.location_short}}</h6>
-                                    <button v-on:click="toggleLikeStatus(event)" v-bind:style="{color: isLiked(event) ? 'red' : 'grey'}">♡</button>
+                                     <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
                                 </div>
                             </div>
                         </div>
@@ -140,9 +140,8 @@
   import { searchEvents, checkUserLike, addUserLike, removeUserLike} from '../../utils/supabaseRequests.js';
   import { supabase } from '../../utils/supabaseClient.js';
   import { useUserStore } from '@/stores/counter.ts';
+  import HeartIcon from '@/components/HeartIcon.vue';
 
-  
-  
   export default {
     data() {
       return {
@@ -157,12 +156,15 @@
         searchTerm: "", //Search term input by user
         searchedEvents: [],
         selectedCategory: "All",
-        heartColor: "black",
         likedEvents: [],
-        user_id: ''
+        user_id: '',
+        event_id: ''
       };
     },
 
+  components: {
+    HeartIcon
+  },
 
   computed: {
     groupedEvents() { //show events in groups
@@ -178,35 +180,46 @@
   },
   async created() {
       this.fetchEvents();
+      this.getUserID();
       this.fetchLikedEvents();
   },
 
 
   methods: {
-
+      async goToEventPage(eventId) {
+        // Trigger the setEventID function and navigate to the event details page
+        const userStore = useUserStore();
+        await userStore.setEventID(eventId);
+        this.$router.push(`/event/${eventId}`);
+      },
       // Like Functionality
       async fetchLikedEvents(){
         try{
-          this.likedEvents = checkUserLike(user.id);
+          console.log("Checking Profile ID: ", this.user_id)
+          this.likedEvents = await checkUserLike(this.user_id);
+          console.log("Liked Events: ", this.likedEvents);
         } catch(error){
-          console.error("Errorfetching liked events:", error);
+          console.error("Error fetching liked events:", error);
         }
       },
       isLiked(event){
         return this.likedEvents.includes(event.id);
       },
       async toggleLikeStatus(event){
-        const eventId = event.id;
+        console.log('Toggling Like for event:', event);
+        const eventId = event;
         const isLiked = this.likedEvents.includes(eventId);
 
         try{
+          console.log("Event ID: ", eventId);
+          console.log("Profile ID: ", this.user_id);
           if(isLiked){
             await removeUserLike(eventId, this.user_id);
             this.likedEvents = this.likedEvents.filter(id => id !== eventId);
           }
           else{
             await addUserLike(eventId, this.user_id);
-            this.likedEvents.push(eventId);
+            this.likedEvents = [...this.likedEvents, eventId];
           }
         } catch (error){
           console.error("Error toggling like:", error);
@@ -408,7 +421,7 @@
       getUserID(){
         const userStore = useUserStore();
         this.user_id = userStore.getAuthToken()
-      }
+      },
   },
 
   mounted() {

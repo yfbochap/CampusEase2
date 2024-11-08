@@ -34,8 +34,8 @@
                 style="display: inline-block; margin-right: 30px;"> 
               Walking on Sunshine Event
             </h2>
-            <!-- HARDCODED *TO REPLACE* -->
-            <button class="heart-btn" 
+            <!-- HeartIcon Component* -->
+            <!-- <button class="heart-btn" 
                     :aria-label="isLiked ? 'Unlike' : 'Like'" 
                     @click="toggleLike">
               <svg 
@@ -46,7 +46,10 @@
               >
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
-            </button>
+            </button> -->
+            <div v-if="event">
+              <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+            </div>
           <div id="details">
             <h2>Location</h2>
             <p>SMU Connex</p>  <!-- HARDCODED *TO REPLACE* -->
@@ -88,6 +91,9 @@ import photo1 from '../assets/images/photo_2024-10-16 13.47.32.jpeg'; // <!-- HA
 import photo2 from '../assets/images/earth.jpeg';
 import photo3 from '../assets/images/bg-1.jpeg';
 import "../assets/base.css";
+import HeartIcon from '@/components/HeartIcon.vue';
+import { useUserStore } from '@/stores/counter.ts';
+import { getEventByEventId, checkUserLike, addUserLike, removeUserLike} from '../../utils/supabaseRequests.js';
 
 
 export default {
@@ -96,7 +102,6 @@ export default {
     return {
       isLightboxOpen: false,
       lightboxImage: "",
-      isLiked: false,
       photos: [
         {
           src: photo1,
@@ -110,17 +115,91 @@ export default {
           src: photo3,
           alt: 'Photo 3'
         },
-      ]
+      ],
+      selectedCategory: "All",
+      likedEvents: [],
+      user_id: '',
+      event_id: '', 
+      event: null
     }
   },
-  mounted() {
+  components: {
+    HeartIcon
+  },
+  async created() {
+      this.getUserID();
+      this.getEventID();
+      console.log("Event ID:", this.event_id)
+      this.fetchEventData();
+      this.fetchLikedEvents();
+  },
+  async mounted() {
     // Log all photo sources when component mounts
     console.log('All photos array:', this.photos);
     this.photos.forEach((photo, index) => {
       console.log(`Photo ${index + 1} source:`, photo.src);
     });
   },
+  computed: {
+
+  },
   methods: {
+    // Fetch event data by event ID
+    async fetchEventData() {
+      try {
+        if (!this.event_id) {
+          console.error("Event ID is missing.");
+          return;
+        }
+        const eventData = await getEventByEventId(this.event_id);
+        this.event = eventData; // Set the fetched event data
+        console.log("Fetched Event Data: ", eventData);
+      } catch (error) {
+        console.error("Error fetching event data:", error);
+      }
+    },
+    // Like Functionality
+    async fetchLikedEvents(){
+      try{
+        console.log("Checking Profile ID: ", this.user_id)
+        this.likedEvents = await checkUserLike(this.user_id);
+        console.log("Liked Events: ", this.likedEvents);
+      } catch(error){
+        console.error("Error fetching liked events:", error);
+      }
+    },
+    isLiked(event){
+      return this.likedEvents.includes(event.id);
+    },
+    async toggleLikeStatus(event){
+      console.log('Toggling Like for event:', event);
+      // const eventId = event.id;
+      const isLiked = this.likedEvents.includes(event);
+
+      try{
+        console.log("Event ID: ", event);
+        console.log("Profile ID: ", this.user_id);
+        if(isLiked){
+          await removeUserLike(event, this.user_id);
+          this.likedEvents = this.likedEvents.filter(id => id !== event);
+        }
+        else{
+          await addUserLike(event, this.user_id);
+          this.likedEvents = [...this.likedEvents, event];
+        }
+      } catch (error){
+        console.error("Error toggling like:", error);
+      }
+    },
+    getUserID(){
+        const userStore = useUserStore();
+        this.user_id = userStore.getAuthToken()
+    },
+    getEventID(){
+        const userStore = useUserStore();
+        this.event_id = userStore.getEventID()
+    },
+    // Lightbox Functionality
     openLightbox(src) {
       this.lightboxImage = src;     // Set the image source for the lightbox
       this.isLightboxOpen = true;    // Display the lightbox
