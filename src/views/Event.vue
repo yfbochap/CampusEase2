@@ -19,13 +19,15 @@
 
       <!-- Event Details Section -->
       <div class="col-md-6 details">
-        <h2 id="eventTitle" class="d-inline-block mr-3">{{ eventTitle }}</h2>
-        
-        <button class="heart-btn" @click="toggleLike" :aria-label="isLiked ? 'Unlike' : 'Like'">
+        <h2 id="eventTitle" class="d-inline-block mr-3">{{ eventTitle }}
+          <button class="heart-btn" @click="toggleLike" :aria-label="isLiked ? 'Unlike' : 'Like'">
           <svg class="heart-icon" :class="{ filled: isLiked }" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
           </svg>
         </button>
+        </h2>
+        
+
 
         <h3>Event Details</h3>
         <p>{{ description }}</p>
@@ -40,8 +42,9 @@
         <p>{{ time }}</p>
 
         <h4>
-          <u style="color: green;"><a :href="signUpLink" target="_blank">Sign Up here!</a></u>
+          <u style="color: green;"><a v-if='signUpLink != ""' :href="signUpLink" target="_blank">Sign Up here!</a></u> <u><a src="" >Add to Calendar</a></u>
         </h4>
+  
       </div>
     </div>
 
@@ -76,7 +79,7 @@ export default {
       time: "",
       user_id: "",
       likedEvents: "",
-      eventID: "" // Store the specific event ID for reference
+      eventID: "" 
     };
   },
   methods: {
@@ -93,7 +96,7 @@ export default {
       this.time = this.getDates(event.start_date_time, event.end_date_time)
       this.signUpLink = event.external_url
       this.galleryPhotos = this.getGalleryPhotos(event)
-      await this.fetchLikedEvents(); // Check if the event is liked
+      await this.fetchLikedEvents(); 
     },
     async fetchLikedEvents(){
       try {
@@ -111,7 +114,7 @@ export default {
         } else {
           await addUserLike(this.eventID, this.user_id);
         }
-        this.isLiked = !isLiked; // Toggle the liked status in the UI
+        this.isLiked = !isLiked; 
       } catch (error) {
         console.error("Error toggling like:", error);
       }
@@ -187,7 +190,7 @@ body {
   font-family: 'Nunito Sans';
 }
 h2{
-  margin-bottom: 30px;
+  /* margin-bottom: 30px; */
   color: white;
 }
 .photos > img#thumbnail {
@@ -213,9 +216,9 @@ h2{
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  /* padding: 8px; */
   position: relative;
-  bottom: 10px;
+  /* bottom: 10px; */
 }
 .heart-icon {
   width: 30px;
@@ -224,7 +227,7 @@ h2{
   stroke: #666;
   stroke-width: 2;
   transition: all 0.2s;
-  margin-left: 10px;
+  /* margin-left: 10px; */
 }
 .heart-icon.filled {
   fill: #ff3040;
