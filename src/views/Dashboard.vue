@@ -1,4 +1,5 @@
 <template>
+  <div class="dashboard-background">
   <br>
   <div id="eventMapTitle">
     <p>Choose your view</p>
@@ -13,7 +14,7 @@
 
   <!-- All Events View -->
   <div v-if="view === 'other'" class="mt-2 mb-2">
-      <h1 class="category-title">Upcoming Events</h1>
+      <h1 class="category-title" style="color: black;">Upcoming Events</h1>
       <!-- add buttons for 3: week, month and next month -->
       <div id="carouselAllEvents" class="carousel slide" data-bs-ride="carousel">
           <div class="carousel-inner">
@@ -106,7 +107,7 @@
           <br>
           <div>
               <div>
-                  <h1 class="category-title">
+                  <h1 class="category-title" style="color: black;">
                       {{ selectedCategory }} Events Around Campus
                   </h1>
                   <div v-if="searchedEvents.length != 0" class="row d-flex p-5 justify-content-center">
@@ -130,6 +131,7 @@
           </div>
       </div>
   </div>
+</div>
 </template>
 
 
@@ -459,6 +461,11 @@
 
 
 <style scoped>
+
+.dashboard-background {
+  background-color: white;
+}
+
 .carousel-control-prev,
 .carousel-control-next {
   width: 80px;
