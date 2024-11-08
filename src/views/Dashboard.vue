@@ -115,7 +115,7 @@
                             <div class="card mb-4">
                                 <div class="card-body">
                                   <img :src=getPhotoURL(event) alt="Event Image" style="width:200px;height:282px"/>
-                                    <h4 class="card-title" @click="goToEventPage(event.id)" style="cursor: pointer;">{{ event.event_name }}</h4>
+                                    <h4 class="card-title" @click="goToEventPage(event.id, event.event_name)" style="cursor: pointer;">{{ event.event_name }}</h4>
                                     <hr>
                                     <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
                                     <h6 class="card-subtitle text-muted">{{ event.location_short}}</h6>
@@ -188,11 +188,11 @@
 
 
   methods: {
-       goToEventPage(eventId) {
+       goToEventPage(eventId, name) {
         // Trigger the setEventID function and navigate to the event details page
         const userStore = useUserStore();
         userStore.setEventID(eventId);
-        this.$router.push(`/event/${eventId}`);
+        this.$router.push(`/event/${eventId}/${name}`);
       },
       // Like Functionality
       async fetchLikedEvents(){
@@ -313,7 +313,7 @@
       },
           
       getPhotoURL(event){
-          // console.log(event)
+          console.log(event.thumbnail)
           const { data, error } = supabase.storage.from('eventPhotos').getPublicUrl(event.thumbnail);
           if (error) {
               console.error('Error fetching public URL for', event.photos, error);
