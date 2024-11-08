@@ -30,36 +30,16 @@ import { checkUserLike,getEventByEventId } from '../../utils/supabaseRequests';
 
 
 export default {
-  name: 'CalendarPage',
   data() {
     return {
       events: [],
       userid: '' 
     };
   },
-  mounted() {
-    const eventsQuery = this.$route.query.events;
-    if (eventsQuery) {
-      this.events = JSON.parse(eventsQuery);
-    }
-  },
   methods: {
     getUserID(){
       const userStore = useUserStore()
       this.userid = userStore.getAuthToken();
-    },
-    formatDate(dateTime) {
-      const date = new Date(dateTime);
-      return date.toLocaleDateString();
-    },
-    formatDay(dateTime) {
-      const date = new Date(dateTime);
-      return date.toLocaleDateString('en-US', { weekday: 'long' });
-    },
-    formatTime(dateTime) {
-      if (!dateTime) return 'N/A';
-      const time = new Date(dateTime);
-      return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     },
     async getUserLiked(){
       let eventIDs = await checkUserLike(this.userid)
@@ -69,7 +49,6 @@ export default {
         console.log(event)
         allLikedEvents.push(event)
       }
-      
       this.events = allLikedEvents
     },
     getDates(start, end) {
@@ -117,7 +96,7 @@ export default {
   background-image: url('@/assets/images/bg-7.png'); 
   background-size: cover;
   background-position: center;
-  height: 100vh;
+  height: 110vh; /* needs to be edited */
   width: 100vw;
   overflow: hidden; 
 }
@@ -156,3 +135,4 @@ export default {
   color: black;
 }
 </style>
+  

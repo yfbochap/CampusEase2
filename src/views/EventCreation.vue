@@ -283,7 +283,7 @@
   background-image: url('@/assets/images/bg-11.jpg'); /* Background image applied here */
   background-size: cover;
   background-position: center;
-  height: 100vh; /* Full height to cover the viewport */
+  height: 100%; /* Full height to cover the viewport */
   width: 100vw; /* Full width to cover the viewport */
   display: flex;
   justify-content: center; /* Center the container horizontally */

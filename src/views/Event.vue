@@ -2,58 +2,59 @@
   <div class="main container-fluid">
     <div class="row align-items-center">
       <!-- Photos Section -->
-      <div class="col-md-6 photos">
-        <img :src=thumbnail :alt=eventTitle  id="thumbnail" class="img-fluid" />
+      <div class="col-md-6 photos d-flex justify-content-center">
+        <div>
+          <img :src=thumbnail :alt=eventTitle  id="thumbnail" class="img-fluid" />
 
-        <div class="gallery d-flex flex-wrap mt-3">
-          <img
-            v-for="(photo, index) in galleryPhotos"
-            :key="index"
-            :src="photo.src"
-            :alt="photo.alt"
-            class="small-photo"
-            @click="openLightbox(photo.src)"
-          />
+          <div class="gallery d-flex flex-wrap mt-3">
+            <img
+              v-for="(photo, index) in galleryPhotos"
+              :key="index"
+              :src="photo.src"
+              :alt="photo.alt"
+              class="small-photo"
+              @click="openLightbox(photo.src)"
+            />
+          </div>
         </div>
       </div>
 
       <!-- Event Details Section -->
       <div class="col-md-6 details">
-        <h2 id="eventTitle" class="d-inline-block mr-3">
-          {{ eventTitle }}
-          <button class="heart-btn" @click="toggleLike" :aria-label="isLiked ? 'Unlike' : 'Like'">
-            <svg class="heart-icon" :class="{ filled: isLiked }" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-            </svg>
-          </button>
-        </h2>
-        <hr>
-        
+        <div>
+          <h2 id="eventTitle" class="d-inline-block mr-3">
+            {{ eventTitle }}
+            <button class="heart-btn" @click="toggleLike" :aria-label="isLiked ? 'Unlike' : 'Like'">
+              <svg class="heart-icon" :class="{ filled: isLiked }" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+          </h2>
+          <hr>
+          
+          <br>
+          <p style="white-space: pre-line">{{ description }}</p>
 
+          <div class="row">
+            <div class="col-6">
+              <h3>Location</h3>
+            <p>{{ location }}</p>
+            </div>
+            <div class="col-6">
+              <h3>Venue</h3>
+              <p>{{ venue }}</p>
+            </div>
 
-        <br>
-        <p style="white-space: pre-line">{{ description }}</p>
-
-        <div class="row">
-          <div class="col-6">
-            <h3>Location</h3>
-          <p>{{ location }}</p>
           </div>
-          <div class="col-6">
-            <h3>Venue</h3>
-            <p>{{ venue }}</p>
-          </div>
 
+
+          <h3>Time</h3>
+          <p>{{ time }}</p>
+
+          <h5>
+            <u style="color: green;"><a v-if='signUpLink != ""' :href="signUpLink" target="_blank">Sign Up here!</a></u> <u><a src="" >Add to Calendar</a></u>
+          </h5>
         </div>
-
-
-        <h3>Time</h3>
-        <p>{{ time }}</p>
-
-        <h5>
-          <u style="color: green;"><a v-if='signUpLink != ""' :href="signUpLink" target="_blank">Sign Up here!</a></u> <u><a src="" >Add to Calendar</a></u>
-        </h5>
-  
       </div>
     </div>
 
