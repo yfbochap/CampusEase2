@@ -50,9 +50,9 @@
         <h3>Time</h3>
         <p>{{ time }}</p>
 
-        <h4>
+        <h5>
           <u style="color: green;"><a v-if='signUpLink != ""' :href="signUpLink" target="_blank">Sign Up here!</a></u> <u><a src="" >Add to Calendar</a></u>
-        </h4>
+        </h5>
   
       </div>
     </div>
