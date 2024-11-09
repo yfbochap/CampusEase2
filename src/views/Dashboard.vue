@@ -1,31 +1,31 @@
 <template>
   <br>
   <div id="eventMapTitle">
-    <p>Choose your view</p>
+    <h4>Choose your view</h4>
   </div>
 
-
+  <div class="container-fluid maincon">
   <div class="row d-flex justify-content-center">
-    <button class="col-3 btn " v-on:click="switchView('otherView')">All Events</button>
-    <div class="col-1"></div>
-      <button class="col-3 btn " v-on:click="switchView('mapView')">Map View</button>
+    <button class="col-3 btn viewbutton" v-on:click="switchView('otherView')">All Events</button>
+    <!-- <div class="col-1"></div> -->
+      <button class="col-3 btn viewbutton" v-on:click="switchView('mapView')">Map View</button>
   </div>
 
   <!-- All Events View -->
   <div v-if="view === 'other'" class="mt-2 mb-2">
       <h1 class="category-title">Upcoming Events</h1>
       <!-- add buttons for 3: week, month and next month -->
-      <div id="carouselAllEvents" class="carousel slide" data-bs-ride="carousel">
+      <!-- <div id="carouselAllEvents" class="carousel slide" data-bs-ride="carousel">
           <div class="carousel-inner">
               <div class="carousel-item" :class="{ active: index === 0 }" v-for="(event, index) in all_events" :key="event.id">
                   <div class="d-flex justify-content-center">
                       <img :src=getPhotoURL(event) alt="Card image cap" style="width:200px;height:282px"> {{event.event_name}}
                   </div>
               </div>
-          </div>
+          </div> -->
 
               <!-- Carousel controls -->
-          <button class="carousel-control-prev" type="button" data-bs-target="#carouselAllEvents" data-bs-slide="prev">
+          <!-- <button class="carousel-control-prev" type="button" data-bs-target="#carouselAllEvents" data-bs-slide="prev">
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Previous</span>
           </button>
@@ -33,9 +33,9 @@
           <button class="carousel-control-next" type="button" data-bs-target="#carouselAllEvents" data-bs-slide="next">
           <span class="carousel-control-next-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Next</span>
-          </button>
+          </button> -->
       </div>
-  </div>
+  <!-- </div> -->
 
   <div v-else>
     <div id="mapDimensions">
@@ -55,16 +55,22 @@
                   :key="index">
 
                   <div class="row d-flex justify-content-center">
-                    <div class="col-sm-8 col-md-5 col-lg-3" v-for="event in eventGroup" :key="event.id">
-                      <div class="card mb-4">
-                        <div class="card-body">
-                          <img :src=getPhotoURL(event) alt="Event Image" style="width:10px;height: 20px;">
-                            <h4 class="card-title">{{ event.event_name }}</h4>
-                            <hr>
-                            <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
-                            <h6 class="card-subtitle text-muted">{{ event.location_short}}</h6>
+                    <div class="col-sm-8 col-md-5 col-lg-3 align-items-stretch" v-for="event in eventGroup" :key="event.id">
+                      
+                        <div class="card mb-4">
+                          <div class="card-body d-flex flex-column">
+                            <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
+                            <img class="event-image" :src=getPhotoURL(event) alt="Event Image">
+                              <h4 class="card-title">{{ event.event_name }}</h4>
+                              <hr>
+                              <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
+                              <h6 class="card-subtitle">{{ event.location_short}}</h6>
+                            </router-link>
+                              <div class="mt-auto">
+                                <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+                              </div>
+                          </div>
                         </div>
-                      </div>
                     </div>
                   </div>
               </div>
@@ -88,19 +94,19 @@
   <div>
       <div>
           <div class="d-flex justify-content-center">
-              <input id="searchbar" class="input-size input-lg " v-model="searchTerm" @input="searchForEvents" type="text" placeholder="Search events..." aria-label="Search">
+              <input id="searchbar" class="i" v-model="searchTerm" @input="searchForEvents" type="text" placeholder="Search events..." aria-label="Search">
           </div>
           <br>
           <div class="d-flex justify-content-center">
             <div>
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'All' }" @click="selectCategory('All')">All</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Academic' }" @click="selectCategory('Academic')">Academic</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Sports' }" @click="selectCategory('Sports')">Sports</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Arts' }" @click="selectCategory('Arts')">Arts</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Networking' }" @click="selectCategory('Networking')">Networking</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Charity' }" @click="selectCategory('Charity')">Charity</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Community' }" @click="selectCategory('Community')">Community</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Welfare' }" @click="selectCategory('Welfare')">Welfare</button>
+              <button type="button" class="btn btn-secondary btn-pill all " :class="{ active: selectedCategory === 'All' }" @click="selectCategory('All')">All</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill academic" :class="{ active: selectedCategory === 'Academic' }" @click="selectCategory('Academic')">Academic</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill sports" :class="{ active: selectedCategory === 'Sports' }" @click="selectCategory('Sports')">Sports</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill arts" :class="{ active: selectedCategory === 'Arts' }" @click="selectCategory('Arts')">Arts</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill networking" :class="{ active: selectedCategory === 'Networking' }" @click="selectCategory('Networking')">Networking</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill charity" :class="{ active: selectedCategory === 'Charity' }" @click="selectCategory('Charity')">Charity</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill community" :class="{ active: selectedCategory === 'Community' }" @click="selectCategory('Community')">Community</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill welfare" :class="{ active: selectedCategory === 'Welfare' }" @click="selectCategory('Welfare')">Welfare</button>
             </div>
           </div>
           <br>
@@ -110,17 +116,25 @@
                       {{ selectedCategory }} Events Around Campus
                   </h1>
                   <div v-if="searchedEvents.length != 0" class="row d-flex p-5 justify-content-center">
-                        <div class="col-sm-8 col-md-5 col-lg-4" v-for="event in searchedEvents" :key="event.id">
-                            <div class="card mb-4">
-                                <div class="card-body">
-                                  <img :src=getPhotoURL(event) alt="Event Image" style="width:200px;height:282px"/>
-                                    <h4 class="card-title">{{ event.event_name }}</h4>
-                                    <hr>
+                    <transition-group name="fade" tag="div" class="row">
+                        <div class="col-sm-8 col-md-5 col-lg-4 align-items-stretch fade-item" v-for="(event,index) in searchedEvents" :key="event.id" :style="{ animationDelay: (index * 0.5) + 's' }">
+                      
+                            <div class="card mb-4 fade-item">
+                                <div class="card-body d-flex flex-column">
+                                  <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
+                                    <img class="event-image" :src=getPhotoURL(event) alt="Event Image"/>
+                                    <h4 class="card-title" style="cursor: pointer;">{{ event.event_name }}</h4>
+                                      
                                     <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
-                                    <h6 class="card-subtitle text-muted">{{ event.location_short}}</h6>
+                                    <h6 class="card-subtitle ">{{ event.location_short}}</h6>
+                                  </router-link>
+                                  <div class="mt-auto">
+                                    <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+                                  </div>
                                 </div>
                             </div>
                         </div>
+                      </transition-group>
                   </div>
                   <div class="p-5" v-else>
                     <h1 style="text-align: center;height: 200px;">There are currently no events matching your search</h1> <!-- to tell that there are no events happening according to search -->
@@ -129,6 +143,7 @@
           </div>
       </div>
   </div>
+</div>
 </template>
 
 
@@ -136,11 +151,11 @@
 
 <script>
   import { getEvents } from '../../utils/supabaseRequests.js';
-  import { searchEvents } from '../../utils/supabaseRequests.js';
-  import { supabase } from '../../utils/supabaseClient.js'
+  import { searchEvents, checkUserLike, addUserLike, removeUserLike} from '../../utils/supabaseRequests.js';
+  import { supabase } from '../../utils/supabaseClient.js';
+  import { useUserStore } from '@/stores/counter.ts';
+  import HeartIcon from '@/components/HeartIcon.vue';
 
-  
-  
   export default {
     data() {
       return {
@@ -154,10 +169,16 @@
         markerCluster: null,
         searchTerm: "", //Search term input by user
         searchedEvents: [],
-        selectedCategory: "All"
+        selectedCategory: "All",
+        likedEvents: [],
+        user_id: '',
+        event_id: ''
       };
     },
 
+  components: {
+    HeartIcon
+  },
 
   computed: {
     groupedEvents() { //show events in groups
@@ -172,11 +193,46 @@
 
   },
   async created() {
-      this.fetchEvents()
+      this.fetchEvents();
+      this.getUserID();
+      this.fetchLikedEvents();
   },
 
 
   methods: {
+      // Like Functionality
+      async fetchLikedEvents(){
+        try{
+          console.log("Checking Profile ID: ", this.user_id)
+          this.likedEvents = await checkUserLike(this.user_id);
+          console.log("Liked Events: ", this.likedEvents);
+        } catch(error){
+          console.error("Error fetching liked events:", error);
+        }
+      },
+      isLiked(event){
+        return this.likedEvents.includes(event.id);
+      },
+      async toggleLikeStatus(event){
+        console.log('Toggling Like for event:', event);
+        const eventId = event;
+        const isLiked = this.likedEvents.includes(eventId);
+
+        try{
+          console.log("Event ID: ", eventId);
+          console.log("Profile ID: ", this.user_id);
+          if(isLiked){
+            await removeUserLike(eventId, this.user_id);
+            this.likedEvents = this.likedEvents.filter(id => id !== eventId);
+          }
+          else{
+            await addUserLike(eventId, this.user_id);
+            this.likedEvents = [...this.likedEvents, eventId];
+          }
+        } catch (error){
+          console.error("Error toggling like:", error);
+        }
+      },
       // View related functions:
       switchView(button_pressed){
           if(this.view === "other" && button_pressed === "mapView"){
@@ -233,48 +289,35 @@
           this.searchForEvents()
       },
 
-      getDates(start,end){
-          let start_time = start.substring(11,)
-          let end_time = end.substring(11,)
-          let start_date = new Date(start.substring(0,10))
-          let end_date = new Date(end.substring(0,10))
+      getDates(start, end) {
+        const formatTime = (isoString) => {
+          const [hour, minute] = isoString.substring(11, 16).split(':').map(Number);
+          const period = hour >= 12 ? 'pm' : 'am';
+          const hour12 = hour % 12 || 12;
+          return `${hour12}:${minute.toString().padStart(2, '0')}${period}`;
+        };
 
-          const [start_hour, start_minute] = start_time.split(':').map(Number);
-          const start_period = start_hour >= 12 ? 'pm' : 'am';
-          const start_hour12 = start_hour % 12 || 12; 
-          let start_time_formatted = `${start_hour12}:${start_minute.toString().padStart(2, '0')}${start_period}`
-          
-          const [end_hour, end_minute] = end_time.split(':').map(Number);
-          const end_period = end_hour >= 12 ? 'pm' : 'am';
-          const end_hour12 = end_hour % 12 || 12; 
-          let end_time_formatted = `${end_hour12}:${end_minute.toString().padStart(2, '0')}${end_period}`
-
-          let time = `${start_time_formatted} - ${end_time_formatted}` // if you want to add time
-
-          // format both dates
-          const days = ["Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"]
+        const formatDate = (isoString) => {
+          const date = new Date(isoString.substring(0, 10));
+          const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
           const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          return `${date.getDate()} ${months[date.getMonth()]} ${String(date.getFullYear()).substring(2)} (${days[date.getDay()]})`;
+        };
 
-          let start_day = days[start_date.getDay()]
-          let start_date_day = start_date.getDay()
-          let start_month = months[start_date.getMonth()];
-          let start_year = String(start_date.getFullYear()).substring(2,); // if want to drop the year, delete this and edit below line
-          let displayed_start_date = `${start_date_day} ${start_month} ${start_year} (${start_day}.)`
+        const start_time_formatted = formatTime(start);
+        const end_time_formatted = formatTime(end);
+        const time = `${start_time_formatted} - ${end_time_formatted}`;
 
-          let end_day = days[end_date.getDay()]
-          let end_date_day = end_date.getDay()
-          let end_month = months[end_date.getMonth()];
-          let end_year = String(end_date.getFullYear()).substring(2,); // if want to drop the year, delete this and edit below line
-          let displayed_end_date = `${end_date_day} ${end_month} ${end_year} (${end_day}.)`
-          // console.log( displayed_end_date, displayed_start_date)
+        const displayed_start_date = formatDate(start);
+        const displayed_end_date = formatDate(end);
 
-          if (displayed_start_date == displayed_end_date){
-              return `${displayed_start_date}`
-          }
-              
-          return `${displayed_start_date} - ${displayed_end_date}`
+        if (displayed_start_date === displayed_end_date) {
+          return `${displayed_start_date} ${time}`;
+        }
+        
+        return `${displayed_start_date} - ${displayed_end_date} ${time}`;
       },
-
+          
       getPhotoURL(event){
           // console.log(event)
           const { data, error } = supabase.storage.from('eventPhotos').getPublicUrl(event.thumbnail);
@@ -382,9 +425,15 @@
       isBetween(value, min, max){
           return value >= min && value <= max
       },
+
+      getUserID(){
+        const userStore = useUserStore();
+        this.user_id = userStore.getAuthToken()
+      },
   },
 
   mounted() {
+
       this.setNumEventsGroup(); // Set initial value based on current viewport
       window.addEventListener('resize', this.setNumEventsGroup); // Update on resize
 
@@ -418,20 +467,95 @@
 
 
 <style scoped>
-.carousel-control-prev,
+.event-link {
+  color: inherit; 
+  text-decoration: none; 
+  display: block; 
+}
+.event-card {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: #ffffff;
+}
+
+.event-link:hover{
+  background-color:transparent;
+}
+.card {
+  background-color: transparent;
+  color: whitesmoke;
+  border: none;
+  
+}
+.card-title {
+  text-align: center;
+  margin-bottom: 20px; 
+}
+.card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.card-body h6 {
+  margin-bottom: 15px; /* Adjust as needed */
+}
+.card-body .heart-icon {
+  margin-top: auto;
+}
+.event-image {
+  width: 200px;
+  height: 278px;
+  display: block; /* Ensures the image doesn't have extra spaces */
+  margin: 0 auto; /* Centers the image horizontally */
+  margin-bottom: 20px; /* Adds space below the image */
+  
+}
+
+.viewbutton{
+  color: white;
+  border: solid 1px rgb(120, 117, 117);
+  margin: 30px;
+  width: 200px;
+  transition: background-color 0.3s ease;
+}
+.viewbutton:hover{
+  background-color: #68686a;
+  border-color: #68686a;
+}
+
+/* Styling for the input */
+.i {
+  width: 100%;
+  max-width: 600px; /* Adjust width as needed */
+  height: 40px; /* Adjust height as needed */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px; /* Make corners rounded */
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none; /* Remove default browser styles */
+  -moz-appearance: none;
+  outline: none; /* Remove default outline */
+}
+
+.maincon{
+  background-color: rgb(24, 24, 24); 
+  color: white;
+}
+/* .carousel-control-prev,
 .carousel-control-next {
   width: 80px;
-}
+} */
 
 #eventMapTitle {
   margin-top: 60px;
   text-align: center;
-  color: rgb(14, 14, 14);
+  color: white;
 }
 
 #map {
-  height: 350px;
-  width:80%
+  height: 550px;
+  width: 90%
 }
 
 #mapDimensions{
@@ -454,6 +578,11 @@
 
 .btn-pill{
   border-radius: 50px;
+  border: none;
+  
+}
+.btn-pill:hover{
+  transform:scale(1.1);
 }
 
 .category-title{
@@ -463,4 +592,72 @@
 .input-size{
   width: 80%;
 }
+
+/* CATEGORY BUTTON STYLING */
+.all {
+  background-color: #7B8794;
+  border: none;
+}
+
+.academic {
+  background-color: #4A90E2;
+  border:none;
+}
+
+.sports {
+  background-color: #50C878;
+}
+
+.arts {
+  background-color: #9B59B6;
+}
+
+.networking {
+  background-color: #F5A623;
+}
+
+.charity {
+  background-color: #E74C3C;
+}
+
+.community {
+  background-color: #F1C40F;
+}
+
+.welfare {
+  background-color: #1ABC9C;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.fade-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-item {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
 </style>

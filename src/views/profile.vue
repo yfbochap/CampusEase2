@@ -1,9 +1,9 @@
 <template>
   <div class="d-flex flex-column align-items-center vh-100 position-relative background-wrapper">
     <!-- Header Section -->
-    <div class="header-section bg-black text-white py-3 w-100 mt-5 mb-3 text-center">
-      <h1>Welcome to Your Profile</h1>
-      <h3>Manage your events, notifications, and settings here</h3>
+    <div class="header-section w-100 text-center">
+      <h2>Welcome to Your Profile</h2>
+      <h5>Manage your events, notifications, and settings here</h5>
     </div>
     
     <!-- Profile Container -->
@@ -12,10 +12,19 @@
         <button @click="goBack" class="btn btn-light position-absolute top-0 start-0 mt-2 ms-3">
           Back
         </button>
-        <div class="profile-picture mb-3">
-          <img src="@/assets/images/bg-2.jpg" alt="Profile Picture" class="rounded-circle border border-white" style="width: 165px; height: 170px;">
+        <div class="profile-picture mb-3" v-if="profileData && profileData.avatar_url">
+          <img v-bind:src="profileData.avatar_url" alt="Profile Picture" class="rounded-circle border border-white" style="width: 165px; height: 170px;">
         </div>
-        <h2 class="profile-name">Name</h2>
+
+        <div v-else>
+          <label for="avatar-upload" class="avatar-upload-label">
+            <input type="file" id="avatar-upload" @change="handleFileChange" class="d-none">
+            <div class="avatar-upload-placeholder rounded-circle border border-white d-flex justify-content-center align-items-center" style="width: 165px; height: 170px;">
+              <div class="plus-icon">+</div>
+            </div>
+          </label>
+        </div>
+        <h2 class="profile-name" v-if="profileData && profileData.username">{{ profileData.username }}</h2>
         <div class="d-inline-flex mt-2">
           <RouterLink class="nav-link" to="/edit_profile">
             <button class="btn btn-light me-2">Edit Profile</button>
@@ -60,16 +69,49 @@
 <script>
 import { gapi } from 'gapi-script';
 
+import { getProfile } from '../../utils/supabaseRequests';
+import { supabase } from '../../utils/supabaseClient';
+
 export default {
   name: 'ProfilePage',
   data() {
     return {
       events: [],
       campusEaseCalendarId: null,
-      userEmail: null
+      userEmail: null,
+      user: null,
+      profileData: null
     };
   },
+  async mounted(){
+    this.fetchUser().then(() => {
+      if (this.user) {
+        this.fetchProfile(this.user.id);
+      }
+    });
+  },
   methods: {
+
+    async fetchUser() {
+      const { data, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error('Error fetching user:', error);
+      } else {
+        this.user = data.user; // Update the reactive user variable
+        console.log('User Details:', this.user.id);
+      }
+    },
+    async fetchProfile(user){
+      try {
+        const profile = await getProfile(user);
+        console.log('Fetched Profile:', profile[0]);
+        this.profileData = profile[0];
+        console.log("Profile Data:", this.profileData);
+        console.log("Avatar URL:", this.profileData.avatar_url);
+      } catch (error){
+        console.error('Error fetching profile data:', error);
+      }
+    },
     goBack() {
       this.$router.go(-1);
     },
@@ -221,15 +263,20 @@ export default {
 }
 
 .header-section {
-  background-color: black;
+  background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent black */
   color: white;
-  width: 100%;
+  padding: 30px;
+  margin-top: 50px;
+  margin-bottom: 10px;
+  text-align: center;
+  border-radius: 5px;
 }
+
 
 .profile-container {
   width: 40vw;
   height: 70%;
-  margin-top: 0;
+  margin-top: 20px;
   background-color: rgba(255, 255, 255, 0.8);
   border-radius: 15px;
   overflow: hidden;

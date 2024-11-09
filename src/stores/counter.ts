@@ -9,11 +9,11 @@ export const useUserStore = defineStore('event', () => {
   // Storing event details
   function setEventID(id){
     event.value = id
-    console.log("Event ID Set", event)
+    console.log("Event ID Set", event.value)
   }
 
   function getEventID(){
-    console.log("Event ID got", event)
+    console.log("Event ID got", event.value)
     return event.value;
   }
 

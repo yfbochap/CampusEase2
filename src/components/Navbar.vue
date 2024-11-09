@@ -14,7 +14,7 @@
           <span class="navbar-toggler-icon"></span> 
         </button> 
 
-        <a v-if="user" class="btn account-icon order-lg-last order-md-last order-sm-last" data-bs-toggle="offcanvas" href="#sidebar"    role="button" aria-controls="offcanvasExample">
+        <a v-if="user" class="btn account-icon order-lg-last order-md-last order-sm-last" data-bs-toggle="offcanvas" href="#sidebar" role="button" aria-controls="offcanvasExample">
             <i class="fas fa-user"></i> 
         </a> 
 
@@ -53,11 +53,11 @@
     <hr> 
     <div class="offcanvas-body" style="position: relative;"> 
       <ul class="p-0"> 
-        <li class="sidebar_link"><router-link to="/profile">Profile</router-link></li> 
-        <li class="sidebar_link"><router-link to="/edit_profile">Edit Profile</router-link></li> 
-        <li class="sidebar_link"><router-link to="/">Events Calendar</router-link></li> 
-        <li class="sidebar_link"><router-link to="/eventCreation">Create New Event</router-link></li> 
-        <li class="sidebar_link"><router-link to="/your_events">Edit Your Events</router-link></li> 
+        <li class="sidebar_link" data-bs-toggle="offcanvas"><router-link to="/profile">Profile</router-link></li> 
+        <li class="sidebar_link" data-bs-toggle="offcanvas"><router-link to="/edit_profile">Edit Profile</router-link></li> 
+        <li class="sidebar_link" data-bs-toggle="offcanvas"><router-link to="/">Events Calendar</router-link></li> 
+        <li class="sidebar_link" data-bs-toggle="offcanvas"><router-link to="/eventCreation">Create New Event</router-link></li> 
+        <li class="sidebar_link" data-bs-toggle="offcanvas"><router-link to="/your_events">Edit Your Events</router-link></li> 
       </ul> 
       <div @click=logout class="btn" id="logout" style="width:217px"> <!-- position:absolute;bottom: 20px; --> 
         Log Out 
@@ -77,8 +77,9 @@
   const fetchUser = async () => {
     const { data } = await supabase.auth.getUser();
     user.value = data.user; // Update the reactive user variable
-    console.log('User State', user.value);
+    // console.log('User State', user.value);
   };
+  
 
   supabase.auth.onAuthStateChange((event, session) => {
     user.value = session?.user || null; // Update user state
@@ -100,7 +101,6 @@
       window.location.reload()
     }
   };
-
 </script> 
  
 <style scoped> 

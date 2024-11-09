@@ -44,9 +44,9 @@ const router = createRouter({
       component: () => import('@/views/SignUp.vue')
     },
     {
-      path:'/event/:id',
+      path:'/event/:id/:name',
       name:'event',
-      component: () => import('../views/Events.vue'),
+      component: () => import('../views/Event.vue'),
       props: true
     },
     {

@@ -1,5 +1,5 @@
 <template>
-  <div class="background-wrapper">
+  <div class="d-flex flex-column align-items-center vh-100 position-relative background-wrapper">
     <!-- Header Section -->
     <div class="container-fluid text-white p-3 w-100 mt-5 mb-5" style="background-color: black; margin: 0;">
       <div class="d-flex justify-content-between align-items-center">
@@ -8,6 +8,9 @@
         </RouterLink>
         <h2 style="margin: auto;">Edit Profile</h2>
       </div>
+    <div class="header-section w-100 text-center">
+      <h2>Welcome to Your Profile</h2>
+      <h5>Edit your profile details here</h5>
     </div>
 
     <!-- Edit Information Section -->
@@ -57,6 +60,11 @@ export default {
       password: "",
     };
   },
+  methods: {
+    goBack() {
+      this.$router.go(-1);
+    },
+  },
 };
 </script>
 
@@ -64,25 +72,42 @@ export default {
 @import '../assets/edit_profile.css';
 
 .background-wrapper {
-  background-image: url('@/assets/images/bg-9.png'); 
+  background-image: url('@/assets/images/bg-6.png'); 
   background-size: cover;
   background-position: center;
-  min-height: 100vh;
-  padding: 0; 
+  height: 100vh;
+  width: 100vw;
 }
 
-.container-fluid {
-  background-color: black;
+.header-section {
+  background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent black */
   color: white;
-  padding: 0;
+  padding: 30px;
+  margin-top: 50px;
+  margin-bottom: 10px;
+  text-align: center;
+  border-radius: 5px;
 }
 
-.container {
-  margin-top: 0; 
+.profile-container {
+  width: 40vw;
+  height: auto;
+  margin-top: 20px;
+  background-color: rgba(255, 255, 255, 1);
+  border-radius: 15px;
+  overflow: hidden;
 }
 
-.card {
-  background-color: rgba(255, 255, 255, 1.0); 
-  border-radius: 10px;
+.profile-header {
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.form-label {
+  font-weight: 500;
 }
 </style>
