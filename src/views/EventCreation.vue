@@ -74,7 +74,7 @@
         &nbsp;&nbsp;
         <div v-if="selectedLocation === 'Other'" class="mb-3">
           <label for="otherLocation" class="form-label">Google Maps Address</label>
-          <input type="text" id="otherLocation" v-model="otherLocation" class="form-control" placeholder="Specify location" required>
+          <input type="text" v-model="otherLocation" id="otherLocation" class="form-control" placeholder="Specify location" required>
         </div>
 
         <div class="flex-half ms-2">
@@ -116,7 +116,7 @@
 </template>
 
 <script setup>
-  import { ref, reactive, watch, onMounted } from 'vue';
+  import { ref, reactive, watch, nextTick, onMounted } from 'vue';
   import { supabase } from '../../utils/supabaseClient';
   import { addEvent, uploadFiles, checkEventExists } from '../../utils/supabaseRequests';
 
@@ -211,14 +211,48 @@
       place_lat.value = locationData.lat;
       place_lng.value = locationData.lng;
       location_short.value = locationData.location_short;
-    } else {
-      place_lat.value = null;
-      place_lng.value = null;
-      location_short.value = null;
-    }
+    } 
   });
 
+  watch(otherLocation, (newValue) => {
+  if (newValue) {
+    console.log(newValue)
+    nextTick(() => {
+      initAutocomplete();
+    });
+  }
+});
+
+
+  const getCoordinates = async() => {
+    const address = document.getElementById("otherLocation").value;
+    console.log(address)
+    otherLocation.value = address
+    const url = "https://maps.googleapis.com/maps/api/geocode/json";
+    await axios.get(url, {
+      params: {
+          "address": address,
+          "key": "AIzaSyDeVgAhC9VSqh64BteBWNqi3EWDm9vJXvU"
+      }
+    })
+    .then(response => {
+      console.log(response.data);
+
+      if (response.data.results.length === 0) {
+        alert('Error: No location found for the provided address.');
+        return; 
+      }
+
+      place_lat.value = response.data.results[0].geometry.location.lat;
+      place_lng.value = response.data.results[0].geometry.location.lng;
+    })
+  };
+
   const submitEvent = async (event) => {
+    if(selectedLocation.value === 'Other'){
+      await getCoordinates()
+      console.log(otherLocation.value, place_lat.value, place_lng.value)
+    }
     event.preventDefault();
 
     const form = document.querySelector('form'); 
@@ -285,13 +319,37 @@
         console.error('Error: Failure to create event.');
         alert('Error: Failure to create event.');
     }
-
-
-
-
   };
 
+  const initAutocomplete = () => {
+  // Ensure the Google Maps script is loaded
+  if (!window.google) {
+    console.error("Google Maps script is not loaded.");
+    return;
+  }
+
+  const input = document.getElementById('otherLocation');
+    if (input) {
+      const autocomplete = new google.maps.places.Autocomplete(input);
+      autocomplete.setComponentRestrictions({ country: 'SG' });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry) {
+          console.log("Selected place:", place.formatted_address);
+          // Use place.geometry.location for lat/lng if needed immediately
+          // Example: const lat = place.geometry.location.lat();
+          // Example: const lng = place.geometry.location.lng();
+        } else {
+          console.error("No details available for input: '" + place.name + "'");
+        }
+      });
+    } else {
+      console.error("Input field with id 'otherLocation' not found.");
+    }
+  };
 </script>
+
 
 <style scoped>
 
