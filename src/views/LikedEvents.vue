@@ -27,7 +27,7 @@
           </ul>
         </div>
         <div v-else>
-          <p class="text-center">No upcoming events found.</p>
+          <p class="text-center text-dark">No Liked Events found.</p>
         </div>
       </div>
     </div>

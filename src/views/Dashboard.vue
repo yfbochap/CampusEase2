@@ -1,7 +1,7 @@
 <template>
   <br>
   <div id="eventMapTitle">
-    <h4>Choose your view</h4>
+    <h6>Choose your view</h6>
   </div>
 
   <div class="container-fluid maincon">
@@ -505,16 +505,16 @@
 .event-image {
   width: 200px;
   height: 278px;
-  display: block; /* Ensures the image doesn't have extra spaces */
-  margin: 0 auto; /* Centers the image horizontally */
-  margin-bottom: 20px; /* Adds space below the image */
+  display: block; 
+  margin: 0 auto; 
+  margin-bottom: 20px; 
   
 }
 
 .viewbutton{
   color: white;
   border: solid 1px rgb(120, 117, 117);
-  margin: 30px;
+  margin: 10px 30px 30px 30px;
   width: 200px;
   transition: background-color 0.3s ease;
 }
