@@ -1,10 +1,9 @@
 <template>
   <br>
-  <div id="eventMapTitle">
-    <h6>Choose your view</h6>
-  </div>
-
   <div class="container-fluid maincon">
+    <div id="eventMapTitle">
+    <h5>Choose your view</h5>
+  </div>
   <div class="row d-flex justify-content-center">
     <button class="col-3 btn viewbutton" v-on:click="switchView('otherView')">All Events</button>
     <!-- <div class="col-1"></div> -->
@@ -145,9 +144,6 @@
   </div>
 </div>
 </template>
-
-
-
 
 <script>
   import { getEvents } from '../../utils/supabaseRequests.js';
@@ -464,8 +460,6 @@
 };
 </script>
 
-
-
 <style scoped>
 .event-link {
   color: inherit; 
@@ -539,7 +533,14 @@
 }
 
 .maincon{
-  background-color: rgb(24, 24, 24); 
+  background-image: url('@/assets/images/bg-4.jpg'); /* Ensure this path matches your project structure */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
   color: white;
 }
 /* .carousel-control-prev,
@@ -548,7 +549,7 @@
 } */
 
 #eventMapTitle {
-  margin-top: 60px;
+  margin-top: 50px;
   text-align: center;
   color: white;
 }
