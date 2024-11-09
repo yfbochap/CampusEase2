@@ -54,7 +54,7 @@
 
         <h5>
           <u style="color: green;"><a v-if='signUpLink != ""' :href="signUpLink" target="_blank">Sign Up here!</a></u> 
-          <u style="color: green;"><a src="" @click="handleEventsCalendar">Add to Calendar</a></u>
+          <u><a src="" @click="handleEventsCalendar">Add to Calendar</a></u>
         </h5>
   
       </div>

@@ -269,8 +269,6 @@
 
       return true
     })
-    .catch(errors => {
-    })
   };
 
   const submitEvent = async (event) => {
