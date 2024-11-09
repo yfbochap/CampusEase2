@@ -52,9 +52,9 @@
             </ul>
           </div>
           <hr class="my-0" />
-          <a href="#" @click="goToLikedEvents" class="list-group-item d-flex justify-content-between align-items-center">
+          <router-link to="/LikedEvents"class="list-group-item d-flex justify-content-between align-items-center">
             <span><i class="fas fa-heart me-3"></i> Liked Events</span>
-          </a>
+          </router-link>
           <div class="text-center">
             <RouterLink class="nav-link" to="/SignIn">
               <button class="btn btn-danger">Logout</button>
@@ -114,9 +114,6 @@ export default {
     },
     goBack() {
       this.$router.go(-1);
-    },
-    goToLikedEvents() {
-      this.$router.push('/LikedEvents');
     },
     initClient() {
       return gapi.client.init({
