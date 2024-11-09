@@ -211,7 +211,11 @@
             this.likedEvents = this.likedEvents.filter(id => id !== eventId);
           }
           else{
-            this.eventLikes[eventId]++
+            if (this.eventLikes[eventId]) {
+              this.eventLikes[eventId]++;
+            } else {
+              this.eventLikes[eventId] = 1
+            }
             await addUserLike(eventId, this.user_id);
             this.likedEvents = [...this.likedEvents, eventId];
           }
