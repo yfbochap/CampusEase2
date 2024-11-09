@@ -1,22 +1,22 @@
 <template>
   <div class="d-flex flex-column align-items-center vh-100 position-relative background-wrapper">
     <!-- Header Section -->
-    <div class="container-fluid text-white p-3 w-100 mt-5 mb-5" style="background-color: black; margin: 0;">
-      <div class="d-flex justify-content-between align-items-center">
-        <RouterLink class="nav-link" to="/profile">
-          <button class="btn btn-light btn-sm"><i class="fas fa-arrow-left"></i> Back</button>
-        </RouterLink>
-        <h2 style="margin: auto;">Edit Profile</h2>
-      </div>
     <div class="header-section w-100 text-center">
       <h2>Welcome to Your Profile</h2>
-      <h5>Edit your profile details here</h5>
+      <h5>Edit your profile here</h5>
     </div>
+
+    <div class="container-fluid mb-5" style="background-color: transparent; margin: 0;">
 
     <!-- Edit Information Section -->
     <div class="container mt-0" style="width:40vw;">
       <div class="card shadow">
         <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+        <RouterLink class="nav-link" to="/profile">
+          <button class="btn btn-light btn-sm"><i class="fas fa-arrow-left"></i> Back</button>
+        </RouterLink>
+        </div>
           <!-- Profile Picture Section -->
           <div class="text-center">
             <div class="position-relative d-inline-block">
@@ -93,7 +93,7 @@ export default {
 .profile-container {
   width: 40vw;
   height: auto;
-  margin-top: 20px;
+  margin-top: 10px;
   background-color: rgba(255, 255, 255, 1);
   border-radius: 15px;
   overflow: hidden;
