@@ -1,6 +1,13 @@
 <template>
   <div class="background-wrapper">
   <div class="container-fluid">
+    <div v-if="alertVisible_errors" class="fixed-alert alert alert-danger alert-dismissible fade show d-flex justify-content-between align-items-center" role="alert">
+      <h4 class="m-0">{{ errorText }}</h4>
+      <button type="button" class="close close-icon" @click="closeAlert_errors" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
     <div v-if="alertVisible" class="fixed-alert alert alert-success alert-dismissible fade show d-flex justify-content-between align-items-center" role="alert">
       <h4 class="m-0">Event Created Succesfully!</h4>
       <button type="button" class="close close-icon" @click="closeAlert" aria-label="Close">
@@ -74,7 +81,7 @@
         &nbsp;&nbsp;
         <div v-if="selectedLocation === 'Other'" class="mb-3">
           <label for="otherLocation" class="form-label">Google Maps Address</label>
-          <input type="text" v-model="otherLocation" id="otherLocation" class="form-control" placeholder="Specify location" required>
+          <input type="text" v-model="otherLocation" id="otherLocation"  class="form-control" placeholder="Specify location" required>
         </div>
 
         <div class="flex-half ms-2">
@@ -197,6 +204,16 @@
   const otherLocation = ref('');
   const eventType = ref('');
   const alertVisible = ref(false);
+  const alertVisible_errors = ref(false)
+  const errorText = ref('')
+
+
+  const openAlert_errors = () =>{
+    alertVisible_errors.value = true
+  }
+  const closeAlert_errors = () => {
+    alertVisible_errors.value = false;
+  };
 
   const openAlert = () =>{
     alertVisible.value = true
@@ -239,32 +256,63 @@
       console.log(response.data);
 
       if (response.data.results.length === 0) {
-        alert('Error: No location found for the provided address.');
-        return; 
+        return false
       }
+      console.log("THIS SHOULDNT HAVE CONTINUED PART 1")
 
+      location_short.value = response.data.results[0].address_components[0].short_name;
+
+      shortAddress = `${city}, ${country}`; // Example of short address
+      console.log(shortAddress)
       place_lat.value = response.data.results[0].geometry.location.lat;
       place_lng.value = response.data.results[0].geometry.location.lng;
+
+      return true
+    })
+    .catch(errors => {
     })
   };
 
   const submitEvent = async (event) => {
     if(selectedLocation.value === 'Other'){
-      await getCoordinates()
+      let confirm = await getCoordinates()
       console.log(otherLocation.value, place_lat.value, place_lng.value)
+      if (!confirm){
+        errorText.value = "Please input a valid address"
+        openAlert_errors()
+        return;
+      }
     }
+    console.log("THIS SHOULDNT HAVE CONTINUED PART 2")
     event.preventDefault();
 
     const form = document.querySelector('form'); 
     if (!form.checkValidity()) {
-      form.reportValidity();
-      return;
+      let counter = 0
+      for (const input of form.elements) {
+        if (!input.checkValidity()) {
+          console.log(input.id, input.classList)
+          counter ++
+          input.style.borderColor = 'red';
+        } else {
+          input.style.borderColor = ''; 
+        }
+        console.log(input.classList)
+      }
+
+    if (counter > 0) {
+      errorText.value = "Missing Required Fields"
+      openAlert_errors()
     }
+    form.reportValidity();
+    return;
+  }
 
     const eventExists = await checkEventExists(eventName.value);
   
     if (eventExists) {
-      alert('An event with this name already exists. Please choose a different name.');
+      errorText.value = 'Event exists. Please choose a different event name.'
+      openAlert_errors()
       return; // Stop the submission if the event exists
     }
 
@@ -288,7 +336,8 @@
     // alert('Event Created: ' + newEvent.name);
 
     if (!thumbnailPhoto) {
-        alert('Please upload a thumbnail image before creating the event.');
+        errorText.value = "Please upload a thumbnail"
+        openAlert_errors()
         return;
     }
 
@@ -337,9 +386,7 @@
         const place = autocomplete.getPlace();
         if (place.geometry) {
           console.log("Selected place:", place.formatted_address);
-          // Use place.geometry.location for lat/lng if needed immediately
-          // Example: const lat = place.geometry.location.lat();
-          // Example: const lng = place.geometry.location.lng();
+          otherLocation.value = document.getElementById("otherLocation").value;
         } else {
           console.error("No details available for input: '" + place.name + "'");
         }
@@ -523,6 +570,9 @@ textarea:focus{
   max-width: 90%; /* Limits width on smaller screens */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a slight shadow */
   transition: opacity 0.3s ease-in-out;
+}
+.invalid-input {
+  border-color: red;
 }
 
 </style>
