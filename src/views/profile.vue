@@ -196,12 +196,6 @@ export default {
           start: { dateTime: '2024-11-14T09:00:00', timeZone: 'Asia/Singapore' },
           end: { dateTime: '2024-11-14T12:00:00', timeZone: 'Asia/Singapore' }
         },
-        {
-          summary: 'Pitch It competition',
-          description: 'Showcase the best design',
-          start: { dateTime: '2024-11-09T09:00:00', timeZone: 'Asia/Singapore' },
-          end: { dateTime: '2024-11-09T12:00:00', timeZone: 'Asia/Singapore' }
-        }
 
 
       ];
