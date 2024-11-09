@@ -1,7 +1,14 @@
 <template>
   <div class="background-wrapper">
   <div class="container-fluid">
-    
+    <div v-if="alertVisible" class="fixed-alert alert alert-success alert-dismissible fade show d-flex justify-content-between align-items-center" role="alert">
+      <h4 class="m-0">Event Created Succesfully!</h4>
+      <button type="button" class="close close-icon" @click="closeAlert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+
     <form class="mt-4 d-flex">
       <div class="left-column">
         <label for="thumbnailPhoto" class="form-label">Thumbnail Photo (Mandatory)</label>
@@ -189,6 +196,14 @@
   const thumbnailPhoto = ref(null);
   const otherLocation = ref('');
   const eventType = ref('');
+  const alertVisible = ref(false);
+
+  const openAlert = () =>{
+    alertVisible.value = true
+  }
+  const closeAlert = () => {
+    alertVisible.value = false;
+  };
 
   watch(selectedLocation, (newLocation) => {
     const locationData = locations[newLocation];
@@ -249,6 +264,7 @@
             
       if (createdEvent) {
           console.log('Event added successfully:', createdEvent);
+          openAlert()
 
           // Clear form fields
           eventName.value = '';
@@ -432,6 +448,24 @@ textarea:focus{
 .flex-half {
   flex: 1;
 }
+.close-icon {
+  font-size: 30px; /* Standard close button size */
+  color: darkolivegreen; /* Default color for the close button (black) */
+  background: transparent; /* Transparent background */
+  border: none; /* Remove border */
+  cursor: pointer; /* Change the cursor to a pointer on hover */
+}
+.fixed-alert {
+  position: fixed; /* Fixes the alert to the screen */
+  top: 80px; /* Spacing from the top of the viewport */
+  left: 50%; /* Centers the alert horizontally */
+  transform: translateX(-50%); /* Corrects centering */
+  z-index: 1050; /* Ensure it appears above other content */
+  width: 50%; /* Adjust width dynamically */
+  max-width: 90%; /* Limits width on smaller screens */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a slight shadow */
+  transition: opacity 0.3s ease-in-out;
+}
+
 </style>
 
-<!-- testing  -->
