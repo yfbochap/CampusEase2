@@ -205,10 +205,13 @@
           console.log("Event ID: ", eventId);
           console.log("Profile ID: ", this.user_id);
           if(isLiked){
+            this.eventLikes[eventId]--
+            console.log(this.eventLikes[eventId])
             await removeUserLike(eventId, this.user_id);
             this.likedEvents = this.likedEvents.filter(id => id !== eventId);
           }
           else{
+            this.eventLikes[eventId]++
             await addUserLike(eventId, this.user_id);
             this.likedEvents = [...this.likedEvents, eventId];
           }
