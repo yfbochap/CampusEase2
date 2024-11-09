@@ -56,18 +56,21 @@
 
                   <div class="row d-flex justify-content-center">
                     <div class="col-sm-8 col-md-5 col-lg-3 align-items-stretch" v-for="event in eventGroup" :key="event.id">
-                      <div class="card mb-4">
-                        <div class="card-body d-flex flex-column">
-                          <img class="event-image" :src=getPhotoURL(event) alt="Event Image">
-                            <h4 class="card-title">{{ event.event_name }}</h4>
-                            <hr>
-                            <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
-                            <h6 class="card-subtitle">{{ event.location_short}}</h6>
-                            <div class="mt-auto">
-                              <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
-                            </div>
+                      
+                        <div class="card mb-4">
+                          <div class="card-body d-flex flex-column">
+                            <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
+                            <img class="event-image" :src=getPhotoURL(event) alt="Event Image">
+                              <h4 class="card-title">{{ event.event_name }}</h4>
+                              <hr>
+                              <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
+                              <h6 class="card-subtitle">{{ event.location_short}}</h6>
+                            </router-link>
+                              <div class="mt-auto">
+                                <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+                              </div>
+                          </div>
                         </div>
-                      </div>
                     </div>
                   </div>
               </div>
@@ -115,16 +118,19 @@
                   <div v-if="searchedEvents.length != 0" class="row d-flex p-5 justify-content-center">
                     <transition-group name="fade" tag="div" class="row">
                         <div class="col-sm-8 col-md-5 col-lg-4 align-items-stretch fade-item" v-for="(event,index) in searchedEvents" :key="event.id" :style="{ animationDelay: (index * 0.5) + 's' }">
+                      
                             <div class="card mb-4 fade-item">
                                 <div class="card-body d-flex flex-column">
-                                  <img class="event-image" :src=getPhotoURL(event) alt="Event Image"/>
-                                    <h4 class="card-title" @click="goToEventPage(event.id)" style="cursor: pointer;">{{ event.event_name }}</h4>
-                                    
+                                  <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
+                                    <img class="event-image" :src=getPhotoURL(event) alt="Event Image"/>
+                                    <h4 class="card-title" style="cursor: pointer;">{{ event.event_name }}</h4>
+                                      
                                     <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
                                     <h6 class="card-subtitle ">{{ event.location_short}}</h6>
-                                    <div class="mt-auto">
-                                     <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
-                                    </div>
+                                  </router-link>
+                                  <div class="mt-auto">
+                                    <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+                                  </div>
                                 </div>
                             </div>
                         </div>
@@ -194,12 +200,6 @@
 
 
   methods: {
-      async goToEventPage(eventId) {
-        // Trigger the setEventID function and navigate to the event details page
-        const userStore = useUserStore();
-        await userStore.setEventID(eventId);
-        this.$router.push(`/event/${eventId}`);
-      },
       // Like Functionality
       async fetchLikedEvents(){
         try{
@@ -467,6 +467,20 @@
 
 
 <style scoped>
+.event-link {
+  color: inherit; 
+  text-decoration: none; 
+  display: block; 
+}
+.event-card {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: #ffffff;
+}
+
+.event-link:hover{
+  background-color:transparent;
+}
 .card {
   background-color: transparent;
   color: whitesmoke;
