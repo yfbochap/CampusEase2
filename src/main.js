@@ -1,8 +1,7 @@
 import './assets/main.css';
 
-import { createApp, ref, provide } from 'vue';
+import { createApp } from 'vue';
 import { createPinia } from 'pinia';
-import { supabase } from '../utils/supabaseClient';
 import piniaPersistedState from 'pinia-plugin-persistedstate';
 
 

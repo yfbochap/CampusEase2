@@ -1,10 +1,10 @@
 <template>
   <br>
-  <div id="eventMapTitle">
+  <!-- <div id="eventMapTitle">
     <p>Choose your view</p>
-  </div>
+  </div> -->
 
-
+  <div class="container-fluid maincon">
   <div class="row d-flex justify-content-center">
     <button class="col-3 btn viewbutton" v-on:click="switchView('otherView')">All Events</button>
     <!-- <div class="col-1"></div> -->
@@ -55,14 +55,17 @@
                   :key="index">
 
                   <div class="row d-flex justify-content-center">
-                    <div class="col-sm-8 col-md-5 col-lg-3" v-for="event in eventGroup" :key="event.id">
+                    <div class="col-sm-8 col-md-5 col-lg-3 align-items-stretch" v-for="event in eventGroup" :key="event.id">
                       <div class="card mb-4">
-                        <div class="card-body">
-                          <img :src=getPhotoURL(event) alt="Event Image" style="width:10px;height: 20px;">
+                        <div class="card-body d-flex flex-column">
+                          <img class="event-image" :src=getPhotoURL(event) alt="Event Image">
                             <h4 class="card-title">{{ event.event_name }}</h4>
                             <hr>
                             <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
-                            <h6 class="card-subtitle text-muted">{{ event.location_short}}</h6>
+                            <h6 class="card-subtitle">{{ event.location_short}}</h6>
+                            <div class="mt-auto">
+                              <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+                            </div>
                         </div>
                       </div>
                     </div>
@@ -93,14 +96,14 @@
           <br>
           <div class="d-flex justify-content-center">
             <div>
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'All' }" @click="selectCategory('All')">All</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Academic' }" @click="selectCategory('Academic')">Academic</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Sports' }" @click="selectCategory('Sports')">Sports</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Arts' }" @click="selectCategory('Arts')">Arts</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Networking' }" @click="selectCategory('Networking')">Networking</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Charity' }" @click="selectCategory('Charity')">Charity</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Community' }" @click="selectCategory('Community')">Community</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Welfare' }" @click="selectCategory('Welfare')">Welfare</button>
+              <button type="button" class="btn btn-secondary btn-pill all " :class="{ active: selectedCategory === 'All' }" @click="selectCategory('All')">All</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill academic" :class="{ active: selectedCategory === 'Academic' }" @click="selectCategory('Academic')">Academic</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill sports" :class="{ active: selectedCategory === 'Sports' }" @click="selectCategory('Sports')">Sports</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill arts" :class="{ active: selectedCategory === 'Arts' }" @click="selectCategory('Arts')">Arts</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill networking" :class="{ active: selectedCategory === 'Networking' }" @click="selectCategory('Networking')">Networking</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill charity" :class="{ active: selectedCategory === 'Charity' }" @click="selectCategory('Charity')">Charity</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill community" :class="{ active: selectedCategory === 'Community' }" @click="selectCategory('Community')">Community</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill welfare" :class="{ active: selectedCategory === 'Welfare' }" @click="selectCategory('Welfare')">Welfare</button>
             </div>
           </div>
           <br>
@@ -110,18 +113,22 @@
                       {{ selectedCategory }} Events Around Campus
                   </h1>
                   <div v-if="searchedEvents.length != 0" class="row d-flex p-5 justify-content-center">
-                        <div class="col-sm-8 col-md-5 col-lg-4" v-for="event in searchedEvents" :key="event.id">
-                            <div class="card mb-4">
-                                <div class="card-body">
-                                  <img :src=getPhotoURL(event) alt="Event Image" style="width:200px;height:282px"/>
-                                    <h4 class="card-title">{{ event.event_name }}</h4>
-                                    <hr>
+                    <transition-group name="fade" tag="div" class="row">
+                        <div class="col-sm-8 col-md-5 col-lg-4 align-items-stretch fade-item" v-for="(event,index) in searchedEvents" :key="event.id" :style="{ animationDelay: (index * 0.5) + 's' }">
+                            <div class="card mb-4 fade-item">
+                                <div class="card-body d-flex flex-column">
+                                  <img class="event-image" :src=getPhotoURL(event) alt="Event Image"/>
+                                    <h4 class="card-title" @click="goToEventPage(event.id)" style="cursor: pointer;">{{ event.event_name }}</h4>
+                                    
                                     <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
-                                    <h6 class="card-subtitle text-muted">{{ event.location_short}}</h6>
-                                    <button v-on:click="toggleLikeStatus(event)" v-bind:style="{color: isLiked(event) ? 'red' : 'grey'}">♡</button>
+                                    <h6 class="card-subtitle ">{{ event.location_short}}</h6>
+                                    <div class="mt-auto">
+                                     <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                      </transition-group>
                   </div>
                   <div class="p-5" v-else>
                     <h1 style="text-align: center;height: 200px;">There are currently no events matching your search</h1> <!-- to tell that there are no events happening according to search -->
@@ -130,6 +137,7 @@
           </div>
       </div>
   </div>
+</div>
 </template>
 
 
@@ -140,9 +148,8 @@
   import { searchEvents, checkUserLike, addUserLike, removeUserLike} from '../../utils/supabaseRequests.js';
   import { supabase } from '../../utils/supabaseClient.js';
   import { useUserStore } from '@/stores/counter.ts';
+  import HeartIcon from '@/components/HeartIcon.vue';
 
-  
-  
   export default {
     data() {
       return {
@@ -157,12 +164,15 @@
         searchTerm: "", //Search term input by user
         searchedEvents: [],
         selectedCategory: "All",
-        heartColor: "black",
         likedEvents: [],
-        user_id: ''
+        user_id: '',
+        event_id: ''
       };
     },
 
+  components: {
+    HeartIcon
+  },
 
   computed: {
     groupedEvents() { //show events in groups
@@ -178,35 +188,46 @@
   },
   async created() {
       this.fetchEvents();
+      this.getUserID();
       this.fetchLikedEvents();
   },
 
 
   methods: {
-
+      async goToEventPage(eventId) {
+        // Trigger the setEventID function and navigate to the event details page
+        const userStore = useUserStore();
+        await userStore.setEventID(eventId);
+        this.$router.push(`/event/${eventId}`);
+      },
       // Like Functionality
       async fetchLikedEvents(){
         try{
-          this.likedEvents = checkUserLike(user.id);
+          console.log("Checking Profile ID: ", this.user_id)
+          this.likedEvents = await checkUserLike(this.user_id);
+          console.log("Liked Events: ", this.likedEvents);
         } catch(error){
-          console.error("Errorfetching liked events:", error);
+          console.error("Error fetching liked events:", error);
         }
       },
       isLiked(event){
         return this.likedEvents.includes(event.id);
       },
       async toggleLikeStatus(event){
-        const eventId = event.id;
+        console.log('Toggling Like for event:', event);
+        const eventId = event;
         const isLiked = this.likedEvents.includes(eventId);
 
         try{
+          console.log("Event ID: ", eventId);
+          console.log("Profile ID: ", this.user_id);
           if(isLiked){
             await removeUserLike(eventId, this.user_id);
             this.likedEvents = this.likedEvents.filter(id => id !== eventId);
           }
           else{
             await addUserLike(eventId, this.user_id);
-            this.likedEvents.push(eventId);
+            this.likedEvents = [...this.likedEvents, eventId];
           }
         } catch (error){
           console.error("Error toggling like:", error);
@@ -408,7 +429,7 @@
       getUserID(){
         const userStore = useUserStore();
         this.user_id = userStore.getAuthToken()
-      }
+      },
   },
 
   mounted() {
@@ -446,15 +467,46 @@
 
 
 <style scoped>
+.card {
+  background-color: transparent;
+  color: whitesmoke;
+  border: none;
+  
+}
+.card-title {
+  text-align: center;
+  margin-bottom: 20px; 
+}
+.card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.card-body h6 {
+  margin-bottom: 15px; /* Adjust as needed */
+}
+.card-body .heart-icon {
+  margin-top: auto;
+}
+.event-image {
+  width: 200px;
+  height: 278px;
+  display: block; /* Ensures the image doesn't have extra spaces */
+  margin: 0 auto; /* Centers the image horizontally */
+  margin-bottom: 20px; /* Adds space below the image */
+  
+}
+
 .viewbutton{
-  /* color: white; */
-  border: solid 1px black;
+  color: white;
+  border: solid 1px rgb(120, 117, 117);
   margin: 30px;
   width: 200px;
   transition: background-color 0.3s ease;
 }
 .viewbutton:hover{
-  background-color: #29292a;
+  background-color: #68686a;
+  border-color: #68686a;
 }
 
 /* Styling for the input */
@@ -472,14 +524,15 @@
   outline: none; /* Remove default outline */
 }
 
-div{
-  /* background-color: #29292a; */
-  /* color: white; */
+.maincon{
+  padding-top: 50px;
+  background-color: rgb(24, 24, 24); 
+  color: white;
 }
-.carousel-control-prev,
+/* .carousel-control-prev,
 .carousel-control-next {
   width: 80px;
-}
+} */
 
 #eventMapTitle {
   margin-top: 60px;
@@ -488,8 +541,8 @@ div{
 }
 
 #map {
-  height: 350px;
-  width:80%
+  height: 550px;
+  width: 90%
 }
 
 #mapDimensions{
@@ -512,6 +565,11 @@ div{
 
 .btn-pill{
   border-radius: 50px;
+  border: none;
+  
+}
+.btn-pill:hover{
+  transform:scale(1.1);
 }
 
 .category-title{
@@ -521,4 +579,72 @@ div{
 .input-size{
   width: 80%;
 }
+
+/* CATEGORY BUTTON STYLING */
+.all {
+  background-color: #7B8794;
+  border: none;
+}
+
+.academic {
+  background-color: #4A90E2;
+  border:none;
+}
+
+.sports {
+  background-color: #50C878;
+}
+
+.arts {
+  background-color: #9B59B6;
+}
+
+.networking {
+  background-color: #F5A623;
+}
+
+.charity {
+  background-color: #E74C3C;
+}
+
+.community {
+  background-color: #F1C40F;
+}
+
+.welfare {
+  background-color: #1ABC9C;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.fade-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-item {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
 </style>

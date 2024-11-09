@@ -17,31 +17,57 @@
         </div>
       </div>
 
-      <!-- Event Details Section -->
-      <div class="col-md-6 details">
-        <h2 id="eventTitle" class="d-inline-block mr-3">{{ eventTitle }}</h2>
+      
+        </div>
+
+        <div class="container details">
+          <h2 id="titlename" 
+                style="display: inline-block; margin-right: 30px;"> 
+              Walking on Sunshine Event
+            </h2>
+            <!-- HeartIcon Component* -->
+            <!-- <button class="heart-btn" 
+                    :aria-label="isLiked ? 'Unlike' : 'Like'" 
+                    @click="toggleLike">
+              <svg 
+                class="heart-icon" 
+                :class="{ 'filled': isLiked }"
+                viewBox="0 0 24 24" 
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+            </button> -->
+            <div v-if="event">
+              <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+            </div>
+          <div id="details">
+            <h2>Location</h2>
+            <p>SMU Connex</p>  <!-- HARDCODED *TO REPLACE* -->
+
+            <h2>Venue</h2>
+            <p>Meeting Pod1</p>  <!-- HARDCODED *TO REPLACE* -->
+
+            <h2>Description</h2>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis
+              provident hic cupiditate, atque aliquid sint enim minima esse, dolores,
+              soluta quaerat mollitia explicabo sequi reprehenderit facilis laborum
+              beatae impedit odit? 
+            </p>  <!-- HARDCODED *TO REPLACE* -->
+
+            <h2>Time</h2>
+            <p>25 November 10AM to 26 November 12PM</p>  <!-- HARDCODED *TO REPLACE* -->
+
+            <h2>Sign-up Link</h2>
+            <p>www.apple.com</p>  <!-- HARDCODED *TO REPLACE* -->
+
+          </div>
+          <button id="calendaradd" class="btn text-white">Add to Calendar</button>
+        </div>
+
         
-        <button class="heart-btn" @click="toggleLike" :aria-label="isLiked ? 'Unlike' : 'Like'">
-          <svg class="heart-icon" :class="{ filled: isLiked }" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-          </svg>
-        </button>
-
-        <h3>Location</h3>
-        <p>{{ location }}</p>
-
-        <h3>Venue</h3>
-        <p>{{ venue }}</p>
-
-        <h3>Description</h3>
-        <p>{{ description }}</p>
-
-        <h3>Time</h3>
-        <p>{{ time }}</p>
-
-        <h3>Sign-up Link</h3>
-        <p><a :href="signUpLink" target="_blank">{{ signUpLink }}</a></p>
-      </div>
+    </div>
     </div>
 
     <!-- Lightbox -->
@@ -53,11 +79,15 @@
 </template>
 
 <script>
-import photo1 from '../assets/images/photo_2024-10-16 13.47.32.jpeg' // <!-- HARDCODED *TO REPLACE* -->
-import photo2 from '../assets/images/earth.jpeg'
-import photo3 from '../assets/images/bg-1.jpeg'
-import thumbnail1 from '../assets/images/test_photo.jpg'
-import '../assets/base.css'
+// Import all images
+import photo1 from '../assets/images/photo_2024-10-16 13.47.32.jpeg'; // <!-- HARDCODED *TO REPLACE* -->
+import photo2 from '../assets/images/earth.jpeg';
+import photo3 from '../assets/images/bg-1.jpeg';
+import "../assets/base.css";
+import HeartIcon from '@/components/HeartIcon.vue';
+import { useUserStore } from '@/stores/counter.ts';
+import { getEventByEventId, checkUserLike, addUserLike, removeUserLike} from '../../utils/supabaseRequests.js';
+
 
 export default {
   data() {
@@ -78,12 +108,104 @@ export default {
       ],
       lightboxVisible: false,
       lightboxImage: "",
-    };
+      photos: [
+        {
+          src: photo1,
+          alt: 'Photo 1'
+        },
+        {
+          src: photo2,
+          alt: 'Photo 2'
+        },
+        {
+          src: photo3,
+          alt: 'Photo 3'
+        },
+      ],
+      selectedCategory: "All",
+      likedEvents: [],
+      user_id: '',
+      event_id: '', 
+      event: null
+    }
+  },
+  components: {
+    HeartIcon
+  },
+  async created() {
+      this.getUserID();
+      this.getEventID();
+      console.log("Event ID:", this.event_id)
+      this.fetchEventData();
+      this.fetchLikedEvents();
+  },
+  async mounted() {
+    // Log all photo sources when component mounts
+    console.log('All photos array:', this.photos);
+    this.photos.forEach((photo, index) => {
+      console.log(`Photo ${index + 1} source:`, photo.src);
+    });
+  },
+  computed: {
+
   },
   methods: {
-    toggleLike() {
-      this.isLiked = !this.isLiked;
+    // Fetch event data by event ID
+    async fetchEventData() {
+      try {
+        if (!this.event_id) {
+          console.error("Event ID is missing.");
+          return;
+        }
+        const eventData = await getEventByEventId(this.event_id);
+        this.event = eventData; // Set the fetched event data
+        console.log("Fetched Event Data: ", eventData);
+      } catch (error) {
+        console.error("Error fetching event data:", error);
+      }
     },
+    // Like Functionality
+    async fetchLikedEvents(){
+      try{
+        console.log("Checking Profile ID: ", this.user_id)
+        this.likedEvents = await checkUserLike(this.user_id);
+        console.log("Liked Events: ", this.likedEvents);
+      } catch(error){
+        console.error("Error fetching liked events:", error);
+      }
+    },
+    isLiked(event){
+      return this.likedEvents.includes(event.id);
+    },
+    async toggleLikeStatus(event){
+      console.log('Toggling Like for event:', event);
+      // const eventId = event.id;
+      const isLiked = this.likedEvents.includes(event);
+
+      try{
+        console.log("Event ID: ", event);
+        console.log("Profile ID: ", this.user_id);
+        if(isLiked){
+          await removeUserLike(event, this.user_id);
+          this.likedEvents = this.likedEvents.filter(id => id !== event);
+        }
+        else{
+          await addUserLike(event, this.user_id);
+          this.likedEvents = [...this.likedEvents, event];
+        }
+      } catch (error){
+        console.error("Error toggling like:", error);
+      }
+    },
+    getUserID(){
+        const userStore = useUserStore();
+        this.user_id = userStore.getAuthToken()
+    },
+    getEventID(){
+        const userStore = useUserStore();
+        this.event_id = userStore.getEventID()
+    },
+    // Lightbox Functionality
     openLightbox(src) {
       this.lightboxImage = src;
       this.lightboxVisible = true;

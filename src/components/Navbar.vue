@@ -7,37 +7,40 @@
       <img src="@/assets/images/CElogo1-1.png" alt="Logo" id="navbarLogo" style="width: 40px;" /> &nbsp CampusEase
     </router-link>
 
-    <!-- Navbar Toggle Button -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    
 
-    <!-- Account Icon or Sign In Button -->
-    <a v-if="user" class="btn account-icon order-lg-last order-md-last order-sm-last" data-bs-toggle="offcanvas" href="#sidebar" role="button" aria-controls="offcanvasExample">
-      <i class="fas fa-user"></i>
-    </a>
-    <router-link v-else to="/signin" class="order-lg-last order-md-last order-sm-last">
-      <button class="btn bg-dark text-white" data-bs-toggle="offcanvas" role="button" aria-controls="offcanvasExample">
-        <span>Sign In</span>
-      </button>
-    </router-link>
+        <a v-if="user" class="btn account-icon order-lg-last order-md-last order-sm-last" data-bs-toggle="offcanvas" href="#sidebar" role="button" aria-controls="offcanvasExample">
+            <i class="fas fa-user"></i> 
+        </a> 
 
-    <!-- Collapsible Nav Links -->
-    <div :class="['collapse', 'navbar-collapse', { show: menuOpen }]" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <router-link class="nav-link" to="/">HOME</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link class="nav-link" to="/dashboard">EVENTS</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link class="nav-link" to="/about">ABOUT</router-link>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
+        <router-link v-else to="/signin" class="order-lg-last order-md-last order-sm-last">
+          <button class="btn bg-dark text-white" data-bs-toggle="offcanvas" role="button" aria-controls="offcanvasExample">
+            <span>Sign In</span>
+          </button> 
+        </router-link>
+        
+
+        <!-- Navbar Toggle Button -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+ 
+        <!-- Nav Links --> 
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav"> 
+          <ul class="navbar-nav"> 
+            <li class="nav-item"> 
+              <router-link class="nav-link" to="/">HOME</router-link> 
+            </li> 
+            <li class="nav-item"> 
+              <router-link class="nav-link" to="/dashboard">EVENTS</router-link> 
+            </li> 
+            <li class="nav-item"> 
+              <router-link class="nav-link" to="/about">ABOUT</router-link> 
+            </li> 
+          </ul> 
+        </div> 
+      </div> 
+  </nav>
 
  
   <!-- SideBar Links --> 
@@ -50,11 +53,11 @@
     <hr> 
     <div class="offcanvas-body" style="position: relative;"> 
       <ul class="p-0"> 
-        <li class="sidebar_link"><router-link to="/profile">Profile</router-link></li> 
-        <li class="sidebar_link"><router-link to="/edit_profile">Edit Profile</router-link></li> 
-        <li class="sidebar_link"><router-link to="/">Events Calendar</router-link></li> 
-        <li class="sidebar_link"><router-link to="/eventCreation">Create New Event</router-link></li> 
-        <li class="sidebar_link"><router-link to="/your_events">Edit Your Events</router-link></li> 
+        <li class="sidebar_link" data-bs-toggle="offcanvas"><router-link to="/profile">Profile</router-link></li> 
+        <li class="sidebar_link" data-bs-toggle="offcanvas"><router-link to="/edit_profile">Edit Profile</router-link></li> 
+        <li class="sidebar_link" data-bs-toggle="offcanvas"><router-link to="/">Events Calendar</router-link></li> 
+        <li class="sidebar_link" data-bs-toggle="offcanvas"><router-link to="/eventCreation">Create New Event</router-link></li> 
+        <li class="sidebar_link" data-bs-toggle="offcanvas"><router-link to="/your_events">Edit Your Events</router-link></li> 
       </ul> 
       <div @click=logout class="btn" id="logout" style="width:217px"> <!-- position:absolute;bottom: 20px; --> 
         Log Out 
@@ -76,8 +79,9 @@
   const fetchUser = async () => {
     const { data } = await supabase.auth.getUser();
     user.value = data.user; // Update the reactive user variable
-    console.log('User State', user.value);
+    // console.log('User State', user.value);
   };
+  
 
   supabase.auth.onAuthStateChange((event, session) => {
     user.value = session?.user || null; // Update user state
@@ -99,7 +103,6 @@
       window.location.reload()
     }
   };
-
 </script> 
  
 <style scoped> 
@@ -151,7 +154,7 @@
 
 
 /* Responsive styling for smaller screens */
-@media (max-width: 768px) {
+@media (max-width: 576px) {
   .navbar-toggler {
     display: inline; /* Show toggle button on small screens */
   }
@@ -179,34 +182,7 @@
     padding: 10px 0;
   }
 }
-/* Additional styling for the 576px to 768px range */
-@media (max-width: 768px) and (min-width: 576px) {
-  .navbar-collapse {
-    display: none; /* Hidden until .show is added */
-  }
 
-  .navbar-collapse.show {
-    display: flex; /* Ensure navbar appears when .show is active */
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .navbar-nav {
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .nav-item {
-    width: 100%;
-  }
-
-  .navbar-nav .nav-link {
-    padding: 10px;
-    width: 100%;
-    text-align: left;
-  }
-}
  
   .offcanvas{ 
     width: 250px; 

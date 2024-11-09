@@ -2,17 +2,17 @@
   <div class="background-wrapper d-flex justify-content-center align-items-center">
     <div class="calendar-card p-4 shadow">
       <div class="calendar-header">
-        <h2 class="text-center">Your Liked Events</h2>
+        <h2 class="text-center text-dark">Your Liked Events</h2>
       </div>
       <div class="calendar-content">
         <div v-if="events.length">
           <ul class="list-unstyled">
-            <li v-for="event in events" :key="event.id" class="event-card mb-3 p-3">
-              <strong class="card-title">{{ event.summary }}</strong><br>
-              Date: {{ formatDate(event.start.dateTime || event.start.date) }}<br>
-              Day: {{ formatDay(event.start.dateTime || event.start.date) }}<br>
-              Start Time: {{ formatTime(event.start.dateTime) }}<br>
-              End Time: {{ formatTime(event.end.dateTime) }}
+            <li v-for="event in events" :key="event.id" class="event-card mb-3 p-3 text-dark">
+              <strong class="card-title">{{ event.event_name }}</strong><br>
+              {{ event.location_short}} 
+              <p style="font-size: 12px;"> {{getDates(event.start_date_time,event.end_date_time)}}<br>
+                {{getTime(event.start_date_time,event.end_date_time)}}</p>
+
             </li>
           </ul>
         </div>
@@ -25,11 +25,16 @@
 </template>
 
 <script>
+import { useUserStore } from '@/stores/counter';
+import { checkUserLike,getEventByEventId } from '../../utils/supabaseRequests';
+
+
 export default {
   name: 'CalendarPage',
   data() {
     return {
-      events: []
+      events: [],
+      userid: '' 
     };
   },
   mounted() {
@@ -39,6 +44,10 @@ export default {
     }
   },
   methods: {
+    getUserID(){
+      const userStore = useUserStore()
+      this.userid = userStore.getAuthToken();
+    },
     formatDate(dateTime) {
       const date = new Date(dateTime);
       return date.toLocaleDateString();
@@ -51,8 +60,55 @@ export default {
       if (!dateTime) return 'N/A';
       const time = new Date(dateTime);
       return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
+    },
+    async getUserLiked(){
+      let eventIDs = await checkUserLike(this.userid)
+      let allLikedEvents = []
+      for (let eventID of eventIDs) {
+        let event = await getEventByEventId(eventID);  // Use await here
+        console.log(event)
+        allLikedEvents.push(event)
+      }
+      
+      this.events = allLikedEvents
+    },
+    getDates(start, end) {
+      const formatDate = (isoString) => {
+        const date = new Date(isoString.substring(0, 10));
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return `${date.getDate()} ${months[date.getMonth()]} ${String(date.getFullYear()).substring(2)} (${days[date.getDay()]})`;
+      };
+
+      const displayed_start_date = formatDate(start);
+      const displayed_end_date = formatDate(end);
+
+      if (displayed_start_date === displayed_end_date) {
+        return `${displayed_start_date}`;
+      }
+
+      return `${displayed_start_date} - ${displayed_end_date}`;
+    },
+    getTime(start, end) {
+      const formatTime = (isoString) => {
+        const [hour, minute] = isoString.substring(11, 16).split(':').map(Number);
+        const period = hour >= 12 ? 'pm' : 'am';
+        const hour12 = hour % 12 || 12;
+        return `${hour12}:${minute.toString().padStart(2, '0')}${period}`;
+      };
+
+      const start_time_formatted = formatTime(start);
+      const end_time_formatted = formatTime(end);
+
+      return `${start_time_formatted} - ${end_time_formatted}`;
+    },
+  },
+  async mounted(){
+    this.getUserID()
+    await this.getUserLiked()
+    console.log(this.events)
   }
+  
 };
 </script>
 
