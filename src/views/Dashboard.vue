@@ -40,15 +40,20 @@
                           <div class="card-body d-flex flex-column">
                             <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
                             <img class="event-image" :src=getPhotoURL(event) alt="Event Image">
+                          </router-link>
+                                    <div class="d-flex justify-content-center align-center" v-if='user_id != null'>
+                                      <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/> 
+                                      <span>
+                                        {{ eventLikes[event.id] || 0 }} Likes
+                                      </span>
+                                    </div>
+                          <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
                               <h4 class="card-title">{{ event.event_name }}</h4>
                               <hr>
                               <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
                               <h6>{{  getTime(event.start_date_time, event.end_date_time) }}</h6>
                               <h6 class="card-subtitle">{{ event.location_short }}</h6>
-                            </router-link>
-                              <div class="mt-auto">
-                                <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
-                              </div>
+                          </router-link>
                           </div>
                         </div>
                     </div>
