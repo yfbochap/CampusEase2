@@ -24,11 +24,12 @@
         <div>
           <h2 id="eventTitle" class="d-inline-block mr-3">
             {{ eventTitle }}
-            <button class="heart-btn" @click="toggleLike" :aria-label="isLiked ? 'Unlike' : 'Like'">
+            <HeartIcon :isLiked="isLiked" :eventId="Number(eventID)" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+            <!-- <button class="heart-btn" @click="toggleLikeStatus" :aria-label="isLiked ? 'Unlike' : 'Like'">
               <svg class="heart-icon" :class="{ filled: isLiked }" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
               </svg>
-            </button>
+            </button> -->
           </h2>
           <hr>
           
@@ -96,8 +97,10 @@ export default {
       lightboxVisible: false,
       lightboxImage: "",
       time: "",
+      start_date_time: "",
+      end_date_time: "",
       user_id: "",
-      likedEvents: "",
+      likedEvents: [],
       eventID: "",
       //For Google Calendar
       campusEaseCalendarId: null,
@@ -107,6 +110,13 @@ export default {
       
     };
   },
+  mounted(){
+    this.getEvent()
+    console.log(this.id)
+  },
+  components: {
+    HeartIcon
+  },
   methods: {
     async getEvent(){
       const userStore = useUserStore()
@@ -114,12 +124,15 @@ export default {
       this.eventID = userStore.getEventID() || this.id;
       console.log(this.eventID)
       let event = await getEventByEventId(this.eventID)
+      console.log("Event Data: ", event)
       this.user_id = userStore.getAuthToken()
       this.eventTitle = event.event_name
       this.location = event.location
       this.venue = event.venue
       this.description = event.description
       this.thumbnail = this.getPhotoURL(event)
+      this.start_date_time = event.start_date_time
+      this.end_date_time = event.end_date_time
       this.time = this.getDates(event.start_date_time, event.end_date_time)
       this.signUpLink = event.external_url
       this.galleryPhotos = this.getGalleryPhotos(event)
@@ -128,7 +141,9 @@ export default {
     async fetchLikedEvents(){
       try {
         this.likedEvents = await checkUserLike(this.user_id);
-        this.isLiked = this.likedEvents.includes(this.eventID);
+        console.log("Liked Events: ", this.likedEvents);
+        this.isLiked = this.likedEvents.includes(Number(this.eventID));
+        console.log(this.isLiked);
       } catch(error) {
         console.error("Error fetching liked events:", error);
       }
@@ -254,48 +269,25 @@ export default {
       }
     },
     async insertOrUpdateEvents() {
-      const dummyEvents = [
-        {
-          summary: 'Tech Talk: AI in Business',
-          description: 'Exploring AI applications in business with guest speakers',
-          start: { dateTime: '2024-11-10T15:00:00', timeZone: 'Asia/Singapore' },
-          end: { dateTime: '2024-11-10T17:00:00', timeZone: 'Asia/Singapore' }
-        },
-        {
-          summary: 'Hackathon 2024',
-          description: '24-hour coding event with exciting prizes',
-          start: { dateTime: '2024-11-15T10:00:00', timeZone: 'Asia/Singapore' },
-          end: { dateTime: '2024-11-15T11:00:00', timeZone: 'Asia/Singapore' }
-        },
-        {
-          summary: 'Orientation Day',
-          description: 'Welcome event for new students',
-          start: { dateTime: '2024-11-12T09:00:00', timeZone: 'Asia/Singapore' },
-          end: { dateTime: '2024-11-12T12:00:00', timeZone: 'Asia/Singapore' }
-        },
-        {
-          summary: 'Career Talk',
-          description: 'Network with potential employees',
-          start: { dateTime: '2024-11-14T09:00:00', timeZone: 'Asia/Singapore' },
-          end: { dateTime: '2024-11-14T12:00:00', timeZone: 'Asia/Singapore' }
-        },
+      const currEvent = {
+        summary: this.eventTitle,
+        description:  this.description,
+        location: this.location,
+        start: { dateTime: this.start_date_time, timeZone: 'Asia/Singapore' },
+        end: { dateTime: this.end_date_time, timeZone: 'Asia/Singapore' }
+      }
 
-
-      ];
-
-      for (const event of dummyEvents) {
-        const existingEvent = await this.findEventByDescription(event.description);
-        if (existingEvent) {
-          await gapi.client.calendar.events.delete({
-            calendarId: this.campusEaseCalendarId,
-            eventId: existingEvent.id
-          });
-        }
-        await gapi.client.calendar.events.insert({
+    const existingEvent = await this.findEventByDescription(currEvent.description);
+      if (existingEvent) {
+        await gapi.client.calendar.events.delete({
           calendarId: this.campusEaseCalendarId,
-          resource: event
+          eventId: existingEvent.id
         });
       }
+      await gapi.client.calendar.events.insert({
+        calendarId: this.campusEaseCalendarId,
+        resource: currEvent
+      });
     },
     async findEventByDescription(description) {
       try {
@@ -325,13 +317,6 @@ export default {
       return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
   },
-  mounted(){
-    this.getEvent()
-    console.log(this.id)
-  },
-  components: {
-    HeartIcon
-  }
 }
 </script>
 
