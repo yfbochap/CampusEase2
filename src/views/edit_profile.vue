@@ -1,7 +1,7 @@
 <template>
   <div class="background-wrapper">
     <!-- Header Section -->
-    <div class="container-fluid text-white p-2 w-100 mb-5" style="background-color: black; margin: 0;">
+    <div class="container-fluid text-white p-3 w-100 mt-5 mb-5" style="background-color: black; margin: 0;">
       <div class="d-flex justify-content-between align-items-center">
         <RouterLink class="nav-link" to="/profile">
           <button class="btn btn-light btn-sm"><i class="fas fa-arrow-left"></i> Back</button>
@@ -17,7 +17,7 @@
           <!-- Profile Picture Section -->
           <div class="text-center">
             <div class="position-relative d-inline-block">
-              <img src=" " alt="Profile Picture" class="rounded-circle border border-white" style="width: 165px; height: 170px;">
+              <img src="@/assets/images/bg-2.jpg" alt="Profile Picture" class="rounded-circle border border-white" style="width: 165px; height: 170px;">
               <button class="btn btn-primary position-absolute bottom-0 end-0 rounded-circle p-1">
                 <i class="fas fa-edit text-white"></i>
               </button>
@@ -28,10 +28,6 @@
             <div class="mb-3">
               <label for="name" class="form-label">Username</label>
               <input type="text" class="form-control" id="name" v-model="name">
-            </div>
-            <div class="mb-3">
-              <label for="mobile" class="form-label">Mobile</label>
-              <input type="text" class="form-control" id="mobile" v-model="mobile">
             </div>
             <div class="mb-3">
               <label for="email" class="form-label">E-mail</label>
