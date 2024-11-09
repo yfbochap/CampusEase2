@@ -1,32 +1,31 @@
 <template>
-  <div class="dashboard-background">
   <br>
   <div id="eventMapTitle">
-    <p>Choose your view</p>
+    <h4>Choose your view</h4>
   </div>
 
-
+  <div class="container-fluid maincon">
   <div class="row d-flex justify-content-center">
-    <button class="col-3 btn " v-on:click="switchView('otherView')">All Events</button>
-    <div class="col-1"></div>
-      <button class="col-3 btn " v-on:click="switchView('mapView')">Map View</button>
+    <button class="col-3 btn viewbutton" v-on:click="switchView('otherView')">All Events</button>
+    <!-- <div class="col-1"></div> -->
+      <button class="col-3 btn viewbutton" v-on:click="switchView('mapView')">Map View</button>
   </div>
 
   <!-- All Events View -->
   <div v-if="view === 'other'" class="mt-2 mb-2">
-      <h1 class="category-title" style="color: black;">Upcoming Events</h1>
+      <h1 class="category-title">Upcoming Events</h1>
       <!-- add buttons for 3: week, month and next month -->
-      <div id="carouselAllEvents" class="carousel slide" data-bs-ride="carousel">
+      <!-- <div id="carouselAllEvents" class="carousel slide" data-bs-ride="carousel">
           <div class="carousel-inner">
               <div class="carousel-item" :class="{ active: index === 0 }" v-for="(event, index) in all_events" :key="event.id">
                   <div class="d-flex justify-content-center">
                       <img :src=getPhotoURL(event) alt="Card image cap" style="width:200px;height:282px"> {{event.event_name}}
                   </div>
               </div>
-          </div>
+          </div> -->
 
               <!-- Carousel controls -->
-          <button class="carousel-control-prev" type="button" data-bs-target="#carouselAllEvents" data-bs-slide="prev">
+          <!-- <button class="carousel-control-prev" type="button" data-bs-target="#carouselAllEvents" data-bs-slide="prev">
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Previous</span>
           </button>
@@ -34,9 +33,9 @@
           <button class="carousel-control-next" type="button" data-bs-target="#carouselAllEvents" data-bs-slide="next">
           <span class="carousel-control-next-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Next</span>
-          </button>
+          </button> -->
       </div>
-  </div>
+  <!-- </div> -->
 
   <div v-else>
     <div id="mapDimensions">
@@ -56,14 +55,17 @@
                   :key="index">
 
                   <div class="row d-flex justify-content-center">
-                    <div class="col-sm-8 col-md-5 col-lg-3" v-for="event in eventGroup" :key="event.id">
+                    <div class="col-sm-8 col-md-5 col-lg-3 align-items-stretch" v-for="event in eventGroup" :key="event.id">
                       <div class="card mb-4">
-                        <div class="card-body">
-                          <img :src=getPhotoURL(event) alt="Event Image" style="width:10px;height: 20px;">
+                        <div class="card-body d-flex flex-column">
+                          <img class="event-image" :src=getPhotoURL(event) alt="Event Image">
                             <h4 class="card-title">{{ event.event_name }}</h4>
                             <hr>
                             <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
-                            <h6 class="card-subtitle text-muted">{{ event.location_short}}</h6>
+                            <h6 class="card-subtitle">{{ event.location_short}}</h6>
+                            <div class="mt-auto">
+                              <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+                            </div>
                         </div>
                       </div>
                     </div>
@@ -89,40 +91,44 @@
   <div>
       <div>
           <div class="d-flex justify-content-center">
-              <input id="searchbar" class="input-size input-lg " v-model="searchTerm" @input="searchForEvents" type="text" placeholder="Search events..." aria-label="Search">
+              <input id="searchbar" class="i" v-model="searchTerm" @input="searchForEvents" type="text" placeholder="Search events..." aria-label="Search">
           </div>
           <br>
           <div class="d-flex justify-content-center">
             <div>
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'All' }" @click="selectCategory('All')">All</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Academic' }" @click="selectCategory('Academic')">Academic</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Sports' }" @click="selectCategory('Sports')">Sports</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Arts' }" @click="selectCategory('Arts')">Arts</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Networking' }" @click="selectCategory('Networking')">Networking</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Charity' }" @click="selectCategory('Charity')">Charity</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Community' }" @click="selectCategory('Community')">Community</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill" :class="{ active: selectedCategory === 'Welfare' }" @click="selectCategory('Welfare')">Welfare</button>
+              <button type="button" class="btn btn-secondary btn-pill all " :class="{ active: selectedCategory === 'All' }" @click="selectCategory('All')">All</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill academic" :class="{ active: selectedCategory === 'Academic' }" @click="selectCategory('Academic')">Academic</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill sports" :class="{ active: selectedCategory === 'Sports' }" @click="selectCategory('Sports')">Sports</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill arts" :class="{ active: selectedCategory === 'Arts' }" @click="selectCategory('Arts')">Arts</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill networking" :class="{ active: selectedCategory === 'Networking' }" @click="selectCategory('Networking')">Networking</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill charity" :class="{ active: selectedCategory === 'Charity' }" @click="selectCategory('Charity')">Charity</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill community" :class="{ active: selectedCategory === 'Community' }" @click="selectCategory('Community')">Community</button>&nbsp;&nbsp;
+              <button type="button" class="btn btn-secondary btn-pill welfare" :class="{ active: selectedCategory === 'Welfare' }" @click="selectCategory('Welfare')">Welfare</button>
             </div>
           </div>
           <br>
           <div>
               <div>
-                  <h1 class="category-title" style="color: black;">
+                  <h1 class="category-title">
                       {{ selectedCategory }} Events Around Campus
                   </h1>
                   <div v-if="searchedEvents.length != 0" class="row d-flex p-5 justify-content-center">
-                        <div class="col-sm-8 col-md-5 col-lg-4" v-for="event in searchedEvents" :key="event.id">
-                            <div class="card mb-4">
-                                <div class="card-body">
-                                  <img :src=getPhotoURL(event) alt="Event Image" style="width:200px;height:282px"/>
-                                    <h4 class="card-title" @click="goToEventPage(event.id, event.event_name)" style="cursor: pointer;">{{ event.event_name }}</h4>
-                                    <hr>
+                    <transition-group name="fade" tag="div" class="row">
+                        <div class="col-sm-8 col-md-5 col-lg-4 align-items-stretch fade-item" v-for="(event,index) in searchedEvents" :key="event.id" :style="{ animationDelay: (index * 0.5) + 's' }">
+                            <div class="card mb-4 fade-item">
+                                <div class="card-body d-flex flex-column">
+                                  <img class="event-image" :src=getPhotoURL(event) alt="Event Image"/>
+                                    <h4 class="card-title" @click="goToEventPage(event.id)" style="cursor: pointer;">{{ event.event_name }}</h4>
+                                    
                                     <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
-                                    <h6 class="card-subtitle text-muted">{{ event.location_short}}</h6>
+                                    <h6 class="card-subtitle ">{{ event.location_short}}</h6>
+                                    <div class="mt-auto">
                                      <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                      </transition-group>
                   </div>
                   <div class="p-5" v-else>
                     <h1 style="text-align: center;height: 200px;">There are currently no events matching your search</h1> <!-- to tell that there are no events happening according to search -->
@@ -188,11 +194,11 @@
 
 
   methods: {
-       goToEventPage(eventId, name) {
+      async goToEventPage(eventId) {
         // Trigger the setEventID function and navigate to the event details page
         const userStore = useUserStore();
-        userStore.setEventID(eventId);
-        this.$router.push(`/event/${eventId}/${name}`);
+        await userStore.setEventID(eventId);
+        this.$router.push(`/event/${eventId}`);
       },
       // Like Functionality
       async fetchLikedEvents(){
@@ -313,7 +319,7 @@
       },
           
       getPhotoURL(event){
-          console.log(event.thumbnail)
+          // console.log(event)
           const { data, error } = supabase.storage.from('eventPhotos').getPublicUrl(event.thumbnail);
           if (error) {
               console.error('Error fetching public URL for', event.photos, error);
@@ -461,25 +467,81 @@
 
 
 <style scoped>
-
-.dashboard-background {
-  background-color: white;
+.card {
+  background-color: transparent;
+  color: whitesmoke;
+  border: none;
+  
+}
+.card-title {
+  text-align: center;
+  margin-bottom: 20px; 
+}
+.card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.card-body h6 {
+  margin-bottom: 15px; /* Adjust as needed */
+}
+.card-body .heart-icon {
+  margin-top: auto;
+}
+.event-image {
+  width: 200px;
+  height: 278px;
+  display: block; /* Ensures the image doesn't have extra spaces */
+  margin: 0 auto; /* Centers the image horizontally */
+  margin-bottom: 20px; /* Adds space below the image */
+  
 }
 
-.carousel-control-prev,
+.viewbutton{
+  color: white;
+  border: solid 1px rgb(120, 117, 117);
+  margin: 30px;
+  width: 200px;
+  transition: background-color 0.3s ease;
+}
+.viewbutton:hover{
+  background-color: #68686a;
+  border-color: #68686a;
+}
+
+/* Styling for the input */
+.i {
+  width: 100%;
+  max-width: 600px; /* Adjust width as needed */
+  height: 40px; /* Adjust height as needed */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px; /* Make corners rounded */
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none; /* Remove default browser styles */
+  -moz-appearance: none;
+  outline: none; /* Remove default outline */
+}
+
+.maincon{
+  background-color: rgb(24, 24, 24); 
+  color: white;
+}
+/* .carousel-control-prev,
 .carousel-control-next {
   width: 80px;
-}
+} */
 
 #eventMapTitle {
   margin-top: 60px;
   text-align: center;
-  color: rgb(14, 14, 14);
+  color: white;
 }
 
 #map {
-  height: 350px;
-  width:80%
+  height: 550px;
+  width: 90%
 }
 
 #mapDimensions{
@@ -502,6 +564,11 @@
 
 .btn-pill{
   border-radius: 50px;
+  border: none;
+  
+}
+.btn-pill:hover{
+  transform:scale(1.1);
 }
 
 .category-title{
@@ -511,4 +578,72 @@
 .input-size{
   width: 80%;
 }
+
+/* CATEGORY BUTTON STYLING */
+.all {
+  background-color: #7B8794;
+  border: none;
+}
+
+.academic {
+  background-color: #4A90E2;
+  border:none;
+}
+
+.sports {
+  background-color: #50C878;
+}
+
+.arts {
+  background-color: #9B59B6;
+}
+
+.networking {
+  background-color: #F5A623;
+}
+
+.charity {
+  background-color: #E74C3C;
+}
+
+.community {
+  background-color: #F1C40F;
+}
+
+.welfare {
+  background-color: #1ABC9C;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.fade-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-item {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
 </style>
