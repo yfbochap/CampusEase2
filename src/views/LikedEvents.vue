@@ -8,11 +8,21 @@
         <div v-if="events.length">
           <ul class="list-unstyled">
             <li v-for="event in events" :key="event.id" class="event-card mb-3 p-3 text-dark">
-              <strong class="card-title">{{ event.event_name }}</strong><br>
-              {{ event.location_short}} 
-              <p style="font-size: 12px;"> {{getDates(event.start_date_time,event.end_date_time)}}<br>
-                {{getTime(event.start_date_time,event.end_date_time)}}</p>
-
+              <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong class="card-title">{{ event.event_name }}</strong>
+                  <button class="heart-btn" @click="toggleLike(event.id)" :aria-label="isLiked(event.id) ? 'Unlike' : 'Like'">
+                    <svg class="heart-icon" :class="{ filled: isLiked(event.id) }" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                  </button>
+                </div>
+                <p>{{ event.location_short }}</p>
+                <p style="font-size: 12px;">
+                  {{ getDates(event.start_date_time, event.end_date_time) }}<br>
+                  {{ getTime(event.start_date_time, event.end_date_time) }}
+                </p>
+              </router-link>
             </li>
           </ul>
         </div>
@@ -26,30 +36,46 @@
 
 <script>
 import { useUserStore } from '@/stores/counter';
-import { checkUserLike,getEventByEventId } from '../../utils/supabaseRequests';
-
+import { checkUserLike, getEventByEventId, addUserLike, removeUserLike } from '../../utils/supabaseRequests';
 
 export default {
   data() {
     return {
       events: [],
-      userid: '' 
+      userId: '',
+      likedEventIds: [],
     };
   },
   methods: {
-    getUserID(){
-      const userStore = useUserStore()
-      this.userid = userStore.getAuthToken();
+    getUserID() {
+      const userStore = useUserStore();
+      this.userId = userStore.getAuthToken();
     },
-    async getUserLiked(){
-      let eventIDs = await checkUserLike(this.userid)
-      let allLikedEvents = []
-      for (let eventID of eventIDs) {
-        let event = await getEventByEventId(eventID);  // Use await here
-        console.log(event)
-        allLikedEvents.push(event)
+    async getUserLiked() {
+      this.likedEventIds = await checkUserLike(this.userId);
+      const allLikedEvents = [];
+      for (let eventId of this.likedEventIds) {
+        let event = await getEventByEventId(eventId);
+        allLikedEvents.push(event);
       }
-      this.events = allLikedEvents
+      this.events = allLikedEvents;
+    },
+    isLiked(eventId) {
+      return this.likedEventIds.includes(eventId);
+    },
+    async toggleLike(eventId) {
+      const liked = this.isLiked(eventId);
+      try {
+        if (liked) {
+          await removeUserLike(eventId, this.userId);
+          this.likedEventIds = this.likedEventIds.filter(id => id !== eventId);
+        } else {
+          await addUserLike(eventId, this.userId);
+          this.likedEventIds.push(eventId);
+        }
+      } catch (error) {
+        console.error("Error toggling like:", error);
+      }
     },
     getDates(start, end) {
       const formatDate = (isoString) => {
@@ -58,15 +84,9 @@ export default {
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         return `${date.getDate()} ${months[date.getMonth()]} ${String(date.getFullYear()).substring(2)} (${days[date.getDay()]})`;
       };
-
-      const displayed_start_date = formatDate(start);
-      const displayed_end_date = formatDate(end);
-
-      if (displayed_start_date === displayed_end_date) {
-        return `${displayed_start_date}`;
-      }
-
-      return `${displayed_start_date} - ${displayed_end_date}`;
+      const displayedStartDate = formatDate(start);
+      const displayedEndDate = formatDate(end);
+      return displayedStartDate === displayedEndDate ? displayedStartDate : `${displayedStartDate} - ${displayedEndDate}`;
     },
     getTime(start, end) {
       const formatTime = (isoString) => {
@@ -75,38 +95,49 @@ export default {
         const hour12 = hour % 12 || 12;
         return `${hour12}:${minute.toString().padStart(2, '0')}${period}`;
       };
-
-      const start_time_formatted = formatTime(start);
-      const end_time_formatted = formatTime(end);
-
-      return `${start_time_formatted} - ${end_time_formatted}`;
+      const startTimeFormatted = formatTime(start);
+      const endTimeFormatted = formatTime(end);
+      return `${startTimeFormatted} - ${endTimeFormatted}`;
     },
   },
-  async mounted(){
-    this.getUserID()
-    await this.getUserLiked()
-    console.log(this.events)
-  }
-  
+  async mounted() {
+    this.getUserID();
+    await this.getUserLiked();
+  },
 };
 </script>
 
 <style scoped>
+.event-link {
+  color: inherit; 
+  text-decoration: none; 
+  display: block; 
+}
+.event-card {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: #ffffff;
+}
+
+.event-link:hover{
+  background-color:transparent;
+}
+
 .background-wrapper {
-  background-image: url('@/assets/images/bg-7.png'); 
+  background-image: url('@/assets/images/bg-7.png');
   background-size: cover;
   background-position: center;
-  height: 110vh; /* needs to be edited */
+  height: 110vh;
   width: 100vw;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 .calendar-card {
-  max-height: 80vh; 
+  max-height: 80vh;
   width: 40vw;
   border-radius: 10px;
   background-color: #f8f9fa;
-  overflow: hidden; 
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -115,13 +146,13 @@ export default {
   position: sticky;
   top: 0;
   background-color: #f8f9fa;
-  z-index: 10; 
+  z-index: 10;
   padding-bottom: 8px;
 }
 
 .calendar-content {
   flex: 1;
-  overflow-y: auto; 
+  overflow-y: auto;
 }
 
 .event-card {
@@ -134,5 +165,24 @@ export default {
   font-weight: bold;
   color: black;
 }
+
+.heart-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.heart-icon {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: #666;
+  stroke-width: 2;
+  transition: all 0.2s;
+}
+
+.heart-icon.filled {
+  fill: #ff3040;
+  stroke: #ff3040;
+}
 </style>
-  
