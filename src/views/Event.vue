@@ -2,210 +2,165 @@
   <div class="main container-fluid">
     <div class="row align-items-center">
       <!-- Photos Section -->
-      <div class="col-md-6 photos">
-        <img :src="thumbnail" alt="About Lviv Conference" id="thumbnail" class="img-fluid" />
+      <div class="col-md-6 photos d-flex justify-content-center">
+        <div>
+          <img :src=thumbnail :alt=eventTitle  id="thumbnail" class="img-fluid" />
 
-        <div class="gallery d-flex flex-wrap mt-3">
-          <img
-            v-for="(photo, index) in galleryPhotos"
-            :key="index"
-            :src="photo.src"
-            :alt="photo.alt"
-            class="small-photo"
-            @click="openLightbox(photo.src)"
-          />
+          <div class="gallery d-flex flex-wrap mt-3">
+            <img
+              v-for="(photo, index) in galleryPhotos"
+              :key="index"
+              :src="photo.src"
+              :alt="photo.alt"
+              class="small-photo"
+              @click="openLightbox(photo.src)"
+            />
+          </div>
         </div>
       </div>
 
-      
-        </div>
-
-        <div class="container details">
-          <h2 id="titlename" 
-                style="display: inline-block; margin-right: 30px;"> 
-              Walking on Sunshine Event
-            </h2>
-            <!-- HeartIcon Component* -->
-            <!-- <button class="heart-btn" 
-                    :aria-label="isLiked ? 'Unlike' : 'Like'" 
-                    @click="toggleLike">
-              <svg 
-                class="heart-icon" 
-                :class="{ 'filled': isLiked }"
-                viewBox="0 0 24 24" 
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+      <!-- Event Details Section -->
+      <div class="col-md-6 details">
+        <div>
+          <h2 id="eventTitle" class="d-inline-block mr-3">
+            {{ eventTitle }}
+            <HeartIcon :isLiked="isLiked" :eventId="Number(eventID)" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+            <!-- <button class="heart-btn" @click="toggleLikeStatus" :aria-label="isLiked ? 'Unlike' : 'Like'">
+              <svg class="heart-icon" :class="{ filled: isLiked }" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
               </svg>
             </button> -->
-            <div v-if="event">
-              <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+          </h2>
+          <hr>
+          
+          <br>
+          <p style="white-space: pre-line">{{ description }}</p>
+
+          <div class="row">
+            <div class="col-6">
+              <h3>Location</h3>
+            <p>{{ location }}</p>
             </div>
-          <div id="details">
-            <h2>Location</h2>
-            <p>SMU Connex</p>  <!-- HARDCODED *TO REPLACE* -->
-
-            <h2>Venue</h2>
-            <p>Meeting Pod1</p>  <!-- HARDCODED *TO REPLACE* -->
-
-            <h2>Description</h2>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis
-              provident hic cupiditate, atque aliquid sint enim minima esse, dolores,
-              soluta quaerat mollitia explicabo sequi reprehenderit facilis laborum
-              beatae impedit odit? 
-            </p>  <!-- HARDCODED *TO REPLACE* -->
-
-            <h2>Time</h2>
-            <p>25 November 10AM to 26 November 12PM</p>  <!-- HARDCODED *TO REPLACE* -->
-
-            <h2>Sign-up Link</h2>
-            <p>www.apple.com</p>  <!-- HARDCODED *TO REPLACE* -->
+            <div class="col-6">
+              <h3>Venue</h3>
+              <p>{{ venue }}</p>
+            </div>
 
           </div>
-          <button id="calendaradd" class="btn text-white">Add to Calendar</button>
-        </div>
 
-        
-    </div>
+
+          <h3>Time</h3>
+          <p>{{ time }}</p>
+
+        <h5>
+          <u style="color: green;"><a v-if='signUpLink != ""' :href="signUpLink" target="_blank">Sign Up here!</a></u> 
+          <u style="color: green;"><a src="" @click="handleEventsCalendar">Add to Calendar</a></u>
+        </h5>
+  
+      </div>
     </div>
 
-    <!-- Lightbox -->
-    <div v-if="lightboxVisible" id="lightbox" class="lightbox align-items-center justify-content-center" @click.self="closeLightbox">
-      <span class="close" @click="closeLightbox">&times;</span>
-      <img class="lightbox-content" :src="lightboxImage" />
+      <!-- Lightbox -->
+      <div v-if="lightboxVisible" id="lightbox" class="lightbox align-items-center justify-content-center" @click.self="closeLightbox">
+        <span class="close" @click="closeLightbox">&times;</span>
+        <img class="lightbox-content" :src="lightboxImage" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-// Import all images
-import photo1 from '../assets/images/photo_2024-10-16 13.47.32.jpeg'; // <!-- HARDCODED *TO REPLACE* -->
-import photo2 from '../assets/images/earth.jpeg';
-import photo3 from '../assets/images/bg-1.jpeg';
-import "../assets/base.css";
+import '../assets/base.css'
+import { useUserStore } from '@/stores/counter';
+import { getEventByEventId, checkUserLike, addUserLike, removeUserLike } from '../../utils/supabaseRequests';
+import { supabase } from '../../utils/supabaseClient';
 import HeartIcon from '@/components/HeartIcon.vue';
-import { useUserStore } from '@/stores/counter.ts';
-import { getEventByEventId, checkUserLike, addUserLike, removeUserLike} from '../../utils/supabaseRequests.js';
-
+import { gapi } from 'gapi-script';
 
 export default {
+  props: {
+    id: {
+      type: String,
+      required: true
+    }
+  },
   data() {
     return {
-      eventTitle: "Walking on Sunshine Machine",
+      eventTitle: "",
       isLiked: false,
-      location: "SMU Connex",
-      venue: "Meeting Pod1",
-      description:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis provident hic cupiditate, atque aliquid sint enim minima esse, dolores, soluta quaerat mollitia explicabo sequi reprehenderit facilis laborum beatae impedit odit?",
-      time: "25 November 10AM to 26 November 12PM",
-      signUpLink: "https://www.apple.com",
-      thumbnail: thumbnail1,
-      galleryPhotos: [
-        { src: photo1, alt: "Photo 1" },
-        { src: photo2, alt: "Photo 2" },
-        { src: photo3, alt: "Photo 3" },
-      ],
+      location: "",
+      venue: "",
+      description: "",
+      signUpLink: "",
+      thumbnail: '',
+      galleryPhotos: [],
       lightboxVisible: false,
       lightboxImage: "",
-      photos: [
-        {
-          src: photo1,
-          alt: 'Photo 1'
-        },
-        {
-          src: photo2,
-          alt: 'Photo 2'
-        },
-        {
-          src: photo3,
-          alt: 'Photo 3'
-        },
-      ],
-      selectedCategory: "All",
+      time: "",
+      start_date_time: "",
+      end_date_time: "",
+      user_id: "",
       likedEvents: [],
-      user_id: '',
-      event_id: '', 
-      event: null
-    }
+      eventID: "",
+      //For Google Calendar
+      campusEaseCalendarId: null,
+      userEmail: null,
+      user: null,
+      profileData: null
+      
+    };
+  },
+  mounted(){
+    this.getEvent()
+    console.log(this.id)
   },
   components: {
     HeartIcon
   },
-  async created() {
-      this.getUserID();
-      this.getEventID();
-      console.log("Event ID:", this.event_id)
-      this.fetchEventData();
-      this.fetchLikedEvents();
-  },
-  async mounted() {
-    // Log all photo sources when component mounts
-    console.log('All photos array:', this.photos);
-    this.photos.forEach((photo, index) => {
-      console.log(`Photo ${index + 1} source:`, photo.src);
-    });
-  },
-  computed: {
-
-  },
   methods: {
-    // Fetch event data by event ID
-    async fetchEventData() {
-      try {
-        if (!this.event_id) {
-          console.error("Event ID is missing.");
-          return;
-        }
-        const eventData = await getEventByEventId(this.event_id);
-        this.event = eventData; // Set the fetched event data
-        console.log("Fetched Event Data: ", eventData);
-      } catch (error) {
-        console.error("Error fetching event data:", error);
-      }
+    async getEvent(){
+      const userStore = useUserStore()
+      console.log(userStore.getEventID(), this.id)
+      this.eventID = userStore.getEventID() || this.id;
+      console.log(this.eventID)
+      let event = await getEventByEventId(this.eventID)
+      console.log("Event Data: ", event)
+      this.user_id = userStore.getAuthToken()
+      this.eventTitle = event.event_name
+      this.location = event.location
+      this.venue = event.venue
+      this.description = event.description
+      this.thumbnail = this.getPhotoURL(event)
+      this.start_date_time = event.start_date_time
+      this.end_date_time = event.end_date_time
+      this.time = this.getDates(event.start_date_time, event.end_date_time)
+      this.signUpLink = event.external_url
+      this.galleryPhotos = this.getGalleryPhotos(event)
+      await this.fetchLikedEvents(); 
     },
-    // Like Functionality
     async fetchLikedEvents(){
-      try{
-        console.log("Checking Profile ID: ", this.user_id)
+      try {
         this.likedEvents = await checkUserLike(this.user_id);
         console.log("Liked Events: ", this.likedEvents);
-      } catch(error){
+        this.isLiked = this.likedEvents.includes(Number(this.eventID));
+        console.log(this.isLiked);
+      } catch(error) {
         console.error("Error fetching liked events:", error);
       }
     },
-    isLiked(event){
-      return this.likedEvents.includes(event.id);
-    },
-    async toggleLikeStatus(event){
-      console.log('Toggling Like for event:', event);
-      // const eventId = event.id;
-      const isLiked = this.likedEvents.includes(event);
-
-      try{
-        console.log("Event ID: ", event);
-        console.log("Profile ID: ", this.user_id);
-        if(isLiked){
-          await removeUserLike(event, this.user_id);
-          this.likedEvents = this.likedEvents.filter(id => id !== event);
+    async toggleLikeStatus(){
+      const isLiked = this.isLiked;
+      try {
+        if (isLiked) {
+          await removeUserLike(this.eventID, this.user_id);
+        } else {
+          await addUserLike(this.eventID, this.user_id);
         }
-        else{
-          await addUserLike(event, this.user_id);
-          this.likedEvents = [...this.likedEvents, event];
-        }
-      } catch (error){
+        this.isLiked = !isLiked; 
+      } catch (error) {
         console.error("Error toggling like:", error);
       }
     },
-    getUserID(){
-        const userStore = useUserStore();
-        this.user_id = userStore.getAuthToken()
-    },
-    getEventID(){
-        const userStore = useUserStore();
-        this.event_id = userStore.getEventID()
-    },
-    // Lightbox Functionality
     openLightbox(src) {
       this.lightboxImage = src;
       this.lightboxVisible = true;
@@ -214,9 +169,157 @@ export default {
       this.lightboxVisible = false;
       this.lightboxImage = "";
     },
+    getDates(start, end) {
+      const formatTime = (isoString) => {
+        const [hour, minute] = isoString.substring(11, 16).split(':').map(Number);
+        const period = hour >= 12 ? 'pm' : 'am';
+        const hour12 = hour % 12 || 12;
+        return `${hour12}:${minute.toString().padStart(2, '0')}${period}`;
+      };
+
+      const formatDate = (isoString) => {
+        const date = new Date(isoString.substring(0, 10));
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        return `${date.getDate()} ${months[date.getMonth()]} ${String(date.getFullYear()).substring(2)} (${days[date.getDay()]})`;
+      };
+
+      const start_time_formatted = formatTime(start);
+      const end_time_formatted = formatTime(end);
+      const time = `${start_time_formatted} - ${end_time_formatted}`;
+
+      const displayed_start_date = formatDate(start);
+      const displayed_end_date = formatDate(end);
+
+      if (displayed_start_date === displayed_end_date) {
+        return `${displayed_start_date} ${time}`;
+      }
+      
+      return `${displayed_start_date} - ${displayed_end_date} ${time}`;
+    },
+    getPhotoURL(event) {
+      const { data, error } = supabase.storage.from('eventPhotos').getPublicUrl(event.thumbnail);
+      if (error) {
+        console.error('Error fetching public URL for', event.photos, error);
+      } else {
+        return data.publicUrl;
+      }
+    },
+    getGalleryPhotos(event){
+      let gallery = []
+      event.photos.forEach(photo => {
+        if (photo != null){
+          const {data} = supabase.storage.from('eventPhotos').getPublicUrl(photo);
+          gallery.push({src: data.publicUrl, alt: photo})
+        }
+      });
+      return gallery
+    },
+    // Functions for "Add to Calendar"
+    initClient() {
+      return gapi.client.init({
+        apiKey: "AIzaSyAdMutgjV2OcfJgxr8ywiyj3Z1smkAiMRM",
+        clientId: "689557435886-91ofkj6r70cg7k3dsphhe54cn3s51ftj.apps.googleusercontent.com",
+        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
+        scope: "https://www.googleapis.com/auth/calendar"
+      });
+    },
+    async handleEventsCalendar() {
+      gapi.load('client:auth2', async () => {
+        await this.initClient();
+        const authInstance = gapi.auth2.getAuthInstance();
+        await authInstance.signIn();
+
+        this.userEmail = authInstance.currentUser.get().getBasicProfile().getEmail();
+
+        const calendarExists = await this.checkCampusEaseCalendar();
+        if (!calendarExists) {
+          await this.createCampusEaseCalendar();
+        }
+
+        await this.insertOrUpdateEvents();
+        window.open(`https://calendar.google.com/calendar/u/0/r?cid=${this.userEmail}`, "_blank");
+      });
+    },
+    async checkCampusEaseCalendar() {
+      try {
+        const response = await gapi.client.calendar.calendarList.list();
+        const calendars = response.result.items;
+        const campusEaseCalendar = calendars.find(calendar => calendar.summary === 'CampusEase Events');
+        if (campusEaseCalendar) {
+          this.campusEaseCalendarId = campusEaseCalendar.id;
+          return true;
+        }
+      } catch (error) {
+        console.error("Error checking CampusEase Calendar:", error);
+      }
+      return false;
+    },
+    async createCampusEaseCalendar() {
+      try {
+        const response = await gapi.client.calendar.calendars.insert({
+          resource: {
+            summary: 'CampusEase Events',
+            timeZone: 'Asia/Singapore'
+          }
+        });
+        this.campusEaseCalendarId = response.result.id;
+      } catch (error) {
+        console.error("Error creating CampusEase Calendar:", error);
+      }
+    },
+    async insertOrUpdateEvents() {
+      const currEvent = {
+        summary: this.eventTitle,
+        description:  this.description,
+        location: this.location,
+        start: { dateTime: this.start_date_time, timeZone: 'Asia/Singapore' },
+        end: { dateTime: this.end_date_time, timeZone: 'Asia/Singapore' }
+      }
+
+    const existingEvent = await this.findEventByDescription(currEvent.description);
+      if (existingEvent) {
+        await gapi.client.calendar.events.delete({
+          calendarId: this.campusEaseCalendarId,
+          eventId: existingEvent.id
+        });
+      }
+      await gapi.client.calendar.events.insert({
+        calendarId: this.campusEaseCalendarId,
+        resource: currEvent
+      });
+    },
+    async findEventByDescription(description) {
+      try {
+        const response = await gapi.client.calendar.events.list({
+          calendarId: this.campusEaseCalendarId,
+          q: description,
+          timeMin: new Date().toISOString(),
+          singleEvents: true
+        });
+        return response.result.items[0];
+      } catch (error) {
+        console.error("Error finding event by description:", error);
+      }
+      return null;
+    },
+    formatDate(dateTime) {
+      const date = new Date(dateTime);
+      return date.toLocaleDateString();
+    },
+    formatDay(dateTime) {
+      const date = new Date(dateTime);
+      return date.toLocaleDateString('en-US', { weekday: 'long' });
+    },
+    formatTime(dateTime) {
+      if (!dateTime) return 'N/A';
+      const time = new Date(dateTime);
+      return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
   },
-};
+}
 </script>
+
 
 <style scoped>
 body {
@@ -224,7 +327,7 @@ body {
   font-family: 'Nunito Sans';
 }
 h2{
-  margin-bottom: 30px;
+  /* margin-bottom: 30px; */
   color: white;
 }
 .photos > img#thumbnail {
@@ -250,9 +353,9 @@ h2{
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  /* padding: 8px; */
   position: relative;
-  bottom: 10px;
+  bottom: 2px;
 }
 .heart-icon {
   width: 30px;
@@ -261,7 +364,7 @@ h2{
   stroke: #666;
   stroke-width: 2;
   transition: all 0.2s;
-  margin-left: 10px;
+  /* margin-left: 10px; */
 }
 .heart-icon.filled {
   fill: #ff3040;

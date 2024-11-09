@@ -1,10 +1,9 @@
 <template>
   <br>
-  <!-- <div id="eventMapTitle">
-    <p>Choose your view</p>
-  </div> -->
-
   <div class="container-fluid maincon">
+    <div id="eventMapTitle">
+    <h5>Choose your view</h5>
+  </div>
   <div class="row d-flex justify-content-center">
     <button class="col-3 btn viewbutton" v-on:click="switchView('otherView')">All Events</button>
     <!-- <div class="col-1"></div> -->
@@ -56,18 +55,21 @@
 
                   <div class="row d-flex justify-content-center">
                     <div class="col-sm-8 col-md-5 col-lg-3 align-items-stretch" v-for="event in eventGroup" :key="event.id">
-                      <div class="card mb-4">
-                        <div class="card-body d-flex flex-column">
-                          <img class="event-image" :src=getPhotoURL(event) alt="Event Image">
-                            <h4 class="card-title">{{ event.event_name }}</h4>
-                            <hr>
-                            <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
-                            <h6 class="card-subtitle">{{ event.location_short}}</h6>
-                            <div class="mt-auto">
-                              <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
-                            </div>
+                      
+                        <div class="card mb-4">
+                          <div class="card-body d-flex flex-column">
+                            <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
+                            <img class="event-image" :src=getPhotoURL(event) alt="Event Image">
+                              <h4 class="card-title">{{ event.event_name }}</h4>
+                              <hr>
+                              <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
+                              <h6 class="card-subtitle">{{ event.location_short}}</h6>
+                            </router-link>
+                              <div class="mt-auto">
+                                <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+                              </div>
+                          </div>
                         </div>
-                      </div>
                     </div>
                   </div>
               </div>
@@ -115,16 +117,19 @@
                   <div v-if="searchedEvents.length != 0" class="row d-flex p-5 justify-content-center">
                     <transition-group name="fade" tag="div" class="row">
                         <div class="col-sm-8 col-md-5 col-lg-4 align-items-stretch fade-item" v-for="(event,index) in searchedEvents" :key="event.id" :style="{ animationDelay: (index * 0.5) + 's' }">
+                      
                             <div class="card mb-4 fade-item">
                                 <div class="card-body d-flex flex-column">
-                                  <img class="event-image" :src=getPhotoURL(event) alt="Event Image"/>
-                                    <h4 class="card-title" @click="goToEventPage(event.id)" style="cursor: pointer;">{{ event.event_name }}</h4>
-                                    
+                                  <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
+                                    <img class="event-image" :src=getPhotoURL(event) alt="Event Image"/>
+                                    <h4 class="card-title" style="cursor: pointer;">{{ event.event_name }}</h4>
+                                      
                                     <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
                                     <h6 class="card-subtitle ">{{ event.location_short}}</h6>
-                                    <div class="mt-auto">
-                                     <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
-                                    </div>
+                                  </router-link>
+                                  <div class="mt-auto">
+                                    <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+                                  </div>
                                 </div>
                             </div>
                         </div>
@@ -139,9 +144,6 @@
   </div>
 </div>
 </template>
-
-
-
 
 <script>
   import { getEvents } from '../../utils/supabaseRequests.js';
@@ -194,12 +196,6 @@
 
 
   methods: {
-      async goToEventPage(eventId) {
-        // Trigger the setEventID function and navigate to the event details page
-        const userStore = useUserStore();
-        await userStore.setEventID(eventId);
-        this.$router.push(`/event/${eventId}`);
-      },
       // Like Functionality
       async fetchLikedEvents(){
         try{
@@ -464,9 +460,21 @@
 };
 </script>
 
-
-
 <style scoped>
+.event-link {
+  color: inherit; 
+  text-decoration: none; 
+  display: block; 
+}
+.event-card {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: #ffffff;
+}
+
+.event-link:hover{
+  background-color:transparent;
+}
 .card {
   background-color: transparent;
   color: whitesmoke;
@@ -491,16 +499,16 @@
 .event-image {
   width: 200px;
   height: 278px;
-  display: block; /* Ensures the image doesn't have extra spaces */
-  margin: 0 auto; /* Centers the image horizontally */
-  margin-bottom: 20px; /* Adds space below the image */
+  display: block; 
+  margin: 0 auto; 
+  margin-bottom: 20px; 
   
 }
 
 .viewbutton{
   color: white;
   border: solid 1px rgb(120, 117, 117);
-  margin: 30px;
+  margin: 10px 30px 30px 30px;
   width: 200px;
   transition: background-color 0.3s ease;
 }
@@ -525,8 +533,14 @@
 }
 
 .maincon{
-  padding-top: 50px;
-  background-color: rgb(24, 24, 24); 
+  background-image: url('@/assets/images/bg-4.jpg'); /* Ensure this path matches your project structure */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
   color: white;
 }
 /* .carousel-control-prev,
@@ -535,9 +549,9 @@
 } */
 
 #eventMapTitle {
-  margin-top: 60px;
+  margin-top: 50px;
   text-align: center;
-  color: rgb(14, 14, 14);
+  color: white;
 }
 
 #map {

@@ -1,7 +1,14 @@
 <template>
+  <div class="background-wrapper">
   <div class="container-fluid">
+    <div v-if="alertVisible" class="fixed-alert alert alert-success alert-dismissible fade show d-flex justify-content-between align-items-center" role="alert">
+      <h4 class="m-0">Event Created Succesfully!</h4>
+      <button type="button" class="close close-icon" @click="closeAlert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
 
-    
+
     <form class="mt-4 d-flex">
       <div class="left-column">
         <label for="thumbnailPhoto" class="form-label">Thumbnail Photo (Mandatory)</label>
@@ -67,7 +74,7 @@
         &nbsp;&nbsp;
         <div v-if="selectedLocation === 'Other'" class="mb-3">
           <label for="otherLocation" class="form-label">Google Maps Address</label>
-          <input type="text" id="otherLocation" v-model="otherLocation" class="form-control" placeholder="Specify location" required>
+          <input type="text" v-model="otherLocation" id="otherLocation" class="form-control" placeholder="Specify location" required>
         </div>
 
         <div class="flex-half ms-2">
@@ -105,10 +112,11 @@
       </div>
     </form>
   </div>
+</div>
 </template>
 
 <script setup>
-  import { ref, reactive, watch, onMounted } from 'vue';
+  import { ref, reactive, watch, nextTick, onMounted } from 'vue';
   import { supabase } from '../../utils/supabaseClient';
   import { addEvent, uploadFiles, checkEventExists } from '../../utils/supabaseRequests';
 
@@ -188,6 +196,14 @@
   const thumbnailPhoto = ref(null);
   const otherLocation = ref('');
   const eventType = ref('');
+  const alertVisible = ref(false);
+
+  const openAlert = () =>{
+    alertVisible.value = true
+  }
+  const closeAlert = () => {
+    alertVisible.value = false;
+  };
 
   watch(selectedLocation, (newLocation) => {
     const locationData = locations[newLocation];
@@ -195,14 +211,48 @@
       place_lat.value = locationData.lat;
       place_lng.value = locationData.lng;
       location_short.value = locationData.location_short;
-    } else {
-      place_lat.value = null;
-      place_lng.value = null;
-      location_short.value = null;
-    }
+    } 
   });
 
+  watch(otherLocation, (newValue) => {
+  if (newValue) {
+    console.log(newValue)
+    nextTick(() => {
+      initAutocomplete();
+    });
+  }
+});
+
+
+  const getCoordinates = async() => {
+    const address = document.getElementById("otherLocation").value;
+    console.log(address)
+    otherLocation.value = address
+    const url = "https://maps.googleapis.com/maps/api/geocode/json";
+    await axios.get(url, {
+      params: {
+          "address": address,
+          "key": "AIzaSyDeVgAhC9VSqh64BteBWNqi3EWDm9vJXvU"
+      }
+    })
+    .then(response => {
+      console.log(response.data);
+
+      if (response.data.results.length === 0) {
+        alert('Error: No location found for the provided address.');
+        return; 
+      }
+
+      place_lat.value = response.data.results[0].geometry.location.lat;
+      place_lng.value = response.data.results[0].geometry.location.lng;
+    })
+  };
+
   const submitEvent = async (event) => {
+    if(selectedLocation.value === 'Other'){
+      await getCoordinates()
+      console.log(otherLocation.value, place_lat.value, place_lng.value)
+    }
     event.preventDefault();
 
     const form = document.querySelector('form'); 
@@ -248,6 +298,7 @@
             
       if (createdEvent) {
           console.log('Event added successfully:', createdEvent);
+          openAlert()
 
           // Clear form fields
           eventName.value = '';
@@ -268,23 +319,67 @@
         console.error('Error: Failure to create event.');
         alert('Error: Failure to create event.');
     }
-
-
-
-
   };
 
+  const initAutocomplete = () => {
+  // Ensure the Google Maps script is loaded
+  if (!window.google) {
+    console.error("Google Maps script is not loaded.");
+    return;
+  }
+
+  const input = document.getElementById('otherLocation');
+    if (input) {
+      const autocomplete = new google.maps.places.Autocomplete(input);
+      autocomplete.setComponentRestrictions({ country: 'SG' });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry) {
+          console.log("Selected place:", place.formatted_address);
+          // Use place.geometry.location for lat/lng if needed immediately
+          // Example: const lat = place.geometry.location.lat();
+          // Example: const lng = place.geometry.location.lng();
+        } else {
+          console.error("No details available for input: '" + place.name + "'");
+        }
+      });
+    } else {
+      console.error("Input field with id 'otherLocation' not found.");
+    }
+  };
 </script>
+
 
 <style scoped>
 
-/* Adjusting top margin for the app container */
+.background-wrapper {
+  background-image: url('@/assets/images/bg-11.jpg'); /* Background image applied here */
+  background-size: cover;
+  background-position: center;
+  height: 100%; /* Full height to cover the viewport */
+  width: 100vw; /* Full width to cover the viewport */
+  display: flex;
+  justify-content: center; /* Center the container horizontally */
+  align-items: center; /* Center the container vertically */
+}
+
 .container-fluid {
   color: white;
-  width: 100%;
   padding-top: 100px;
   padding-bottom: 25px;
-  background-color: #1e1d1d;
+  background-color: rgb(0, 0, 0, 0.7); /* Slight opacity for contrast */
+  width: 100%;
+  max-width: 1000px; /* Limit scaling */
+  margin: auto; /* Center the form content */
+}
+
+/* Limit scaling to 1000px for large screens */
+@media (min-width: 1000px) {
+  .container-fluid {
+    max-width: 1000px;
+    margin: auto;
+  }
 }
 
 input[type="text"],input[type="datetime-local"],input[type="url"], select, textarea {
@@ -411,6 +506,24 @@ textarea:focus{
 .flex-half {
   flex: 1;
 }
+.close-icon {
+  font-size: 30px; /* Standard close button size */
+  color: darkolivegreen; /* Default color for the close button (black) */
+  background: transparent; /* Transparent background */
+  border: none; /* Remove border */
+  cursor: pointer; /* Change the cursor to a pointer on hover */
+}
+.fixed-alert {
+  position: fixed; /* Fixes the alert to the screen */
+  top: 80px; /* Spacing from the top of the viewport */
+  left: 50%; /* Centers the alert horizontally */
+  transform: translateX(-50%); /* Corrects centering */
+  z-index: 1050; /* Ensure it appears above other content */
+  width: 50%; /* Adjust width dynamically */
+  max-width: 90%; /* Limits width on smaller screens */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a slight shadow */
+  transition: opacity 0.3s ease-in-out;
+}
+
 </style>
 
-<!-- testing  -->
