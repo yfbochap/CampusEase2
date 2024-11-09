@@ -51,17 +51,19 @@
           <h3>Time</h3>
           <p>{{ time }}</p>
 
-          <h5>
-            <u style="color: green;"><a v-if='signUpLink != ""' :href="signUpLink" target="_blank">Sign Up here!</a></u> <u><a src="" >Add to Calendar</a></u>
-          </h5>
-        </div>
+        <h5>
+          <u style="color: green;"><a v-if='signUpLink != ""' :href="signUpLink" target="_blank">Sign Up here!</a></u> 
+          <u style="color: green;"><a src="" @click="handleEventsCalendar">Add to Calendar</a></u>
+        </h5>
+  
       </div>
     </div>
 
-    <!-- Lightbox -->
-    <div v-if="lightboxVisible" id="lightbox" class="lightbox align-items-center justify-content-center" @click.self="closeLightbox">
-      <span class="close" @click="closeLightbox">&times;</span>
-      <img class="lightbox-content" :src="lightboxImage" />
+      <!-- Lightbox -->
+      <div v-if="lightboxVisible" id="lightbox" class="lightbox align-items-center justify-content-center" @click.self="closeLightbox">
+        <span class="close" @click="closeLightbox">&times;</span>
+        <img class="lightbox-content" :src="lightboxImage" />
+      </div>
     </div>
   </div>
 </template>
@@ -72,6 +74,7 @@ import { useUserStore } from '@/stores/counter';
 import { getEventByEventId, checkUserLike, addUserLike, removeUserLike } from '../../utils/supabaseRequests';
 import { supabase } from '../../utils/supabaseClient';
 import HeartIcon from '@/components/HeartIcon.vue';
+import { gapi } from 'gapi-script';
 
 export default {
   props: {
@@ -95,7 +98,13 @@ export default {
       time: "",
       user_id: "",
       likedEvents: "",
-      eventID: "" 
+      eventID: "",
+      //For Google Calendar
+      campusEaseCalendarId: null,
+      userEmail: null,
+      user: null,
+      profileData: null
+      
     };
   },
   methods: {
@@ -191,6 +200,130 @@ export default {
       });
       return gallery
     },
+    // Functions for "Add to Calendar"
+    initClient() {
+      return gapi.client.init({
+        apiKey: "AIzaSyAdMutgjV2OcfJgxr8ywiyj3Z1smkAiMRM",
+        clientId: "689557435886-91ofkj6r70cg7k3dsphhe54cn3s51ftj.apps.googleusercontent.com",
+        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
+        scope: "https://www.googleapis.com/auth/calendar"
+      });
+    },
+    async handleEventsCalendar() {
+      gapi.load('client:auth2', async () => {
+        await this.initClient();
+        const authInstance = gapi.auth2.getAuthInstance();
+        await authInstance.signIn();
+
+        this.userEmail = authInstance.currentUser.get().getBasicProfile().getEmail();
+
+        const calendarExists = await this.checkCampusEaseCalendar();
+        if (!calendarExists) {
+          await this.createCampusEaseCalendar();
+        }
+
+        await this.insertOrUpdateEvents();
+        window.open(`https://calendar.google.com/calendar/u/0/r?cid=${this.userEmail}`, "_blank");
+      });
+    },
+    async checkCampusEaseCalendar() {
+      try {
+        const response = await gapi.client.calendar.calendarList.list();
+        const calendars = response.result.items;
+        const campusEaseCalendar = calendars.find(calendar => calendar.summary === 'CampusEase Events');
+        if (campusEaseCalendar) {
+          this.campusEaseCalendarId = campusEaseCalendar.id;
+          return true;
+        }
+      } catch (error) {
+        console.error("Error checking CampusEase Calendar:", error);
+      }
+      return false;
+    },
+    async createCampusEaseCalendar() {
+      try {
+        const response = await gapi.client.calendar.calendars.insert({
+          resource: {
+            summary: 'CampusEase Events',
+            timeZone: 'Asia/Singapore'
+          }
+        });
+        this.campusEaseCalendarId = response.result.id;
+      } catch (error) {
+        console.error("Error creating CampusEase Calendar:", error);
+      }
+    },
+    async insertOrUpdateEvents() {
+      const dummyEvents = [
+        {
+          summary: 'Tech Talk: AI in Business',
+          description: 'Exploring AI applications in business with guest speakers',
+          start: { dateTime: '2024-11-10T15:00:00', timeZone: 'Asia/Singapore' },
+          end: { dateTime: '2024-11-10T17:00:00', timeZone: 'Asia/Singapore' }
+        },
+        {
+          summary: 'Hackathon 2024',
+          description: '24-hour coding event with exciting prizes',
+          start: { dateTime: '2024-11-15T10:00:00', timeZone: 'Asia/Singapore' },
+          end: { dateTime: '2024-11-15T11:00:00', timeZone: 'Asia/Singapore' }
+        },
+        {
+          summary: 'Orientation Day',
+          description: 'Welcome event for new students',
+          start: { dateTime: '2024-11-12T09:00:00', timeZone: 'Asia/Singapore' },
+          end: { dateTime: '2024-11-12T12:00:00', timeZone: 'Asia/Singapore' }
+        },
+        {
+          summary: 'Career Talk',
+          description: 'Network with potential employees',
+          start: { dateTime: '2024-11-14T09:00:00', timeZone: 'Asia/Singapore' },
+          end: { dateTime: '2024-11-14T12:00:00', timeZone: 'Asia/Singapore' }
+        },
+
+
+      ];
+
+      for (const event of dummyEvents) {
+        const existingEvent = await this.findEventByDescription(event.description);
+        if (existingEvent) {
+          await gapi.client.calendar.events.delete({
+            calendarId: this.campusEaseCalendarId,
+            eventId: existingEvent.id
+          });
+        }
+        await gapi.client.calendar.events.insert({
+          calendarId: this.campusEaseCalendarId,
+          resource: event
+        });
+      }
+    },
+    async findEventByDescription(description) {
+      try {
+        const response = await gapi.client.calendar.events.list({
+          calendarId: this.campusEaseCalendarId,
+          q: description,
+          timeMin: new Date().toISOString(),
+          singleEvents: true
+        });
+        return response.result.items[0];
+      } catch (error) {
+        console.error("Error finding event by description:", error);
+      }
+      return null;
+    },
+    formatDate(dateTime) {
+      const date = new Date(dateTime);
+      return date.toLocaleDateString();
+    },
+    formatDay(dateTime) {
+      const date = new Date(dateTime);
+      return date.toLocaleDateString('en-US', { weekday: 'long' });
+    },
+    formatTime(dateTime) {
+      if (!dateTime) return 'N/A';
+      const time = new Date(dateTime);
+      return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
   },
   mounted(){
     this.getEvent()
@@ -198,8 +331,8 @@ export default {
   },
   components: {
     HeartIcon
-  },
-};
+  }
+}
 </script>
 
 
