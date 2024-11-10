@@ -24,9 +24,9 @@
         <div>
           <h2 id="eventTitle" class="d-inline-block mr-3">
             {{ eventTitle }}
-            <div v-if="this.user_id != null">
+            <span v-if="this.user_id != null">
               <HeartIcon :isLiked="isLiked" :eventId="Number(eventID)" :userId="user_id" @toggle-like="toggleLikeStatus"/>
-            </div>
+            </span>
           </h2>
           <hr>
           
