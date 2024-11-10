@@ -1,5 +1,5 @@
 <template>
-<!-- get events which users have signed up for and set up buttons to edit and delete (should take 2 hours) -->
+
 
 <div id="body" class="d-flex flex-column justify-content-center align-items-center">
     <div id="eventView">
@@ -7,7 +7,7 @@
         <hr>
         <div id="editEvents">
             <div v-for="event in userEvents" class="row">
-                <h5 class="col-12">{{ event.event_name }}</h5>
+                <h5 class="col-12">{{ event.event_name }} {{ event.likeCount }} Likes</h5>
                 <button @click="editEvent(event.id)" class="btn btn-primary col-2">Edit</button>
                 <button class="btn btn-danger col-2">Delete</button>
             </div>
@@ -21,7 +21,7 @@
 
 <script>
     import router from '@/router';
-    import { getEventsByUserId } from '../../utils/supabaseRequests';
+    import { getEventsByUserId, getLikedUsersByEventId } from '../../utils/supabaseRequests';
     import { useUserStore } from '@/stores/counter';
 
     const userStore = useUserStore()
@@ -37,12 +37,20 @@
             async getUserEvents() {
                 let id = this.userId
                 this.userEvents = await getEventsByUserId(id)
+                // Fetch the number of likes for each event
+                for (const event of this.userEvents) {
+                    event.likeCount = await this.getNumberOfLikes(event.id);
+                }
             },
             editEvent(event_id){
                 console.log(event_id)
                 userStore.setEventID(event_id)
                 router.push("edit_event")
             },
+            async getNumberOfLikes(id){
+                let data = await getLikedUsersByEventId(id)
+                return data.length
+            }
         },
         mounted() {
             this.getUserEvents()

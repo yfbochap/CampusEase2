@@ -1,6 +1,7 @@
 <template>
   <div class="background-wrapper">
   <div class="container-fluid">
+  
     <div v-if="alertVisible_errors" class="fixed-alert alert alert-danger alert-dismissible fade show d-flex justify-content-between align-items-center" role="alert">
       <h4 class="m-0">{{ errorText }}</h4>
       <button type="button" class="close close-icon" @click="closeAlert_errors" aria-label="Close">
@@ -9,7 +10,7 @@
     </div>
 
     <div v-if="alertVisible" class="fixed-alert alert alert-success alert-dismissible fade show d-flex justify-content-between align-items-center" role="alert">
-      <h4 class="m-0">Event Created Succesfully!</h4>
+      <h4 class="m-0">Event Updated Succesfully!</h4>
       <button type="button" class="close close-icon" @click="closeAlert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
@@ -66,7 +67,7 @@
             <option value="Administration Building">Administration Building</option>
             <option value="Campus Green">Campus Green</option>
             <option value="Lee Kong Chian School of Business">Lee Kong Chian School of Business</option>
-            <option value="Li Ka Shing Library">Li Ka Shing Libraryy</option>
+            <option value="Li Ka Shing Library">Li Ka Shing Library</option>
             <option value="Prinsep Street Residences">Prinsep Street Residences</option>
             <option value="School of Accountancy">School of Accountancy</option>
             <option value="School of Computing & Information Systems 1">School of Computing & Information Systems 1</option>
@@ -151,7 +152,7 @@
     console.log("Fetched event data:", eventDetails);
 
     if(eventDetails){
-      selectedLocation.value = eventDetails.location;
+      selectedLocation.value = locations[eventDetails.location] ? eventDetails.location : "Other";
       place_lat.value = eventDetails.place_lat;
       place_lng.value = eventDetails.place_lng;
       location_short.value = eventDetails.location_short;
@@ -165,7 +166,7 @@
       thumbnailPhoto.value = eventDetails.thumbnail;
       eventPhotos.value = [...eventDetails.photos];
 
-      otherLocation.value = ref(''); // Change this if you're fixing up other location option on event creation
+      otherLocation.value = (selectedLocation.value === "Other") ? eventDetails.location : '';
       eventType.value = eventDetails.event_type;
 
       const thumbnailUrl = await supabase.storage.from('eventPhotos').getPublicUrl(thumbnailPhoto.value);
@@ -195,7 +196,7 @@
       thumbnailPreview.value = thumbnailUrl.data.publicUrl;
 
     }
-};
+  };
 
   onMounted( async () => {
     checkAccess()
@@ -302,6 +303,16 @@
     }
   });
 
+  watch(otherLocation, (newValue) => {
+  if (newValue) {
+    console.log(newValue);
+    if (!alertVisible.value && !alertVisible_errors.value) {
+      initAutocomplete();
+    }
+  }
+});
+
+
   function compareAndUpdateImages(arrayA, arrayB, imagesToUpload, imagesToDelete) {
     const maxLength = Math.max(arrayA.length, arrayB.length);
 
@@ -334,20 +345,81 @@
     }
   };
 
-// @Karsh i think this part might need to change 
+  // @Karsh i think this part might need to change 
+  const getCoordinates = async () => {
+    const address = document.getElementById("otherLocation").value;
+    console.log(address);
+    otherLocation.value = address;
+    const url = "https://maps.googleapis.com/maps/api/geocode/json";
+
+    try {
+      const response = await axios.get(url, {
+        params: {
+          address: address,
+          key: "AIzaSyDeVgAhC9VSqh64BteBWNqi3EWDm9vJXvU"
+        }
+      });
+      
+      if (response.data.results.length === 0) {
+        console.log("Location Not Found");
+        return true;  // Indicating an error (no location found)
+      }
+      
+      console.log("THIS SHOULDN'T HAVE CONTINUED PART 1");
+      console.log(response.data.results)
+      location_short.value = response.data.results[0].formatted_address.replace(/\d+/g, '').split(',')[0].trim();
+      console.log(location_short.value)
+      place_lat.value = response.data.results[0].geometry.location.lat;
+      place_lng.value = response.data.results[0].geometry.location.lng;
+      console.log("Information Processed, location found");
+      return false;  // Indicating success
+    } catch (error) {
+      console.error("Error fetching coordinates:", error);
+      return true;  // Indicating an error occurred
+    }
+  };
+
   const submitEvent = async (event) => {
+    if(selectedLocation.value === 'Other'){
+      let error = await getCoordinates()
+      console.log(`Status: ${error}`) 
+      console.log(otherLocation.value, place_lat.value, place_lng.value)
+      if(error){
+        console.log("Error Message Triggered")
+        errorText.value = "Please input a valid address"
+        openAlert_errors()
+        return;
+      }
+    }
     event.preventDefault();
     // await fetchEventData();
 
     const form = document.querySelector('form'); 
     if (!form.checkValidity()) {
+      let counter = 0
+      for (const input of form.elements) {
+        if (!input.checkValidity()) {
+          console.log(input.id, input.classList)
+          counter ++
+          input.style.borderColor = 'red';
+        } else {
+          input.style.borderColor = ''; 
+        }
+        console.log(input.classList)
+      }
+
+      if (counter > 0) {
+        errorText.value = "Missing Required Fields"
+        openAlert_errors()
+      }
+
       form.reportValidity();
-      alert("Missing Field!");
       return;
     }
 
     if (!thumbnailPhoto.value){
-      alert("Missing Thumbnail Photo!");
+      errorText.value = "Missing Thumbnail Photo"
+      openAlert_errors()
       return;
     }
     
@@ -451,8 +523,10 @@
             
       if (updatedEvent) {
           console.log('Event updated successfully:', updatedEvent);
-          alert('Event updated successfully!');
-          window.location.reload();
+          openAlert()
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
       }
 
       else {
@@ -460,6 +534,32 @@
           alert('Error: Failure to update event.');
       }
 
+  };
+
+  const initAutocomplete = () => {
+  // Ensure the Google Maps script is loaded
+  if (!window.google) {
+    console.error("Google Maps script is not loaded.");
+    return;
+  }
+
+  const input = document.getElementById('otherLocation');
+    if (input) {
+      const autocomplete = new google.maps.places.Autocomplete(input);
+      autocomplete.setComponentRestrictions({ country: 'SG' });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry) {
+          console.log("Selected place:", place.formatted_address);
+          otherLocation.value = document.getElementById("otherLocation").value;
+        } else {
+          console.error("No details available for input: '" + place.name + "'");
+        }
+      });
+    } else {
+      console.error("Input field with id 'otherLocation' not found.");
+    }
   };
 
 </script>

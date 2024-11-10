@@ -303,13 +303,14 @@ const getCoordinates = async () => {
         console.log(input.classList)
       }
 
-    if (counter > 0) {
-      errorText.value = "Missing Required Fields"
-      openAlert_errors()
+      if (counter > 0) {
+        errorText.value = "Missing Required Fields"
+        openAlert_errors()
+      }
+      
+      form.reportValidity();
+      return;
     }
-    form.reportValidity();
-    return;
-  }
 
     const eventExists = await checkEventExists(eventName.value);
   
