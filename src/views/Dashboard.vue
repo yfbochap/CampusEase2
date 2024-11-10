@@ -2,7 +2,7 @@
   <br>
   <div class="container-fluid maincon">
     <div id="eventMapTitle">
-    <h5>Choose your view</h5>
+
   </div>
   <div class="row d-flex justify-content-center">
     <button class="col-3 btn viewbutton" v-on:click="switchView('otherView')">All Events</button>
@@ -13,26 +13,6 @@
   <!-- All Events View -->
   <div v-if="view === 'other'" class="mt-2 mb-2">
       <h1 class="category-title">Upcoming Events</h1>
-      <!-- add buttons for 3: week, month and next month -->
-      <!-- <div id="carouselAllEvents" class="carousel slide" data-bs-ride="carousel">
-          <div class="carousel-inner">
-              <div class="carousel-item" :class="{ active: index === 0 }" v-for="(event, index) in all_events" :key="event.id">
-                  <div class="d-flex justify-content-center">
-                      <img :src=getPhotoURL(event) alt="Card image cap" style="width:200px;height:282px"> {{event.event_name}}
-                  </div>
-              </div>
-          </div> -->
-
-              <!-- Carousel controls -->
-          <!-- <button class="carousel-control-prev" type="button" data-bs-target="#carouselAllEvents" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Previous</span>
-          </button>
-
-          <button class="carousel-control-next" type="button" data-bs-target="#carouselAllEvents" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Next</span>
-          </button> -->
       </div>
   <!-- </div> -->
 
@@ -60,14 +40,20 @@
                           <div class="card-body d-flex flex-column">
                             <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
                             <img class="event-image" :src=getPhotoURL(event) alt="Event Image">
+                          </router-link>
+                                    <div class="d-flex justify-content-center align-center" v-if='user_id != null'>
+                                      <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/> 
+                                      <span>
+                                        {{ eventLikes[event.id] || 0 }} People Liked
+                                      </span>
+                                    </div>
+                          <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
                               <h4 class="card-title">{{ event.event_name }}</h4>
                               <hr>
                               <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
-                              <h6 class="card-subtitle">{{ event.location_short}}</h6>
-                            </router-link>
-                              <div class="mt-auto">
-                                <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
-                              </div>
+                              <h6>{{  getTime(event.start_date_time, event.end_date_time) }}</h6>
+                              <h6 class="card-subtitle">{{ event.location_short }}</h6>
+                          </router-link>
                           </div>
                         </div>
                     </div>
@@ -122,14 +108,19 @@
                                 <div class="card-body d-flex flex-column">
                                   <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
                                     <img class="event-image" :src=getPhotoURL(event) alt="Event Image"/>
-                                    <h4 class="card-title" style="cursor: pointer;">{{ event.event_name }}</h4>
-                                      
-                                    <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
-                                    <h6 class="card-subtitle ">{{ event.location_short}}</h6>
                                   </router-link>
-                                  <div class="mt-auto">
-                                    <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/>
-                                  </div>
+                                    <div class="d-flex justify-content-center align-center" v-if='user_id != null'>
+                                      <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/> 
+                                      <span>
+                                        {{ eventLikes[event.id] || 0 }} People Liked
+                                      </span>
+                                    </div>
+                                    <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
+                                      <h4 class="card-title" style="cursor: pointer;">{{ event.event_name }}</h4>
+                                      <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
+                                      <h6>{{ getTime(event.start_date_time,event.end_date_time) }}</h6>
+                                      <h6 class="card-subtitle ">{{ event.location_short}}</h6>
+                                    </router-link>
                                 </div>
                             </div>
                         </div>
@@ -147,7 +138,7 @@
 
 <script>
   import { getEvents } from '../../utils/supabaseRequests.js';
-  import { searchEvents, checkUserLike, addUserLike, removeUserLike} from '../../utils/supabaseRequests.js';
+  import { searchEvents, checkUserLike, addUserLike, removeUserLike, getLikedUsersByEvents} from '../../utils/supabaseRequests.js';
   import { supabase } from '../../utils/supabaseClient.js';
   import { useUserStore } from '@/stores/counter.ts';
   import HeartIcon from '@/components/HeartIcon.vue';
@@ -168,7 +159,8 @@
         selectedCategory: "All",
         likedEvents: [],
         user_id: '',
-        event_id: ''
+        event_id: '',
+        eventLikes: {},
       };
     },
 
@@ -218,10 +210,17 @@
           console.log("Event ID: ", eventId);
           console.log("Profile ID: ", this.user_id);
           if(isLiked){
+            this.eventLikes[eventId]--
+            console.log(this.eventLikes[eventId])
             await removeUserLike(eventId, this.user_id);
             this.likedEvents = this.likedEvents.filter(id => id !== eventId);
           }
           else{
+            if (this.eventLikes[eventId]) {
+              this.eventLikes[eventId]++;
+            } else {
+              this.eventLikes[eventId] = 1
+            }
             await addUserLike(eventId, this.user_id);
             this.likedEvents = [...this.likedEvents, eventId];
           }
@@ -286,33 +285,27 @@
       },
 
       getDates(start, end) {
-        const formatTime = (isoString) => {
-          const [hour, minute] = isoString.substring(11, 16).split(':').map(Number);
-          const period = hour >= 12 ? 'pm' : 'am';
-          const hour12 = hour % 12 || 12;
-          return `${hour12}:${minute.toString().padStart(2, '0')}${period}`;
-        };
-
-        const formatDate = (isoString) => {
-          const date = new Date(isoString.substring(0, 10));
-          const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-          const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-          return `${date.getDate()} ${months[date.getMonth()]} ${String(date.getFullYear()).substring(2)} (${days[date.getDay()]})`;
-        };
-
-        const start_time_formatted = formatTime(start);
-        const end_time_formatted = formatTime(end);
-        const time = `${start_time_formatted} - ${end_time_formatted}`;
-
-        const displayed_start_date = formatDate(start);
-        const displayed_end_date = formatDate(end);
-
-        if (displayed_start_date === displayed_end_date) {
-          return `${displayed_start_date} ${time}`;
-        }
-        
-        return `${displayed_start_date} - ${displayed_end_date} ${time}`;
-      },
+      const formatDate = (isoString) => {
+        const date = new Date(isoString.substring(0, 10));
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return `${date.getDate()} ${months[date.getMonth()]} ${String(date.getFullYear()).substring(2)} (${days[date.getDay()]})`;
+      };
+      const displayedStartDate = formatDate(start);
+      const displayedEndDate = formatDate(end);
+      return displayedStartDate === displayedEndDate ? displayedStartDate : `${displayedStartDate} - ${displayedEndDate}`;
+    },
+    getTime(start, end) {
+      const formatTime = (isoString) => {
+        const [hour, minute] = isoString.substring(11, 16).split(':').map(Number);
+        const period = hour >= 12 ? 'pm' : 'am';
+        const hour12 = hour % 12 || 12;
+        return `${hour12}:${minute.toString().padStart(2, '0')}${period}`;
+      };
+      const startTimeFormatted = formatTime(start);
+      const endTimeFormatted = formatTime(end);
+      return `${startTimeFormatted} - ${endTimeFormatted}`;
+    },
           
       getPhotoURL(event){
           // console.log(event)
@@ -323,6 +316,25 @@
           return data.publicUrl;
           }
 
+      },
+
+      async getNumberOfLikes() {
+        this.eventLikes = {}
+        try {
+          const events = await getLikedUsersByEvents();
+          console.log(events)
+          events.forEach(participant => {
+          const eventId = participant.event_id;
+          if (this.eventLikes[eventId]) {
+            this.eventLikes[eventId]++;
+          } else {
+            this.eventLikes[eventId] = 1
+          }
+        });
+        } catch (error) {
+          console.error("Error fetching number of particiants:", error);
+        }
+        console.log(this.eventLikes)
       },
 
 
@@ -428,7 +440,7 @@
       },
   },
 
-  mounted() {
+  async mounted() {
 
       this.setNumEventsGroup(); // Set initial value based on current viewport
       window.addEventListener('resize', this.setNumEventsGroup); // Update on resize
@@ -455,6 +467,7 @@
     });
     // -------- END CODE TO INITIALISE GOOGLE MAPS ---------
   this.searchForEvents(); //initial population
+  await this.getNumberOfLikes();// get liked 
 
   },
 };

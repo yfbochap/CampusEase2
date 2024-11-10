@@ -3,6 +3,7 @@
     <div class="calendar-card p-4 shadow">
       <div class="calendar-header">
         <h2 class="text-center text-dark">Your Liked Events</h2>
+        <p class="text-center text-dark">Check Out Your Liked Events Here!</p>
       </div>
       <div class="calendar-content">
         <div v-if="events.length">

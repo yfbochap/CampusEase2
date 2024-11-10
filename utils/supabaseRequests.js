@@ -251,3 +251,15 @@ export async function removeUserLike(event_id, profile_id){
   }
 }
 
+export async function getLikedUsersByEvents() {
+  try {
+    const { data, error } = await supabase
+      .from('participant')
+      .select('event_id, profile_id') 
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.log("Error retrieving participants for event", error);
+  }
+}
+
