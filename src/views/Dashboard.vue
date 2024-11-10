@@ -79,7 +79,7 @@
   <div>
       <div>
           <div class="d-flex justify-content-center align-items-center">
-            <i class="fas fa-search"></i>  
+            <i class="bx bx-search" style="font-size: 20px;"></i>
             <input id="searchbar" class="i" v-model="searchTerm" @input="searchForEvents" type="text" placeholder="Search events..." aria-label="Search">
           </div>
           <br>
