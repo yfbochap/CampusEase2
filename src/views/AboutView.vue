@@ -6,15 +6,21 @@
       Your browser does not support the video tag.
     </video>
 
-    <!-- About Us Header -->
-    <div class="about-header">
-      ABOUT US
+    <!-- Responsive About Us Header -->
+    <div class="container my-4">
+      <div class="row justify-content-center">
+        <div class="col-10 col-sm-6 col-md-6 col-lg-7 col-xl-7">
+          <div class="about-header">
+            <h2>ABOUT US</h2>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="container my-4">
       <div class="row justify-content-center">
         <!-- Dynamically responsive columns -->
-        <div class="col-12 col-sm-8 col-md-8 col-lg-7 col-xl-6">
+        <div class="col-10 col-sm-6 col-md-6 col-lg-7 col-xl-7">
           <div class="about-section">
             <img src="@/assets/images/CElogo1-1.png" alt="Campus Ease Logo" class="about-logo img-fluid" />
             <img src="@/assets/images/about-desc1.png" alt="Campus Ease Description" class="about-description img-fluid" />
@@ -76,22 +82,24 @@ video {
 
 /* About Header with reduced padding */
 .about-header {
+  background-color: rgba(0, 0, 0, 0.5); /* Translucent background for readability */
   position: relative;
-  height: 250px;
+  padding-top: 50px;
+  padding-bottom: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 40px;
+  font-size: 40px; /* Font size for readability */
   font-weight: bold;
   color: white;
   background-size: cover;
   background-position: center;
-  margin-bottom: 1rem; /* Reduced space below header */
+  text-align: center;
 }
 
 /* About section styling */
 .about-section {
-  padding: 30px;
+  padding: 10px;
   background: rgba(255, 255, 255, 0.8);
   text-align: center;
 }
@@ -99,13 +107,19 @@ video {
 /* Limit the container max-width at large screen sizes */
 .container {
   max-width: 1200px;
+  margin-top: 0px;
 }
 
-.about-logo, .about-description {
-  width: 100%;
-  max-width: 85%;
+.about-logo {
+  width: 40%;
+  max-width: 45%;
   height: auto;
-  margin-top: 0;
+}
+
+.about-description {
+  width: 65%;
+  max-width: 65%;
+  height: auto;
 }
 
 /* FAQ Section */
