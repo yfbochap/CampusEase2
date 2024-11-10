@@ -389,7 +389,6 @@
 
     const newEvent = {
       created_by: user.value,
-      // created_by: user.value.id,
       name: eventName.value,
       venue: eventVenue.value,
       place_lat: place_lat.value,

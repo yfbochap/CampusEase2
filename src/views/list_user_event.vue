@@ -8,13 +8,12 @@
         <div class="calendar-content">
           <div v-if="userEvents.length">
             <ul class="list-unstyled">
-              <li v-for="event in userEvents" :key="event.id" class="event-card mb-3 p-3 text-dark">
+              <li v-for="event in userEvents" :key="event.id" class="event-card mb-2 p-3 text-dark">
                 <div class="d-flex justify-content-between align-items-center">
                   <router-link 
                     :to="{ name: 'event', params: { id: event.id, name: event.event_name } }" 
-                    class="event-link"
-                  >
-                    <strong class="card-title">{{ event.event_name }}</strong>
+                    class="event-link">
+                    <h5 class="card-title"><u>{{ event.event_name }}</u></h5>
                   </router-link>
                   <div class="d-flex align-items-center">
                     <span class="like-count me-3">{{ event.likeCount }} Likes</span>
@@ -75,7 +74,30 @@
             async getNumberOfLikes(id){
                 let data = await getLikedUsersByEventId(id)
                 return data.length
-            }
+            },
+            getDates(start, end) {
+                const formatDate = (isoString) => {
+                    const date = new Date(isoString.substring(0, 10));
+                    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    return `${date.getDate()} ${months[date.getMonth()]} ${String(date.getFullYear()).substring(2)} (${days[date.getDay()]})`;
+                    };
+                const displayedStartDate = formatDate(start);
+                const displayedEndDate = formatDate(end);
+                return displayedStartDate === displayedEndDate ? displayedStartDate : `${displayedStartDate} - ${displayedEndDate}`;
+            },
+            getTime(start, end) {
+            const formatTime = (isoString) => {
+                const [hour, minute] = isoString.substring(11, 16).split(':').map(Number);
+                const period = hour >= 12 ? 'pm' : 'am';
+                const hour12 = hour % 12 || 12;
+                return `${hour12}:${minute.toString().padStart(2, '0')}${period}`;
+                };
+            const startTimeFormatted = formatTime(start);
+            const endTimeFormatted = formatTime(end);
+            return `${startTimeFormatted} - ${endTimeFormatted}`;
+            
+            },
         },
         mounted() {
             this.getUserEvents()
@@ -90,6 +112,7 @@
 
 <style>
 .background-wrapper {
+    padding-top:9vh;
   min-height: 90vh;
   display: flex;
   align-items: center;
@@ -98,7 +121,7 @@
 }
 
 .calendar-card {
-  width: 60vw;
+  width: 50vw;
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 15px;
 }
@@ -108,7 +131,7 @@
 }
 
 .calendar-content {
-  max-height: 60vh;
+  max-height: 50vh;
   overflow-y: auto;
 }
 
