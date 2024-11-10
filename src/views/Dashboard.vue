@@ -44,7 +44,7 @@
                                     <div class="d-flex justify-content-center align-center" v-if='user_id != null'>
                                       <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/> 
                                       <span>
-                                        {{ eventLikes[event.id] || 0 }} Likes
+                                        {{ eventLikes[event.id] || 0 }} People Liked
                                       </span>
                                     </div>
                           <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
@@ -112,7 +112,7 @@
                                     <div class="d-flex justify-content-center align-center" v-if='user_id != null'>
                                       <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/> 
                                       <span>
-                                        {{ eventLikes[event.id] || 0 }} Likes
+                                        {{ eventLikes[event.id] || 0 }} People Liked
                                       </span>
                                     </div>
                                     <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
