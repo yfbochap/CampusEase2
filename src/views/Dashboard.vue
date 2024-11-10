@@ -5,9 +5,17 @@
 
   </div>
   <div class="row d-flex justify-content-center">
-    <button class="col-3 btn viewbutton" v-on:click="switchView('otherView')">All Events</button>
+    <button
+    class="col-3 btn viewbutton"
+    :class="{ active: view === 'other' }"
+    v-on:click="switchView('otherView')"
+    >All Events</button>
     <!-- <div class="col-1"></div> -->
-      <button class="col-3 btn viewbutton" v-on:click="switchView('mapView')">Map View</button>
+    <button
+    class="col-3 btn viewbutton"
+    :class="{ active: view === 'map' }"
+    v-on:click="switchView('mapView')"
+    >Map View</button>
   </div>
 
   <!-- All Events View -->
@@ -537,16 +545,23 @@
   
 }
 
-.viewbutton{
+.viewbutton {
   color: white;
   border: solid 1px rgb(120, 117, 117);
   margin: 10px 30px 30px 30px;
   width: 200px;
   transition: background-color 0.3s ease;
 }
-.viewbutton:hover{
+
+.viewbutton:hover {
   background-color: #68686a;
   border-color: #68686a;
+}
+
+/* Active state styling for selected button */
+.viewbutton.active {
+  background-color: #032943; /* Change this to your desired active color */
+  border-color: #ffffff;
 }
 
 /* Styling for the input */
