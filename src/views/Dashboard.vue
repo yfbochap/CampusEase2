@@ -20,7 +20,7 @@
 
   <!-- All Events View -->
   <div v-if="view === 'other'" class="mt-2 mb-2">
-      <h1 class="category-title">Upcoming Events</h1>
+      <h1 class="category-title">Events</h1>
       </div>
   <!-- </div> -->
 
@@ -86,23 +86,34 @@
   <!-- Search Function -->
   <div>
       <div>
-          <div class="d-flex justify-content-center align-items-center">
-            <i class="bx bx-search" style="font-size: 20px;"></i>
-            <input id="searchbar" class="i" v-model="searchTerm" @input="searchForEvents" type="text" placeholder="Search events..." aria-label="Search" autocomplete="off">
+        <div class="d-flex flex-column align-items-center">
+          <!-- Search Bar Row -->
+          <div class="search-bar-row d-flex justify-content-center align-items-center w-100">
+            <i class="bx bx-search" style="font-size: 20px; margin-right: 8px;"></i>
+            <input
+              id="searchbar"
+              class="i"
+              v-model="searchTerm"
+              @input="searchForEvents"
+              type="text"
+              placeholder="Search events..."
+              aria-label="Search"
+              autocomplete="off"
+            />
           </div>
-          <br>
-          <div class="d-flex justify-content-center">
-            <div>
-              <button type="button" class="btn btn-secondary btn-pill all " :class="{ active: selectedCategory === 'All' }" @click="selectCategory('All')">All</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill academic" :class="{ active: selectedCategory === 'Academic' }" @click="selectCategory('Academic')">Academic</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill sports" :class="{ active: selectedCategory === 'Sports' }" @click="selectCategory('Sports')">Sports</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill arts" :class="{ active: selectedCategory === 'Arts' }" @click="selectCategory('Arts')">Arts</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill networking" :class="{ active: selectedCategory === 'Networking' }" @click="selectCategory('Networking')">Networking</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill charity" :class="{ active: selectedCategory === 'Charity' }" @click="selectCategory('Charity')">Charity</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill community" :class="{ active: selectedCategory === 'Community' }" @click="selectCategory('Community')">Community</button>&nbsp;&nbsp;
-              <button type="button" class="btn btn-secondary btn-pill welfare" :class="{ active: selectedCategory === 'Welfare' }" @click="selectCategory('Welfare')">Welfare</button>
-            </div>
+
+          <!-- Category Buttons Row -->
+          <div class="category-buttons-row d-flex flex-wrap justify-content-center mt-2">
+            <button type="button" class="btn btn-secondary btn-pill all" :class="{ active: selectedCategory === 'All' }" @click="selectCategory('All')">All</button>
+            <button type="button" class="btn btn-secondary btn-pill academic" :class="{ active: selectedCategory === 'Academic' }" @click="selectCategory('Academic')">Academic</button>
+            <button type="button" class="btn btn-secondary btn-pill sports" :class="{ active: selectedCategory === 'Sports' }" @click="selectCategory('Sports')">Sports</button>
+            <button type="button" class="btn btn-secondary btn-pill arts" :class="{ active: selectedCategory === 'Arts' }" @click="selectCategory('Arts')">Arts</button>
+            <button type="button" class="btn btn-secondary btn-pill networking" :class="{ active: selectedCategory === 'Networking' }" @click="selectCategory('Networking')">Networking</button>
+            <button type="button" class="btn btn-secondary btn-pill charity" :class="{ active: selectedCategory === 'Charity' }" @click="selectCategory('Charity')">Charity</button>
+            <button type="button" class="btn btn-secondary btn-pill community" :class="{ active: selectedCategory === 'Community' }" @click="selectCategory('Community')">Community</button>
+            <button type="button" class="btn btn-secondary btn-pill welfare" :class="{ active: selectedCategory === 'Welfare' }" @click="selectCategory('Welfare')">Welfare</button>
           </div>
+        </div>
           <br>
           <div>
               <div>
@@ -565,25 +576,79 @@
 }
 
 /* Styling for the input */
+.search-bar-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid white; /* Border for the search bar */
+  padding-bottom: 5px;
+  max-width: 100%; /* Allow full width on large screens */
+  margin: 0 auto; /* Center alignment */
+}
+
 .i {
-  width: 100%;
-  max-width: 600px; /* Adjust width as needed */
-  height: 40px; /* Adjust height as needed */
-  padding: 10px;
-  border: none;
-  border-bottom: 1px solid white;
+  flex-grow: 1;
+  height: 40px;
+  padding-left: 5px;
   color: white;
   background-color: transparent;
   box-sizing: border-box;
   appearance: none;
-  -webkit-appearance: none; /* Remove default browser styles */
-  -moz-appearance: none;
-  outline: none; /* Remove default outline */
+  outline: none;
+  border: none; /* Remove input's border */
 }
+
 .i::placeholder {
   color: white;
-  opacity: 1; /* Firefox */
+  opacity: 1;
 }
+
+.category-buttons-row {
+  display: flex;
+  flex-wrap: wrap; /* Allows wrapping for smaller screens */
+  gap: 8px;
+  justify-content: center;
+  max-width: 100%; /* Allow full width on small screens */
+}
+
+.category-buttons-row .btn-pill {
+  padding: 8px 16px;
+  white-space: nowrap; /* Prevents text from breaking */
+  flex: 0 1 auto; /* Default to auto size based on content */
+  margin: 5px;
+}
+
+@media (min-width: 992px) {
+  .category-buttons-row {
+    flex-wrap: nowrap; /* Prevent wrapping on large screens */
+    justify-content: center;
+    max-width: 100%; /* Allow full row width on large screens */
+  }
+  .category-buttons-row .btn-pill {
+    flex: 0 0 auto; /* Prevents buttons from expanding */
+  }
+  .search-bar-row {
+    max-width: 600px; /* Match category buttons' width on large screens */
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .category-buttons-row {
+    flex-wrap: nowrap; /* Single row on medium screens */
+    justify-content: center;
+    max-width: 100%;
+  }
+  .category-buttons-row .btn-pill {
+    flex: 0 1 auto; /* Adjusts to content */
+  }
+}
+
+@media (max-width: 576px) {
+  .category-buttons-row .btn-pill {
+    flex: 1 1 calc(33.33% - 10px); /* Each button takes about 3 columns */
+  }
+}
+
 
 /* .i { original code
   width: 100%;
@@ -644,11 +709,6 @@
   height: 400px
 }
 
-.btn-pill{
-  border-radius: 50px;
-  border: none;
-  
-}
 .btn-pill:hover{
   transform:scale(1.1);
 }
