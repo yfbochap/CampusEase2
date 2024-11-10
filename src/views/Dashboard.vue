@@ -282,7 +282,7 @@
       setNumEventsGroup() { //change number of cards displayed due to different breakpoints 
           const width = window.innerWidth;
           if (width >= 992) {
-              this.numEventsGroup = 3; // Large 
+              this.numEventsGroup = 4; // Large 
           } else if (width >= 768) {
               this.numEventsGroup = 2; // Medium 
           } else {
@@ -580,14 +580,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid white; /* Border for the search bar */
+  border-bottom: 1px solid white;
   padding-bottom: 5px;
-  max-width: 100%; /* Allow full width on large screens */
+  max-width: 600px; /* Set a fixed max-width */
+  width: 100%; /* Allow it to adjust based on screen size */
   margin: 0 auto; /* Center alignment */
 }
 
 .i {
   flex-grow: 1;
+  min-width: 0; /* Allows shrinking */
+  max-width: 100%; /* Ensures input respects the parent width */
   height: 40px;
   padding-left: 5px;
   color: white;
@@ -595,7 +598,7 @@
   box-sizing: border-box;
   appearance: none;
   outline: none;
-  border: none; /* Remove input's border */
+  border: none;
 }
 
 .i::placeholder {
@@ -640,6 +643,13 @@
   }
   .category-buttons-row .btn-pill {
     flex: 0 1 auto; /* Adjusts to content */
+  }
+}
+
+
+@media (max-width: 600px) {
+  .search-bar-row {
+    max-width: 100%; /* Allow full width on screens smaller than 600px */
   }
 }
 
