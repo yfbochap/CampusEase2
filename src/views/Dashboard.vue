@@ -78,8 +78,9 @@
   <!-- Search Function -->
   <div>
       <div>
-          <div class="d-flex justify-content-center">
-              <input id="searchbar" class="i" v-model="searchTerm" @input="searchForEvents" type="text" placeholder="Search events..." aria-label="Search"><i class="fas fa-search"></i>
+          <div class="d-flex justify-content-center align-items-center">
+            <i class="fas fa-search"></i>  
+            <input id="searchbar" class="i" v-model="searchTerm" @input="searchForEvents" type="text" placeholder="Search events..." aria-label="Search">
           </div>
           <br>
           <div class="d-flex justify-content-center">
@@ -186,6 +187,12 @@
       this.fetchLikedEvents();
   },
 
+  beforeDestroy() {
+    if (this.map) {
+      google.maps.event.clearListeners(this.map, 'bounds_changed');
+      google.maps.event.clearListeners(this.map, 'zoom_changed');
+    }
+  },
 
   methods: {
       // Like Functionality
