@@ -158,20 +158,32 @@
   const thumbnailPreview = ref('');
   const eventPhotosPreview = ref(Array(3).fill(''));
 
-  const handleThumbnailPhoto = (event) => {
-    thumbnailPhoto.value = event.target.files[0];
-    if (thumbnailPhoto.value) {
-      thumbnailPreview.value = URL.createObjectURL(thumbnailPhoto.value);
+  const handleThumbnailPhoto = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Test functionality for removing alpha channel
+      const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, "");
+      const jpegBlob = await removeAlphaChannel(file);
+      const jpegFile = new File([jpegBlob], `${fileNameWithoutExtension}.jpeg`, { type: "image/jpeg" });
+
+      thumbnailPhoto.value = jpegFile;
+      thumbnailPreview.value = URL.createObjectURL(jpegFile);
     } else {
       thumbnailPreview.value = null;
     }
   };
 
-  const handlePhotos = (index) => (event) => {
+  const handlePhotos = (index) => async (event) => {
     const file = event.target.files[0];
     if (file) {
-      eventPhotos.value[index] = file; // Store the file
-      eventPhotosPreview.value[index] = URL.createObjectURL(file); // Create preview URL
+      // Test functionality for removing alpha channel
+      const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, "");
+      const jpegBlob = await removeAlphaChannel(file);
+      const jpegFile = new File([jpegBlob], `${fileNameWithoutExtension}.jpeg`, { type: "image/jpeg" });
+
+
+      eventPhotos.value[index] = jpegFile; // Store the file
+      eventPhotosPreview.value[index] = URL.createObjectURL(jpegFile); // Create preview URL
     } else {
       eventPhotosPreview.value[index] = null; // Clear the preview if no file is selected
     }
@@ -232,47 +244,85 @@
   });
 
   watch(otherLocation, (newValue) => {
-  if (newValue) {
-    console.log(newValue)
-    nextTick(() => {
-      initAutocomplete();
-    });
-  }
-});
-
-
-const getCoordinates = async () => {
-  const address = document.getElementById("otherLocation").value;
-  console.log(address);
-  otherLocation.value = address;
-  const url = "https://maps.googleapis.com/maps/api/geocode/json";
-
-  try {
-    const response = await axios.get(url, {
-      params: {
-        address: address,
-        key: "AIzaSyDeVgAhC9VSqh64BteBWNqi3EWDm9vJXvU"
-      }
-    });
-    
-    if (response.data.results.length === 0) {
-      console.log("Location Not Found");
-      return true;  // Indicating an error (no location found)
+    if (newValue) {
+      console.log(newValue)
+      nextTick(() => {
+        initAutocomplete();
+      });
     }
-    
-    console.log("THIS SHOULDN'T HAVE CONTINUED PART 1");
-    console.log(response.data.results)
-    location_short.value = response.data.results[0].formatted_address.replace(/\d+/g, '').split(',')[0].trim();
-    console.log(location_short.value)
-    place_lat.value = response.data.results[0].geometry.location.lat;
-    place_lng.value = response.data.results[0].geometry.location.lng;
-    console.log("Information Processed, location found");
-    return false;  // Indicating success
-  } catch (error) {
-    console.error("Error fetching coordinates:", error);
-    return true;  // Indicating an error occurred
-  }
-};
+  });
+
+
+  const getCoordinates = async () => {
+    const address = document.getElementById("otherLocation").value;
+    console.log(address);
+    otherLocation.value = address;
+    const url = "https://maps.googleapis.com/maps/api/geocode/json";
+
+    try {
+      const response = await axios.get(url, {
+        params: {
+          address: address,
+          key: "AIzaSyDeVgAhC9VSqh64BteBWNqi3EWDm9vJXvU"
+        }
+      });
+      
+      if (response.data.results.length === 0) {
+        console.log("Location Not Found");
+        return true;  // Indicating an error (no location found)
+      }
+      
+      console.log("THIS SHOULDN'T HAVE CONTINUED PART 1");
+      console.log(response.data.results)
+      location_short.value = response.data.results[0].formatted_address.replace(/\d+/g, '').split(',')[0].trim();
+      console.log(location_short.value)
+      place_lat.value = response.data.results[0].geometry.location.lat;
+      place_lng.value = response.data.results[0].geometry.location.lng;
+      console.log("Information Processed, location found");
+      return false;  // Indicating success
+    } catch (error) {
+      console.error("Error fetching coordinates:", error);
+      return true;  // Indicating an error occurred
+    }
+  };
+
+  const removeAlphaChannel = async (file) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        img.src = e.target.result;
+      };
+
+      reader.onerror = (err) => {
+        reject("Error reading file: " + err);
+      };
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size to image size
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        // Draw image without alpha channel (JPEG format has no alpha)
+        ctx.drawImage(img, 0, 0);
+        
+        // Convert canvas to JPEG (you can specify quality here)
+        const dataUrl = canvas.toDataURL('image/jpeg', 1.0); // 1.0 is for max quality
+        
+        // Convert base64 data URL to Blob and resolve with it
+        fetch(dataUrl)
+          .then(res => res.blob())
+          .then(blob => resolve(blob))
+          .catch(reject);
+      };
+
+      img.src = reader.readAsDataURL(file); // Start reading the file
+    });
+  };
 
   const submitEvent = async (event) => {
     if(selectedLocation.value === 'Other'){
@@ -345,6 +395,7 @@ const getCoordinates = async () => {
         return;
     }
 
+    console.log("Before Upload Files: ", thumbnailPhoto.value, eventPhotos.value);
     const { thumbnailPath, additionalImagePaths } = await uploadFiles(thumbnailPhoto.value, eventPhotos.value, eventName.value);
 
     const createdEvent = await addEvent(newEvent, thumbnailPath, additionalImagePaths || []);
