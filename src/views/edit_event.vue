@@ -1,5 +1,19 @@
 <template>
-  <div class="container">
+  <div class="background-wrapper">
+  <div class="container-fluid">
+    <div v-if="alertVisible_errors" class="fixed-alert alert alert-danger alert-dismissible fade show d-flex justify-content-between align-items-center" role="alert">
+      <h4 class="m-0">{{ errorText }}</h4>
+      <button type="button" class="close close-icon" @click="closeAlert_errors" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <div v-if="alertVisible" class="fixed-alert alert alert-success alert-dismissible fade show d-flex justify-content-between align-items-center" role="alert">
+      <h4 class="m-0">Event Created Succesfully!</h4>
+      <button type="button" class="close close-icon" @click="closeAlert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
 
     <h2>Update Event</h2>
     <form class="mt-4 d-flex">
@@ -24,12 +38,13 @@
       </div>
 
       <div class="right-column ms-4">
-        <div class="mb-3">
+        <div class="mb-3 d-flex location-venue-container">
+          <div class="flex-half">
           <label for="eventName" class="form-label">Event Name</label>
           <input type="text" class="form-control" id="eventName" v-model="eventName" required>
         </div>
 
-        <div class="mb-3">
+        <div class="flex-half ms-2">
           <label for="eventType" class="form-label">Event Category</label>
           <select id="eventType" class="form-control" v-model="eventType" required>
             <option value="Academic">Academic</option>
@@ -42,8 +57,10 @@
             <option value="Others">Others</option>
           </select>
         </div>
+        </div>
 
-        <div class="mb-3">
+        <div class="mb-3 d-flex location-venue-container">
+          <div class="flex-half">
           <label for="location" class="form-label">Location</label>
           <select id="location" class="form-control" v-model="selectedLocation" required>
             <option value="Administration Building">Administration Building</option>
@@ -61,16 +78,18 @@
             <option value="Other">Other</option>
           </select>
         </div>
+        &nbsp;&nbsp;
 
         <div v-if="selectedLocation === 'Other'" class="mb-3">
           <label for="otherLocation" class="form-label">Google Maps Address</label>
           <input type="text" id="otherLocation" v-model="otherLocation" class="form-control" placeholder="Specify location" required>
         </div>
 
-        <div class="mb-3">
+        <div class="flex-half ms-2">
           <label for="eventVenue" class="form-label">Venue</label>
           <input type="text" class="form-control" id="eventVenue" v-model="eventVenue" required>
         </div>
+      </div>
 
         <div class="mb-3">
           <label for="eventStartDateTime" class="form-label">Start Date</label>
@@ -100,6 +119,7 @@
         <button type="button" @click="submitEvent" class="btn text-white" id="submitButton">Update Event</button>
       </div>
     </form>
+  </div>
   </div>
 </template>
 
@@ -251,6 +271,23 @@
   const thumbnailPhoto = ref(null);
   const otherLocation = ref('');
   const eventType = ref('');
+  const alertVisible = ref(false);
+  const alertVisible_errors = ref(false)
+  const errorText = ref('')
+
+  const openAlert_errors = () =>{
+    alertVisible_errors.value = true
+  }
+  const closeAlert_errors = () => {
+    alertVisible_errors.value = false;
+  };
+
+  const openAlert = () =>{
+    alertVisible.value = true
+  }
+  const closeAlert = () => {
+    alertVisible.value = false;
+  };
 
   watch(selectedLocation, (newLocation) => {
     const locationData = locations[newLocation];
@@ -297,7 +334,7 @@
     }
   };
 
-
+// @Karsh i think this part might need to change 
   const submitEvent = async (event) => {
     event.preventDefault();
     // await fetchEventData();
@@ -428,33 +465,49 @@
 </script>
 
 <style scoped>
-/* Styling for the navigation bar */
-nav {
-  background-color: darkblue;
-  padding: 1rem;
-  position: fixed;
-  width: 100%;
-  top: 0;
-  z-index: 1000;
-}
-nav .navbar-brand {
-  color: white;
-  font-weight: bold;
-}
-nav a {
-  color: white;
-  text-decoration: none;
-  padding: 0 1rem;
+
+.background-wrapper {
+  background-image: url('@/assets/images/bg-11.jpg'); /* Background image applied here */
+  background-size: cover;
+  background-position: center;
+  height: 100%; /* Full height to cover the viewport */
+  width: 100vw; /* Full width to cover the viewport */
+  display: flex;
+  justify-content: center; /* Center the container horizontally */
+  align-items: center; /* Center the container vertically */
 }
 
-/* Adjusting top margin for the app container */
-.container {
-  margin-top: 10px;
+.container-fluid {
+  color: white;
+  padding-top: 100px;
+  padding-bottom: 25px;
+  background-color: rgb(0, 0, 0, 0.7); /* Slight opacity for contrast */
+  width: 100%;
+  max-width: 1000px; /* Limit scaling */
+  margin: auto; /* Center the form content */
+}
+
+/* Limit scaling to 1000px for large screens */
+@media (min-width: 1000px) {
+  .container-fluid {
+    max-width: 1000px;
+    margin: auto;
+  }
+}
+
+input[type="text"],input[type="datetime-local"],input[type="url"], select, textarea {
+  background-color: #6e6868;
+  color: #fafefb;
+  border-color: #777676;
+}
+
+textarea:focus{
+  background-color: #6e6868;
+  color: #fafefb;
 }
 
 .thumbnail-box,
 .small-photo-box {
-  border: 2px dashed #ccc;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -462,7 +515,10 @@ nav a {
   cursor: pointer;
   position: relative;
   margin-bottom: 1rem;
+  border: 1px dashed #e4dede;
+  
 }
+
 
 .thumbnail-box:hover,
 .small-photo-box:hover {
@@ -550,6 +606,11 @@ nav a {
   margin-top: auto;
   background-color: #000000;
   border-color: #ccc;
+  transition: background-color 0.3s, color 0.3s;
+}
+#submitButton:hover{
+  color: #000000 !important;
+  background-color: #ccc;
 }
 #brandname {
   font-size: 24px;
@@ -557,6 +618,34 @@ nav a {
 .links {
   color: rgb(249, 234, 27);
 }
+.location-venue-container {
+  display: flex;
+}
+.flex-half {
+  flex: 1;
+}
+.close-icon {
+  font-size: 30px; /* Standard close button size */
+  color: darkolivegreen; /* Default color for the close button (black) */
+  background: transparent; /* Transparent background */
+  border: none; /* Remove border */
+  cursor: pointer; /* Change the cursor to a pointer on hover */
+}
+.fixed-alert {
+  position: fixed; /* Fixes the alert to the screen */
+  top: 80px; /* Spacing from the top of the viewport */
+  left: 50%; /* Centers the alert horizontally */
+  transform: translateX(-50%); /* Corrects centering */
+  z-index: 1050; /* Ensure it appears above other content */
+  width: 50%; /* Adjust width dynamically */
+  max-width: 90%; /* Limits width on smaller screens */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a slight shadow */
+  transition: opacity 0.3s ease-in-out;
+}
+.invalid-input {
+  border-color: red;
+}
+
 </style>
 
 <!-- testing  -->

@@ -2,14 +2,14 @@
   <div class="background-wrapper">
   <div class="container-fluid">
     <div v-if="alertVisible_errors" class="fixed-alert alert alert-danger alert-dismissible fade show d-flex justify-content-between align-items-center" role="alert">
-      <h4 class="m-0">{{ errorText }}</h4>
+      <h5 class="m-0">{{ errorText }}</h5>
       <button type="button" class="close close-icon" @click="closeAlert_errors" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
 
     <div v-if="alertVisible" class="fixed-alert alert alert-success alert-dismissible fade show d-flex justify-content-between align-items-center" role="alert">
-      <h4 class="m-0">Event Created Succesfully!</h4>
+      <h5 class="m-0">Event Created Succesfully!</h5>
       <button type="button" class="close close-icon" @click="closeAlert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
@@ -66,7 +66,7 @@
             <option value="Administration Building">Administration Building</option>
             <option value="Campus Green">Campus Green</option>
             <option value="Lee Kong Chian School of Business">Lee Kong Chian School of Business</option>
-            <option value="Li Ka Shing Library">Li Ka Shing Libraryy</option>
+            <option value="Li Ka Shing Library">Li Ka Shing Library</option>
             <option value="Prinsep Street Residences">Prinsep Street Residences</option>
             <option value="School of Accountancy">School of Accountancy</option>
             <option value="School of Computing & Information Systems 1">School of Computing & Information Systems 1</option>
@@ -241,43 +241,46 @@
 });
 
 
-  const getCoordinates = async() => {
-    const address = document.getElementById("otherLocation").value;
-    console.log(address)
-    otherLocation.value = address
-    const url = "https://maps.googleapis.com/maps/api/geocode/json";
-    await axios.get(url, {
+const getCoordinates = async () => {
+  const address = document.getElementById("otherLocation").value;
+  console.log(address);
+  otherLocation.value = address;
+  const url = "https://maps.googleapis.com/maps/api/geocode/json";
+
+  try {
+    const response = await axios.get(url, {
       params: {
-          "address": address,
-          "key": "AIzaSyDeVgAhC9VSqh64BteBWNqi3EWDm9vJXvU"
+        address: address,
+        key: "AIzaSyDeVgAhC9VSqh64BteBWNqi3EWDm9vJXvU"
       }
-    })
-    .then(response => {
-      console.log(response.data);
-
-      if (response.data.results.length === 0) {
-        return false
-      }
-      console.log("THIS SHOULDNT HAVE CONTINUED PART 1")
-
-      location_short.value = response.data.results[0].address_components[0].short_name;
-
-      shortAddress = `${city}, ${country}`; // Example of short address
-      console.log(shortAddress)
-      place_lat.value = response.data.results[0].geometry.location.lat;
-      place_lng.value = response.data.results[0].geometry.location.lng;
-
-      return true
-    })
-    .catch(errors => {
-    })
-  };
+    });
+    
+    if (response.data.results.length === 0) {
+      console.log("Location Not Found");
+      return true;  // Indicating an error (no location found)
+    }
+    
+    console.log("THIS SHOULDN'T HAVE CONTINUED PART 1");
+    console.log(response.data.results)
+    location_short.value = response.data.results[0].formatted_address.replace(/\d+/g, '').split(',')[0].trim();
+    console.log(location_short.value)
+    place_lat.value = response.data.results[0].geometry.location.lat;
+    place_lng.value = response.data.results[0].geometry.location.lng;
+    console.log("Information Processed, location found");
+    return false;  // Indicating success
+  } catch (error) {
+    console.error("Error fetching coordinates:", error);
+    return true;  // Indicating an error occurred
+  }
+};
 
   const submitEvent = async (event) => {
     if(selectedLocation.value === 'Other'){
-      let confirm = await getCoordinates()
+      let error = await getCoordinates()
+      console.log(`Status: ${error}`) 
       console.log(otherLocation.value, place_lat.value, place_lng.value)
-      if (!confirm){
+      if(error){
+        console.log("Error Message Triggered")
         errorText.value = "Please input a valid address"
         openAlert_errors()
         return;
@@ -336,7 +339,7 @@
     // alert('Event Created: ' + newEvent.name);
 
     if (!thumbnailPhoto) {
-        errorText.value = "Please upload a thumbnail"
+        errorText.value = "Please upload a thumbnail photo"
         openAlert_errors()
         return;
     }
@@ -347,6 +350,7 @@
             
       if (createdEvent) {
           console.log('Event added successfully:', createdEvent);
+          closeAlert_errors()
           openAlert()
 
           // Clear form fields
@@ -540,6 +544,11 @@ textarea:focus{
   margin-top: auto;
   background-color: #000000;
   border-color: #ccc;
+  transition: background-color 0.3s, color 0.3s;
+}
+#submitButton:hover{
+  color: #000000 !important;
+  background-color: #ccc;
 }
 #brandname {
   font-size: 24px;

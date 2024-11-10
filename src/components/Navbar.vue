@@ -6,22 +6,9 @@
     <router-link class="navbar-brand" to="/">
       <img src="@/assets/images/CElogo1-1.png" alt="Logo" id="navbarLogo" style="width: 40px;" /> &nbsp CampusEase
     </router-link>
-
-    
-
-        <a v-if="user" class="btn account-icon order-lg-last order-md-last order-sm-last" data-bs-toggle="offcanvas" href="#sidebar" role="button" aria-controls="offcanvasExample">
-            <i class="fas fa-user"></i> 
-        </a> 
-
-        <router-link v-else to="/signin" class="order-lg-last order-md-last order-sm-last">
-          <button class="btn bg-dark text-white" data-bs-toggle="offcanvas" role="button" aria-controls="offcanvasExample">
-            <span>Sign In</span>
-          </button> 
-        </router-link>
-        
-
+      
         <!-- Navbar Toggle Button -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler " type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
  
@@ -39,6 +26,17 @@
             </li> 
           </ul> 
         </div> 
+
+        <a v-if="user" class="btn account-icon order-lg-last order-md-last order-sm-last m-0" data-bs-toggle="offcanvas" href="#sidebar" role="button" aria-controls="offcanvasExample">
+            <i class="fas fa-user"></i> 
+        </a> 
+
+        <router-link v-else to="/signin" class="order-lg-last order-md-last order-sm-last d-flex">
+          <button class="btn bg-dark text-white" role="button" aria-controls="offcanvasExample">
+            <span>Sign In</span>
+          </button> 
+        </router-link>
+
       </div> 
   </nav>
 
@@ -50,12 +48,12 @@
       <h5 id="sidebar" style="margin: 0px;">Profile Settings</h5> 
       <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button> 
     </div> 
-    <hr> 
+    <hr>
     <div class="offcanvas-body" style="position: relative;"> 
+      <h5 style ="color: #c4c0c0;padding:0px;"><strong>Welcome, {{ userName }}</strong></h5>
+      <hr style="color: #c4c0c0"> 
       <ul class="p-0"> 
-        <li class="sidebar_link" data-bs-toggle="offcanvas"><router-link to="/profile">Profile</router-link></li> 
-        <li class="sidebar_link" data-bs-toggle="offcanvas"><router-link to="/edit_profile">Edit Profile</router-link></li> 
-        <li class="sidebar_link" data-bs-toggle="offcanvas"><router-link to="/">Events Calendar</router-link></li> 
+        <li class="sidebar_link" data-bs-toggle="offcanvas"><router-link to="/likedEvents">Your Liked Events</router-link></li> 
         <li class="sidebar_link" data-bs-toggle="offcanvas"><router-link to="/eventCreation">Create New Event</router-link></li> 
         <li class="sidebar_link" data-bs-toggle="offcanvas"><router-link to="/your_events">Edit Your Events</router-link></li> 
       </ul> 
@@ -70,16 +68,19 @@
   import { ref, onMounted } from 'vue';
   import { supabase } from '../../utils/supabaseClient';
   import { useUserStore } from '@/stores/counter';
+  import { getProfile } from '../../utils/supabaseRequests';
 
   
 
   const user = ref(null);
   const userStorage = useUserStore()
+  const userName = ref('')
 
   const fetchUser = async () => {
     const { data } = await supabase.auth.getUser();
     user.value = data.user; // Update the reactive user variable
-    // console.log('User State', user.value);
+    let profileData = await getProfile(data.user.id)
+    userName.value = profileData[0].username
   };
   
 
@@ -154,7 +155,7 @@
 
 
 /* Responsive styling for smaller screens */
-@media (max-width: 576px) {
+@media (max-width: 575px) {
   .navbar-toggler {
     display: inline; /* Show toggle button on small screens */
   }

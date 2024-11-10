@@ -44,7 +44,7 @@
                                     <div class="d-flex justify-content-center align-center" v-if='user_id != null'>
                                       <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/> 
                                       <span>
-                                        {{ eventLikes[event.id] || 0 }} Likes
+                                        {{ eventLikes[event.id] || 0 }} People Liked
                                       </span>
                                     </div>
                           <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
@@ -78,8 +78,9 @@
   <!-- Search Function -->
   <div>
       <div>
-          <div class="d-flex justify-content-center">
-              <input id="searchbar" class="i" v-model="searchTerm" @input="searchForEvents" type="text" placeholder="Search events..." aria-label="Search">
+          <div class="d-flex justify-content-center align-items-center">
+            <i class="bx bx-search" style="font-size: 20px;"></i>
+            <input id="searchbar" class="i" v-model="searchTerm" @input="searchForEvents" type="text" placeholder="Search events..." aria-label="Search">
           </div>
           <br>
           <div class="d-flex justify-content-center">
@@ -112,7 +113,7 @@
                                     <div class="d-flex justify-content-center align-center" v-if='user_id != null'>
                                       <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/> 
                                       <span>
-                                        {{ eventLikes[event.id] || 0 }} Likes
+                                        {{ eventLikes[event.id] || 0 }} People Liked
                                       </span>
                                     </div>
                                     <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
@@ -186,9 +187,25 @@
       this.fetchLikedEvents();
   },
 
+  beforeDestroy() {
+    if (this.map) {
+      google.maps.event.clearListeners(this.map, 'bounds_changed');
+      google.maps.event.clearListeners(this.map, 'zoom_changed');
+    }
+  },
 
   methods: {
       // Like Functionality
+      preloadImages() {
+    const images = this.all_events.map(event => {
+      return this.getPhotoURL(event); // This will generate the URLs for the images
+    });
+
+    images.forEach((imageUrl) => {
+      const img = new Image();
+      img.src = imageUrl; // Preload image by setting the source
+    });
+  },
       async fetchLikedEvents(){
         try{
           console.log("Checking Profile ID: ", this.user_id)
@@ -262,6 +279,7 @@
               this.all_events = fetchedEvents;
               // console.log("All Events:", this.all_events); 
               this.all_events.sort((a, b) => new Date(a.start_date_time) - new Date(b.start_date_time)); // sort events based on start time
+              this.preloadImages();
               return fetchedEvents;
           } catch (error) {
               console.error("Error fetching events:", error);
@@ -271,6 +289,7 @@
       // All Events View related functions:
       async searchForEvents(){ // by search for events in database by search term + selected catagory
           const data = await searchEvents('event_name',this.searchTerm) 
+          this.searchedEvents = []
           const category = this.selectedCategory
           let events_criteria = data.filter(event =>  // filter according to events which meet the 
               category === "All" || event.event_type === category
@@ -536,14 +555,34 @@
   max-width: 600px; /* Adjust width as needed */
   height: 40px; /* Adjust height as needed */
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 10px; /* Make corners rounded */
+  border: none;
+  border-bottom: 1px solid white;
+  color: white;
+  background-color: transparent;
   box-sizing: border-box;
   appearance: none;
   -webkit-appearance: none; /* Remove default browser styles */
   -moz-appearance: none;
   outline: none; /* Remove default outline */
 }
+.i::placeholder {
+  color: white;
+  opacity: 1; /* Firefox */
+}
+
+/* .i { original code
+  width: 100%;
+  max-width: 600px; 
+  height: 40px; 
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  outline: none;
+} */
 
 .maincon{
   background-image: url('@/assets/images/bg-4.jpg'); /* Ensure this path matches your project structure */
