@@ -277,7 +277,7 @@ export default {
         end: { dateTime: this.end_date_time, timeZone: 'Asia/Singapore' }
       }
 
-    const existingEvent = await this.findEventByDescription(currEvent.description);
+    const existingEvent = await this.findEventByTitle(currEvent.summary);
       if (existingEvent) {
         await gapi.client.calendar.events.delete({
           calendarId: this.campusEaseCalendarId,
@@ -289,17 +289,18 @@ export default {
         resource: currEvent
       });
     },
-    async findEventByDescription(description) {
+    async findEventByTitle(title) {
       try {
         const response = await gapi.client.calendar.events.list({
           calendarId: this.campusEaseCalendarId,
-          q: description,
+          q: title,
           timeMin: new Date().toISOString(),
           singleEvents: true
         });
-        return response.result.items[0];
-      } catch (error) {
-        console.error("Error finding event by description:", error);
+        return response.result.items.find(event => event.summary === title) || null;
+      } 
+      catch (error) {
+        console.error("Error finding event by title:", error);
       }
       return null;
     },
