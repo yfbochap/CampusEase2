@@ -1,5 +1,5 @@
 <template>
-    <div class="background-wrapper d-flex justify-content-center align-items-center">
+    <div class="background-wrapper">
       <div class="calendar-card p-4 shadow">
         <div class="calendar-header">
           <h2 class="text-center text-dark">Your Created Events</h2>
@@ -8,17 +8,23 @@
         <div class="calendar-content">
           <div v-if="userEvents.length">
             <ul class="list-unstyled">
-              <li v-for="event in userEvents" :key="event.id" class="event-card mb-2 p-3 text-dark">
+              <li v-for="event in userEvents" :key="event.id" class="event-card mx-2 mb-2 p-3 text-dark">
                 <div class="d-flex justify-content-between align-items-center">
                   <router-link 
                     :to="{ name: 'event', params: { id: event.id, name: event.event_name } }" 
                     class="event-link">
-                    <h5 class="card-title"><u>{{ event.event_name }}</u></h5>
+                    <h6 class="card-title"><u><strong>{{ event.event_name }}</strong></u></h6>
                   </router-link>
                   <div class="d-flex align-items-center">
-                    <span class="like-count me-3">{{ event.likeCount }} Likes</span>
-                    <button @click="editEvent(event.id)" class="btn btn-primary me-2">Edit</button>
-                    <button class="btn btn-danger">Delete</button>
+                    <div>
+                      <span class="like-count me-3">{{ event.likeCount }} Likes</span>
+                    </div>
+                    <div>
+                      <button @click="editEvent(event.id)" class="btn btn-primary me-2">Edit</button>
+                    </div>
+                    <div>
+                      <button class="btn btn-danger">Delete</button>
+                    </div>
                   </div>
                 </div>
                 <p>{{ event.location_short }}</p>
@@ -112,7 +118,12 @@
 
 <style>
 .background-wrapper {
+  background-image: url('@/assets/images/bg-9.jpg');
+  background-size: cover;
+  background-position: center;
   min-height: 90vh;
+  height: 110vh;
+  width: 100vw;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -120,8 +131,8 @@
 }
 
 .calendar-card {
-  width: 50vw;
-  background-color: rgba(255, 255, 255, 0.9);
+  width: 45vw;
+  background-color: #f8f9fa;
   border-radius: 15px;
 }
 

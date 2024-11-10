@@ -111,20 +111,22 @@ video {
 }
 
 .about-logo {
-  width: 40%;
-  max-width: 45%;
+  width: 30%;
+  max-width: 35%;
   height: auto;
 }
 
 .about-description {
-  width: 65%;
-  max-width: 65%;
+  width: 50%;
+  max-width: 50%;
   height: auto;
 }
 
 /* FAQ Section */
 .faq-section {
-  padding: 30px;
+  padding-bottom: 10px;
+  padding-left: 30px;
+  padding-right: 30px;
   background-color: rgba(255, 255, 255, 0.8);
   color: black;
 }

@@ -8,10 +8,10 @@
       <div class="calendar-content">
         <div v-if="events.length">
           <ul class="list-unstyled">
-            <li v-for="event in events" :key="event.id" class="event-card mb-3 p-3 text-dark">
+            <li v-for="event in events" :key="event.id" class="event-card mx-2 mb-3 p-3 text-dark">
               <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
                 <div class="d-flex justify-content-between align-items-center">
-                  <strong class="card-title">{{ event.event_name }}</strong>
+                  <u><strong class="card-title">{{ event.event_name }}</strong></u>
                   <button class="heart-btn" @click="toggleLike(event.id)" :aria-label="isLiked(event.id) ? 'Unlike' : 'Like'">
                     <svg class="heart-icon" :class="{ filled: isLiked(event.id) }" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -130,7 +130,7 @@ export default {
 }
 
 .background-wrapper {
-  background-image: url('@/assets/images/bg-7.png');
+  background-image: url('@/assets/images/bg-7.jpg');
   background-size: cover;
   background-position: center;
   height: 110vh;
