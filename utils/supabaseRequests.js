@@ -1,4 +1,7 @@
 import { supabase } from "./supabaseClient";
+// Add diff functions for same purpose so not that many api calls are made
+// getLikedByEvents -> get all
+// getLikedByEventId -> one specifc
 
 export const getEvents = async () => {
     const { data, error } = await supabase
@@ -256,6 +259,19 @@ export async function getLikedUsersByEvents() {
     const { data, error } = await supabase
       .from('participant')
       .select('event_id, profile_id') 
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.log("Error retrieving participants for event", error);
+  }
+}
+
+export async function getLikedUsersByEventId(event_id) {
+  try {
+    const { data, error } = await supabase
+      .from('participant')
+      .select('event_id, profile_id')
+      .eq('event_id', event_id); 
     if (error) throw error;
     return data;
   } catch (error) {
