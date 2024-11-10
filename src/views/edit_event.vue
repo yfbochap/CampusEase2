@@ -85,7 +85,7 @@
 
         <div v-if="selectedLocation === 'Other'" class="mb-3">
           <label for="otherLocation" class="form-label">Google Maps Address</label>
-          <input type="text" id="otherLocation" v-model="otherLocation" class="form-control" placeholder="Specify location" required>
+          <input type="text" id="otherLocation" v-model="otherLocation" class="form-control" placeholder="Specify location" required autocomplete="off">
         </div>
 
         <div class="flex-half ms-2">

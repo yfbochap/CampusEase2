@@ -80,7 +80,7 @@
       <div>
           <div class="d-flex justify-content-center align-items-center">
             <i class="bx bx-search" style="font-size: 20px;"></i>
-            <input id="searchbar" class="i" v-model="searchTerm" @input="searchForEvents" type="text" placeholder="Search events..." aria-label="Search">
+            <input id="searchbar" class="i" v-model="searchTerm" @input="searchForEvents" type="text" placeholder="Search events..." aria-label="Search" autocomplete="off">
           </div>
           <br>
           <div class="d-flex justify-content-center">
@@ -102,7 +102,7 @@
                       {{ selectedCategory }} Events Around Campus
                   </h1>
                   <div v-if="searchedEvents.length != 0" class="row d-flex p-5 justify-content-center">
-                    <transition-group name="fade" tag="div" class="row">
+                    <!-- <transition-group name="fade" tag="div" class="row"> -->
                         <div class="col-sm-8 col-md-5 col-lg-4 align-items-stretch fade-item" v-for="(event,index) in searchedEvents" :key="event.id" :style="{ animationDelay: (index * 0.5) + 's' }">
                       
                             <div class="card mb-4 fade-item">
@@ -125,7 +125,7 @@
                                 </div>
                             </div>
                         </div>
-                      </transition-group>
+                      <!-- </transition-group> -->
                   </div>
                   <div class="p-5" v-else>
                     <h1 style="text-align: center;height: 200px;">There are currently no events matching your search</h1> <!-- to tell that there are no events happening according to search -->
@@ -680,7 +680,7 @@
 .welfare {
   background-color: #1ABC9C;
 }
-
+/* 
 .fade-enter-active, .fade-leave-active {
   transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 }
@@ -711,6 +711,6 @@
     transform: translateY(0);
   }
 }
-
+ */
 
 </style>
