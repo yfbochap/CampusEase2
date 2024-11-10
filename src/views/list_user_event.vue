@@ -1,21 +1,42 @@
 <template>
-
-
-<div id="body" class="d-flex flex-column justify-content-center align-items-center">
-    <div id="eventView">
-        <h1 style="text-align: center; color: black;padding-top: 10px;">Edit Your Events Here</h1>
-        <hr>
-        <div id="editEvents">
-            <div v-for="event in userEvents" class="row">
-                <h5 class="col-12">{{ event.event_name }} {{ event.likeCount }} Likes</h5>
-                <button @click="editEvent(event.id)" class="btn btn-primary col-2">Edit</button>
-                <button class="btn btn-danger col-2">Delete</button>
-            </div>
+    <div class="background-wrapper d-flex justify-content-center align-items-center">
+      <div class="calendar-card p-4 shadow">
+        <div class="calendar-header">
+          <h2 class="text-center text-dark">Your Created Events</h2>
+          <p class="text-center text-dark">Manage the events you've created!</p>
         </div>
+        <div class="calendar-content">
+          <div v-if="userEvents.length">
+            <ul class="list-unstyled">
+              <li v-for="event in userEvents" :key="event.id" class="event-card mb-3 p-3 text-dark">
+                <div class="d-flex justify-content-between align-items-center">
+                  <router-link 
+                    :to="{ name: 'event', params: { id: event.id, name: event.event_name } }" 
+                    class="event-link"
+                  >
+                    <strong class="card-title">{{ event.event_name }}</strong>
+                  </router-link>
+                  <div class="d-flex align-items-center">
+                    <span class="like-count me-3">{{ event.likeCount }} Likes</span>
+                    <button @click="editEvent(event.id)" class="btn btn-primary me-2">Edit</button>
+                    <button class="btn btn-danger">Delete</button>
+                  </div>
+                </div>
+                <p>{{ event.location_short }}</p>
+                <p style="font-size: 12px;">
+                  {{ getDates(event.start_date_time, event.end_date_time) }}<br>
+                  {{ getTime(event.start_date_time, event.end_date_time) }}
+                </p>
+              </li>
+            </ul>
+          </div>
+          <div v-else>
+            <p class="text-center text-dark">No events found.</p>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
-
-</template>
+  </template>
 
 
 
@@ -68,25 +89,42 @@
 
 
 <style>
-#body{
-    height: 90vh;
+.background-wrapper {
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
 }
 
-#eventView{
-    display: flex;
-    flex-direction: column;
-    width: 40vw; 
-    height: 70%;
-    margin-top: 0; 
-    background-color: rgba(255, 255, 255, 0.8); 
-    border-radius: 15px;
+.calendar-card {
+  width: 60vw;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
 }
 
-#editEvents{
-    flex-grow: 1; 
-    overflow: auto;
-    color: black;
-    padding:10px
+.calendar-header {
+  margin-bottom: 20px;
 }
 
+.calendar-content {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.event-card {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.event-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.like-count {
+  font-size: 14px;
+  color: #666;
+}
 </style>

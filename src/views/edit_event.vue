@@ -1,17 +1,19 @@
 <template>
   <div class="background-wrapper">
   <div class="container-fluid">
-  
-    <div v-if="alertVisible_errors" class="fixed-alert alert alert-danger alert-dismissible fade show d-flex justify-content-between align-items-center" role="alert">
+
+    <!-- Error Alert -->
+    <div v-if="alertVisible_errors" class="fixed-alert alert alert-danger  d-flex justify-content-between align-items-center slide-down-enter-active" role="alert">
       <h4 class="m-0">{{ errorText }}</h4>
-      <button type="button" class="close close-icon" @click="closeAlert_errors" aria-label="Close">
+      <button type="button" class="close close-icon alertclose" @click="closeAlert_errors" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
 
-    <div v-if="alertVisible" class="fixed-alert alert alert-success alert-dismissible fade show d-flex justify-content-between align-items-center" role="alert">
+    <!-- Success Alert -->
+    <div v-if="alertVisible" class="fixed-alert alert alert-success  d-flex justify-content-between align-items-center slide-down-enter-active" role="alert">
       <h4 class="m-0">Event Updated Succesfully!</h4>
-      <button type="button" class="close close-icon" @click="closeAlert" aria-label="Close">
+      <button type="button" class="close close-icon alertclose" @click="closeAlert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
@@ -279,15 +281,24 @@
   const alertVisible_errors = ref(false)
   const errorText = ref('')
 
-  const openAlert_errors = () =>{
-    alertVisible_errors.value = true
-  }
+  const autoCloseAlertErrors = () => {
+  setTimeout(() => {
+    if (alertVisible_errors.value) {
+      closeAlert_errors();
+    }
+  }, 3000); // Closes the alert after 3 seconds
+};
+  const openAlert_errors = () => {
+  alertVisible_errors.value = true;
+  autoCloseAlertErrors(); // Automatically close the error alert after 3 seconds
+};
   const closeAlert_errors = () => {
     alertVisible_errors.value = false;
   };
 
   const openAlert = () =>{
     alertVisible.value = true
+    autoCloseAlertErrors();
   }
   const closeAlert = () => {
     alertVisible.value = false;
@@ -734,20 +745,39 @@ textarea:focus{
   border: none; /* Remove border */
   cursor: pointer; /* Change the cursor to a pointer on hover */
 }
-.fixed-alert {
-  position: fixed; /* Fixes the alert to the screen */
-  top: 80px; /* Spacing from the top of the viewport */
-  left: 50%; /* Centers the alert horizontally */
-  transform: translateX(-50%); /* Corrects centering */
-  z-index: 1050; /* Ensure it appears above other content */
-  width: 50%; /* Adjust width dynamically */
-  max-width: 90%; /* Limits width on smaller screens */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a slight shadow */
-  transition: opacity 0.3s ease-in-out;
-}
 .invalid-input {
   border-color: red;
 }
+
+/* ANIMATION FOR MODAL */
+.fixed-alert {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1050;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.fixed-alert.slide-down-enter-active {
+  animation: slideDown 0.5s ease forwards;
+}
+
+@keyframes slideDown {
+  0% {
+    transform: translate(-50%, -100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, 100px);
+    opacity: 1;
+  }
+}
+
+.alertclose {
+  margin-left: 10px; /* Adjust this value as needed */
+}
+
 
 </style>
 
