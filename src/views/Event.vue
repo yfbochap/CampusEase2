@@ -24,12 +24,9 @@
         <div>
           <h2 id="eventTitle" class="d-inline-block mr-3">
             {{ eventTitle }}
-            <HeartIcon :isLiked="isLiked" :eventId="Number(eventID)" :userId="user_id" @toggle-like="toggleLikeStatus"/>
-            <!-- <button class="heart-btn" @click="toggleLikeStatus" :aria-label="isLiked ? 'Unlike' : 'Like'">
-              <svg class="heart-icon" :class="{ filled: isLiked }" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-              </svg>
-            </button> -->
+            <div v-if="this.user_id != null">
+              <HeartIcon :isLiked="isLiked" :eventId="Number(eventID)" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+            </div>
           </h2>
           <hr>
           
@@ -110,6 +107,9 @@ export default {
       
     };
   },
+  created(){
+    this.getUserID();
+  },
   mounted(){
     this.getEvent()
     console.log(this.id)
@@ -118,14 +118,19 @@ export default {
     HeartIcon
   },
   methods: {
+    getUserID(){
+        const userStore = useUserStore();
+        this.user_id = userStore.getAuthToken()
+        console.log(this.user_id)
+    },
     async getEvent(){
+      console.log("getting events")
       const userStore = useUserStore()
       console.log(userStore.getEventID(), this.id)
       this.eventID = userStore.getEventID() || this.id;
       console.log(this.eventID)
       let event = await getEventByEventId(this.eventID)
       console.log("Event Data: ", event)
-      this.user_id = userStore.getAuthToken()
       this.eventTitle = event.event_name
       this.location = event.location
       this.venue = event.venue

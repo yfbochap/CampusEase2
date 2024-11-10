@@ -26,6 +26,10 @@
 
     const userStore = useUserStore()
 
+    if (userStore.getAuthToken() == null){ //immediately redirect
+      router.push("/signin")
+    }
+
     export default {
         data(){
             return {

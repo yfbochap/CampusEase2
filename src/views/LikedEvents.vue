@@ -38,6 +38,7 @@
 <script>
 import { useUserStore } from '@/stores/counter';
 import { checkUserLike, getEventByEventId, addUserLike, removeUserLike } from '../../utils/supabaseRequests';
+import router from '@/router';
 
 export default {
   data() {
@@ -51,6 +52,10 @@ export default {
     getUserID() {
       const userStore = useUserStore();
       this.userId = userStore.getAuthToken();
+      console.log(this.userId)
+      if (this.userId == null){ //immediately redirect
+        router.push("/signin")
+      } 
     },
     async getUserLiked() {
       this.likedEventIds = await checkUserLike(this.userId);

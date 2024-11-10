@@ -134,6 +134,9 @@
 
   const userStore = useUserStore()
   const user = userStore.getAuthToken();
+  if (user == null){ //immediately redirect
+      router.push("/signin")
+  }
   const eventId = userStore.getEventID();
   const eventData = ref(null);
 

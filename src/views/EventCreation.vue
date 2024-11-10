@@ -126,13 +126,21 @@
   import { ref, reactive, watch, nextTick, onMounted } from 'vue';
   import { supabase } from '../../utils/supabaseClient';
   import { addEvent, uploadFiles, checkEventExists } from '../../utils/supabaseRequests';
+  import { useUserStore } from '@/stores/counter';
+  import router from '@/router';
+
+
+  const userStore = useUserStore()
+
+  if (userStore.getAuthToken() == null){ //immediately redirect
+      router.push("/signin")
+  }
 
   const user = ref(null);
 
   const fetchUser = async () => {
-    const { data } = await supabase.auth.getUser();
-    user.value = data.user; // Update the reactive user variable
-    console.log('User Details', user.value.id);
+    user.value = userStore.getAuthToken()
+    console.log(user.value)
   };
 
   onMounted(() => {
@@ -357,7 +365,7 @@
         errorText.value = "Missing Required Fields"
         openAlert_errors()
       }
-      
+
       form.reportValidity();
       return;
     }
