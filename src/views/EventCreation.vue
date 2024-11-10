@@ -540,6 +540,11 @@ textarea:focus{
   margin-top: auto;
   background-color: #000000;
   border-color: #ccc;
+  transition: background-color 0.3s, color 0.3s;
+}
+#submitButton:hover{
+  color: #000000 !important;
+  background-color: #ccc;
 }
 #brandname {
   font-size: 24px;
