@@ -8,7 +8,7 @@
     </router-link>
       
         <!-- Navbar Toggle Button -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler " type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
  
@@ -27,12 +27,12 @@
           </ul> 
         </div> 
 
-        <a v-if="user" class="btn account-icon order-lg-last order-md-last order-sm-last m-0 d-flex" data-bs-toggle="offcanvas" href="#sidebar" role="button" aria-controls="offcanvasExample">
+        <a v-if="user" class="btn account-icon order-lg-last order-md-last order-sm-last m-0" data-bs-toggle="offcanvas" href="#sidebar" role="button" aria-controls="offcanvasExample">
             <i class="fas fa-user"></i> 
         </a> 
 
         <router-link v-else to="/signin" class="order-lg-last order-md-last order-sm-last d-flex">
-          <button class="btn bg-dark text-white" data-bs-toggle="offcanvas" role="button" aria-controls="offcanvasExample">
+          <button class="btn bg-dark text-white" role="button" aria-controls="offcanvasExample">
             <span>Sign In</span>
           </button> 
         </router-link>
@@ -155,7 +155,7 @@
 
 
 /* Responsive styling for smaller screens */
-@media (max-width: 576px) {
+@media (max-width: 575px) {
   .navbar-toggler {
     display: inline; /* Show toggle button on small screens */
   }
