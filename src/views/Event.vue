@@ -53,8 +53,8 @@
           <p>{{ time }}</p>
 
         <h5>
-          <u style="color: green;"><a v-if='signUpLink != ""' :href="signUpLink" target="_blank">Sign Up here!</a></u> 
-          <u><a src="" @click="handleEventsCalendar">Add to Calendar</a></u>
+          <u style="color: green;"><a class= "btn btn-outline-success" v-if='signUpLink != ""' :href="signUpLink" target="_blank">Sign Up here!</a></u> &nbsp;
+          <u><a class="btn btn-outline-light" src="" @click="handleEventsCalendar">Add to Calendar</a></u>
         </h5>
   
       </div>
