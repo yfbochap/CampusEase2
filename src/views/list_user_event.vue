@@ -53,7 +53,7 @@
                         >
                             <i class="bx bx-edit btnns"></i>
                         </button>
-                        <button class="btn">
+                        <button class="btn" @click="deleteEvent()">
                             <i class="bx bx-trash btnns"></i>
                         </button>
                         </div>
