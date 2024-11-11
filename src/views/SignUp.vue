@@ -66,8 +66,8 @@ const handleSignup = async () => {
   </video>
   <div class="d-flex align-items-center justify-content-center min-vh-100 background-image">
     <div class="col-md-6">
-      <div class="card shadow">
-        <div class="card-body">
+      <div class="card ">
+        <div class="card-body ">
           <h2 class="card-title text-center mb-4">Create Account</h2>
           <form @submit.prevent="handleSignup">
             <div class="mb-3">
@@ -116,7 +116,7 @@ const handleSignup = async () => {
             </div>
             <div class="d-flex justify-content-center">
               <button
-                class="btn btn-dark text-white"
+                class="btn submit"
                 type="submit"
               >
                 Sign Up
@@ -125,7 +125,7 @@ const handleSignup = async () => {
           </form>
           <div class="d-flex justify-content-center mt-3">
               <button
-                class="btn btn-secondary text-white"
+                class="btn back"
                 @click="router.push('/SignIn')"
               >
                 Back to Sign In
@@ -162,5 +162,30 @@ const handleSignup = async () => {
 
 .card {
   border-radius: 1rem;
+  background-color: #333435;
+  color: white;
 }
+input[type="text"],input[type="email"],input[type="password"]{
+  background-color: #545454;
+  color: #fafefb;
+  border-color: #777676;
+}
+.submit{
+  background-color: rgba(187, 182, 182, 0.9);
+  width: 20%
+
+}
+.back{
+  background-color: rgba(187, 182, 182, 0.9);
+  width: 20%;
+}
+.submit, .back{
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.submit:hover, .back:hover{
+  background-color: rgba(239, 238, 238, 0.9);
+  color: rgb(39, 39, 39);
+}
+
 </style>

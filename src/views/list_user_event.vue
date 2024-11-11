@@ -64,7 +64,7 @@
             </ul>
           </div>
           <div v-else>
-            <p class="text-center text-dark">No events found.</p>
+            <p class="text-center text-light">No events found.</p>
           </div>
         </div>
       </div>
