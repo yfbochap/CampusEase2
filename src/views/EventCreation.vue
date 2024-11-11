@@ -435,7 +435,8 @@
           thumbnailPhoto.value = null;
           selectedLocation.value = '';
           otherLocation.value = '';
-      }
+          thumbnailPreview.value = '';
+          setTimeout(() => {router.push("/your_events");}, 4000);}
 
     else {
         console.error('Error: Failure to create event.');
@@ -633,11 +634,11 @@ textarea:focus{
   flex: 1;
 }
 .close-icon {
-  font-size: 30px; /* Standard close button size */
-  color: darkolivegreen; /* Default color for the close button (black) */
-  background: transparent; /* Transparent background */
-  border: none; /* Remove border */
-  cursor: pointer; /* Change the cursor to a pointer on hover */
+  font-size: 30px; 
+  color: darkolivegreen; 
+  background: transparent; 
+  border: none; 
+  cursor: pointer; 
 }
 /* ANIMATION FOR MODAL */
 .fixed-alert {

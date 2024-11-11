@@ -280,3 +280,16 @@ export async function getLikedUsersByEventId(event_id) {
 }
 
 
+export async function deleteEventByEventID(id){
+  console.log(id)
+  try {
+    const { data, error } = await supabase
+      .from('event') 
+      .delete()
+      .eq('id', id); 
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error deleting event:', error);
+  }
+
+}
