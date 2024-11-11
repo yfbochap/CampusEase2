@@ -498,7 +498,14 @@
 
       for (const [index, item] of imagesToUpload.entries()){
         const uploadedPath = await uploadImage(item, 'additional', eventName.value, index);
-        uploadedImages.push(uploadedPath);
+        if (uploadedPath){
+          uploadedImages.push(uploadedPath);
+        }
+        else{
+          errorText.value = "An Extra Image Has An Error. Please Use Another Image";
+          openAlert_errors();
+          return;
+        }
       }
 
       console.log("Uploaded images: ", uploadedImages)

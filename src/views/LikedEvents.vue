@@ -1,11 +1,11 @@
 <template>
   <div class="background-wrapper d-flex justify-content-center align-items-center">
-    <div class="calendar-card p-4 shadow">
+    <div class="calendar-card p-4 shadow ">
       <div class="calendar-header">
-        <h2 class="text-center text-dark">Your Liked Events</h2>
-        <p class="text-center text-dark">Check Out Your Liked Events Here!</p>
+        <h2 class="text-center ">Your Liked Events</h2>
+        <p class="text-center ">Check Out Your Liked Events Here!</p>
       </div>
-      <div class="calendar-content">
+      <div class="calendar-content your-scrollable-element">
         <div v-if="events.length">
           <ul class="list-unstyled">
             <li v-for="event in events" :key="event.id" class="event-card mx-2 mb-3 p-3 text-dark">
@@ -116,6 +116,15 @@ export default {
 </script>
 
 <style scoped>
+.your-scrollable-element {
+  overflow: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.your-scrollable-element::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
 .event-link {
   color: inherit; 
   text-decoration: none; 
@@ -144,18 +153,20 @@ export default {
   max-height: 80vh;
   width: 40vw;
   border-radius: 10px;
-  background-color: #f8f9fa;
+  background-color: #333435;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  
 }
 
 .calendar-header {
   position: sticky;
   top: 0;
-  background-color: #f8f9fa;
+  background-color: #333435;
   z-index: 10;
-  padding-bottom: 8px;
+  /* padding-bottom: 8px; */
+  color: white;
 }
 
 .calendar-content {

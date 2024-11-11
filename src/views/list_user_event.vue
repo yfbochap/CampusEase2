@@ -10,37 +10,56 @@
     <div class="background-wrapper d-flex justify-content-center align-items-center">
       <div class="calendar-card p-4 shadow">
         <div class="calendar-header">
-          <h2 class="text-center text-dark">Your Created Events</h2>
-          <p class="text-center text-dark">Manage the events you've created!</p>
+          <h2 class="text-center">Your Created Events</h2>
+          <p class="text-center ">Manage the events you've created!</p>
         </div>
-        <div class="calendar-content">
+        <div class="calendar-content your-scrollable-element">
           <div v-if="userEvents.length">
             <ul class="list-unstyled">
-              <li v-for="event in userEvents" :key="event.id" class="event-card mb-2 p-3 text-dark">
-                <div class="d-flex justify-content-between align-items-center">
-                  <router-link 
-                    :to="{ name: 'event', params: { id: event.id, name: event.event_name } }" 
-                    class="event-link">
-                    <h5 class="card-title">{{ event.event_name }} &nbsp;<i class="bx bx-link-external"></i></h5> 
-                  </router-link>
-                  <div class="d-flex align-items-center">
-                    <div>
-                      <span class="like-count me-3">{{ event.likeCount }} Likes</span>
+                <li 
+                    v-for="event in userEvents" 
+                    :key="event.id" 
+                    class="event-card mb-3 p-3 text-dark border rounded bg-light"
+                    >
+                    <!-- Card header with event title and link -->
+                    <div class="d-flex">
+
+                        <div class="col d-flex flex-column  align-items-start maindeets">
+                        <router-link 
+                        :to="{ name: 'event', params: { id: event.id, name: event.event_name } }" 
+                        class="event-link mb-2 mb-sm-0"
+                        >
+                        <h5 class="card-title">{{ event.event_name }} &nbsp;<i class="bx bx-link-external"></i></h5>
+                        </router-link>
+                        
+                        <span class="like-count mb-2 mb-sm-0 me-sm-3">{{ event.likeCount }} Likes</span>
+
+                        <div class="row">
+                        <p class="mb-2">{{ event.location_short }}</p>
+                        <p style="font-size: 12px;">
+                            {{ getDates(event.start_date_time, event.end_date_time) }}<br>
+                            {{ getTime(event.start_date_time, event.end_date_time) }}
+                        </p>
+                        </div>
+
+                        
+                        <!-- </div> -->
                     </div>
-                    <div>
-                      <button @click="editEvent(event.id)" class="btn btn-primary me-2">Edit</button>
-                    </div>
-                    <div>
-                      <button class="btn btn-danger">Delete</button>
-                    </div>
-                  </div>
+                    <div class="button-container d-flex align-items-start ms-auto">
+                        <button 
+                            @click="editEvent(event.id)" 
+                            class="btn"
+                        >
+                            <i class="bx bx-edit btnns"></i>
+                        </button>
+                        <button class="btn">
+                            <i class="bx bx-trash btnns"></i>
+                        </button>
+                        </div>
                 </div>
-                <p class="mb-2">{{ event.location_short }}</p>
-                <p style="font-size: 12px;">
-                  {{ getDates(event.start_date_time, event.end_date_time) }}<br>
-                  {{ getTime(event.start_date_time, event.end_date_time) }}
-                </p>
-              </li>
+                    
+                    </li>
+
             </ul>
           </div>
           <div v-else>
@@ -150,6 +169,42 @@
 
 
 <style>
+/* For Chrome, Edge, Safari */
+.your-scrollable-element {
+  overflow: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.your-scrollable-element::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+.bx-trash{
+    color: red;
+    
+}
+
+.btnns{
+    font-size: 28px;
+}
+
+i{
+    color: black;
+    font-size: 25px;
+   
+}
+/* For extra-small screens (below 576px) */
+@media (max-width: 575.98px) {
+  .button-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    margin-top: auto; /* Push buttons to the bottom */
+    width: 100%;
+  }
+}
+
+
 .background-wrapper {
   background-image: url('@/assets/images/bg-9.jpg');
   background-size: cover;
@@ -165,17 +220,20 @@
 
 .calendar-card {
   width: 45vw;
-  background-color: #f8f9fa;
+  background-color: #333435;
   border-radius: 15px;
+  
 }
 
 .calendar-header {
   margin-bottom: 20px;
+  color: white;
 }
 
 .calendar-content {
   max-height: 50vh;
   overflow-y: auto;
+  background-color: #333435;
 }
 
 .event-card {

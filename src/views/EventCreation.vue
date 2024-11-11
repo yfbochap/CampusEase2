@@ -1,125 +1,128 @@
 <template>
   <div class="background-wrapper">
-  <div class="container-fluid">
-    <div v-if="alertVisible_errors" class="fixed-alert alert alert-danger  d-flex justify-content-between align-items-center slide-down-enter-active slide-up-exit-active" role="alert">
-      <h5 class="m-0">{{ errorText }}</h5>
-      <button type="button" class="close close-icon alertclose" @click="closeAlert_errors" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
+    <div class="container-fluid">
+      <div v-if="alertVisible_errors" class="fixed-alert alert alert-danger d-flex justify-content-between align-items-center slide-down-enter-active slide-up-exit-active" role="alert">
+        <h5 class="m-0">{{ errorText }}</h5>
+        <button type="button" class="close close-icon alertclose" @click="closeAlert_errors" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
 
-    <div v-if="alertVisible" class="fixed-alert alert alert-success  d-flex justify-content-between align-items-center slide-down-enter-active" role="alert">
-      <h5 class="m-0">Event Created Succesfully!</h5>
-      <button type="button" class="close close-icon alertclose" @click="closeAlert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-
-
-    <form class="mt-4 d-flex">
-      <div class="left-column">
-        <label for="thumbnailPhoto" class="form-label">Thumbnail Photo (Mandatory)</label>
-        <div class="thumbnail-box" style="border-radius: 10px;">
-          <input type="file" id="thumbnailPhoto" @change="handleThumbnailPhoto" accept="image/*" required>
-          <div class="plus-icon">+</div>
-          <img v-if="thumbnailPhoto" :src="thumbnailPreview" alt="Thumbnail" class="thumbnail-preview">
-          <button v-if="thumbnailPhoto" @click="removeThumbnail" class="remove-icon">X</button>
-        </div>
-
-        <label for="eventPhotos1" class="form-label">Additional Photos (Optional)</label>
-        <div class="small-photo-wrapper">
-          <div class="small-photo-box" v-for="(photo, index) in 3" :key="index" style="border-radius: 7px;">
-            <input type="file" class="form-control" :id="'eventPhotos' + (index + 1)" @change="(e) => { handlePhotos(index)(e); }" accept="image/*">
+      <div v-if="alertVisible" class="fixed-alert alert alert-success d-flex justify-content-between align-items-center slide-down-enter-active" role="alert">
+        <h5 class="m-0">Event Created Successfully!</h5>
+        <button type="button" class="close close-icon alertclose" @click="closeAlert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    
+      <form class="mt-4 d-flex justify-content-center flex-wrap">
+        <div class= "me-4">
+          <label for="thumbnailPhoto" class="form-label">Thumbnail Photo (Mandatory)</label>
+          <div class="thumbnail-box" style="border-radius: 10px;">
+            <input type="file" id="thumbnailPhoto" @change="handleThumbnailPhoto" accept="image/*" required>
             <div class="plus-icon">+</div>
-            <img v-if="eventPhotosPreview[index]" :src="eventPhotosPreview[index]" alt="Event Photo" class="small-photo-preview">
-            <button v-if="eventPhotosPreview[index]" @click="removePhoto(index)" class="remove-icon">X</button>
+            <img v-if="thumbnailPhoto" :src="thumbnailPreview" alt="Thumbnail" class="thumbnail-preview">
+            <button v-if="thumbnailPhoto" @click="removeThumbnail" class="remove-icon">X</button>
+          </div>
+
+          <label for="eventPhotos1" class="form-label">Additional Photos (Optional)</label>
+          <div class="small-photo-wrapper">
+            <div class="small-photo-box" v-for="(photo, index) in 3" :key="index" style="border-radius: 7px;">
+              <input type="file" class="form-control" :id="'eventPhotos' + (index + 1)" @change="(e) => { handlePhotos(index)(e); }" accept="image/*">
+              <div class="plus-icon">+</div>
+              <img v-if="eventPhotosPreview[index]" :src="eventPhotosPreview[index]" alt="Event Photo" class="small-photo-preview">
+              <button v-if="eventPhotosPreview[index]" @click="removePhoto(index)" class="remove-icon">X</button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="right-column ms-4">
-        <div class="mb-3 d-flex location-venue-container">
-          <div class="flex-half">
-          <label for="eventName" class="form-label">Event Name</label>
-          <input type="text" class="form-control" id="eventName" v-model="eventName" required>
-        </div>
+        <div class="right-column">
+          <div class="mb-3 d-flex flex-wrap gap-2">
+            <div class="flex-grow-1 same-width">
+              <label for="eventName" class="form-label">Event Name</label>
+              <input type="text" class="form-control" id="eventName" v-model="eventName" required>
+            </div>
+            <div class="flex-grow-1 same-width">
+              <label for="eventType" class="form-label">Event Category</label>
+              <select id="eventType" class="form-control" v-model="eventType" required>
+                <option value="Academic">Academic</option>
+                <option value="Sports">Sports</option>
+                <option value="Arts">Arts</option>
+                <option value="Networking">Networking</option>
+                <option value="Charity">Charity</option>
+                <option value="Community">Community</option>
+                <option value="Welfare">Welfare</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
+          </div>
+        
+     
+          <!-- Location and Venue fields in one row for medium and above screens -->
+          <div class="mb-3 d-flex flex-wrap gap-2 location-venue-container">
+            <div class="flex-grow-1 same-width">
+              <label for="location" class="form-label">Location</label>
+              <select id="location" class="form-control" v-model="selectedLocation" required>
+                <option value="Administration Building">Administration Building</option>
+                <option value="Campus Green">Campus Green</option>
+                <option value="Lee Kong Chian School of Business">Lee Kong Chian School of Business</option>
+                <option value="Li Ka Shing Library">Li Ka Shing Library</option>
+                <option value="Prinsep Street Residences">Prinsep Street Residences</option>
+                <option value="School of Accountancy">School of Accountancy</option>
+                <option value="School of Computing & Information Systems 1">School of Computing & Information Systems 1</option>
+                <option value="School of Economics/School of Computing & Information Systems 2">School of Economics/School of Computing & Information Systems 2</option>
+                <option value="School of Social Sciences/College of Integrative Studies">School of Social Sciences/College of Integrative Studies</option>
+                <option value="SMU Connexion">SMU Connexion</option>
+                <option value="Yong Pung How School of Law/Kwa Geok Choo Law Library">Yong Pung How School of Law/Kwa Geok Choo Law Library</option>
+                <option value="T-Junction">T-Junction</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
 
-        <div class="flex-half ms-2">
-          <label for="eventType" class="form-label">Event Category</label>
-          <select id="eventType" class="form-control" v-model="eventType" required>
-            <option value="Academic">Academic</option>
-            <option value="Sports">Sports</option>
-            <option value="Arts">Arts</option>
-            <option value="Networking">Networking</option>
-            <option value="Charity">Charity</option>
-            <option value="Community">Community</option>
-            <option value="Welfare">Welfare</option>
-            <option value="Others">Others</option>
-          </select>
-        </div>
-        </div>
+            <div v-if="selectedLocation === 'Other'" class="flex-grow-1 same-width">
+              <label for="otherLocation" class="form-label">Google Maps Address</label>
+              <input type="text" v-model="otherLocation" id="otherLocation" class="form-control" placeholder="Specify location" required autocomplete="off">
+            </div>
 
-        <div class="mb-3 d-flex location-venue-container">
-          <div class="flex-half">
-          <label for="location" class="form-label">Location</label>
-          <select id="location" class="form-control" v-model="selectedLocation" required>
-            <option value="Administration Building">Administration Building</option>
-            <option value="Campus Green">Campus Green</option>
-            <option value="Lee Kong Chian School of Business">Lee Kong Chian School of Business</option>
-            <option value="Li Ka Shing Library">Li Ka Shing Library</option>
-            <option value="Prinsep Street Residences">Prinsep Street Residences</option>
-            <option value="School of Accountancy">School of Accountancy</option>
-            <option value="School of Computing & Information Systems 1">School of Computing & Information Systems 1</option>
-            <option value="School of Economics/School of Computing & Information Systems 2">School of Economics/School of Computing & Information Systems 2</option>
-            <option value="School of Social Sciences/College of Integrative Studies">School of Social Sciences/College of Integrative Studies</option>
-            <option value="SMU Connexion">SMU Connexion</option>
-            <option value="Yong Pung How School of Law/Kwa Geok Choo Law Library">Yong Pung How School of Law/Kwa Geok Choo Law Library</option>
-            <option value="T-Junction">T-Junction</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        &nbsp;&nbsp;
-        <div v-if="selectedLocation === 'Other'" class="mb-3">
-          <label for="otherLocation" class="form-label">Google Maps Address</label>
-          <input type="text" v-model="otherLocation" id="otherLocation"  class="form-control" placeholder="Specify location" required autocomplete="off">
-        </div>
+            <div class="flex-grow-1 same-width">
+              <label for="eventVenue" class="form-label">Venue</label>
+              <input type="text" class="form-control" id="eventVenue" v-model="eventVenue" required>
+            </div>
+          </div>
 
-        <div class="flex-half ms-2">
-          <label for="eventVenue" class="form-label">Venue</label>
-          <input type="text" class="form-control" id="eventVenue" v-model="eventVenue" required>
-        </div>
-      </div>
+          <!-- Start and End Date fields in one row for medium and above screens -->
+          <div class="mb-3 d-flex flex-wrap gap-2">
+            <div class="flex-grow-1 same-width">
+              <label for="eventStartDateTime" class="form-label">Start Date</label>
+              <input type="datetime-local" class="form-control" id="eventStartDateTime" v-model="eventStartDateTime" required>
+            </div>
 
-        <div class="mb-3">
-          <label for="eventStartDateTime" class="form-label">Start Date</label>
-          <input type="datetime-local" class="form-control" id="eventStartDateTime" v-model="eventStartDateTime" required>
-        </div>
+            <div class="flex-grow-1 same-width">
+              <label for="eventEndDateTime" class="form-label">End Date</label>
+              <input type="datetime-local" class="form-control" id="eventEndDateTime" v-model="eventEndDateTime" required>
+            </div>
+          </div>
 
-        <div class="mb-3">
-          <label for="eventEndDateTime" class="form-label">End Date</label>
-          <input type="datetime-local" class="form-control" id="eventEndDateTime" v-model="eventEndDateTime" required>
-        </div>
+          <div class="mb-3">
+            <label for="eventDescription" class="form-label">Description</label>
+            <textarea class="form-control" id="eventDescription" rows="3" v-model="eventDescription" required></textarea>
+          </div>
 
-        <div class="mb-3">
-          <label for="eventDescription" class="form-label">Description</label>
-          <textarea class="form-control" id="eventDescription" rows="3" v-model="eventDescription" required></textarea>
-        </div>
+          <div class="mb-3">
+            <label for="eventOrganisation" class="form-label">Organisation (Optional)</label>
+            <input type="text" class="form-control" id="eventOrganisation" v-model="eventOrganisation">
+          </div>
 
-        <div class="mb-3">
-          <label for="eventOrganisation" class="form-label">Organisation (Optional)</label>
-          <input type="text" class="form-control" id="eventOrganisation" v-model="eventOrganisation">
-        </div>
+          <div class="mb-3">
+            <label for="eventSignUp" class="form-label">Sign-up Link (Optional)</label>
+            <input type="url" class="form-control" id="eventSignUp" v-model="eventSignUp" placeholder="https://example.com/sign-up">
+          </div>
 
-        <div class="mb-3">
-          <label for="eventSignUp" class="form-label">Sign-up Link (Optional)</label>
-          <input type="url" class="form-control" id="eventSignUp" v-model="eventSignUp" placeholder="https://example.com/sign-up">
+          <button type="button" @click="submitEvent" class="btn text-white" id="submitButton">Create Event</button>
         </div>
-
-        <button type="button" @click="submitEvent" class="btn text-white" id="submitButton">Create Event</button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
-</div>
 </template>
 
 <script setup>
@@ -508,6 +511,82 @@
   }
 }
 
+@media (max-width: 768px) {
+  .right-column {
+    flex: 1 1 100%;
+  }
+
+  .location-venue-container {
+    flex-direction: column; /* Stack the Location and Venue fields */
+  }
+
+  .mb-3.d-flex {
+    flex-direction: column;
+  }
+}
+
+.location-venue-container {
+  display: flex;
+  gap: 2rem;
+}
+
+@media (max-width: 564px) {
+  .container-fluid {
+    padding-top: 50px;
+    margin: auto;
+  }
+
+  .right-column {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+  }
+
+  
+
+  /* Stretch input fields in right column */
+  .right-column input[type="text"],
+  .right-column input[type="datetime-local"],
+  .right-column input[type="url"],
+  .right-column select,
+  .right-column textarea {
+    width: 100%;
+  }
+
+  .location-venue-container {
+    flex-direction: column;
+  }
+
+  /* Center the thumbnail box with fixed width */
+  .thumbnail-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    max-width: 400px; /* Sets a fixed width for centering */
+  }
+
+  .small-photo-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  /* Ensure each small photo box is centered and has a defined size */
+  .small-photo-box {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+  }
+}
+
+
 input[type="text"],input[type="datetime-local"],input[type="url"], select, textarea {
   background-color: #6e6868;
   color: #fafefb;
@@ -525,6 +604,7 @@ textarea:focus{
   justify-content: center;
   align-items: center;
   height: 400px;
+  width: 100%;
   cursor: pointer;
   position: relative;
   margin-bottom: 1rem;
@@ -594,17 +674,26 @@ textarea:focus{
     background: darkred;
 }
 
-
-.left-column {
-  width: 40%;
-  margin-right: 2%;
+.same-width {
+  flex: 1 1 0;
+  flex-grow: 1;
+  min-width: 200px;
 }
+
+/* Layout adjustments for medium screens */
+.flex-md-100 {
+  flex: 1 1 100%;
+}
+
 .right-column {
   width: 60%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
+  flex: 2;
+  min-width: 300px;
+  margin-right: 20px;
 }
 .small-photo-wrapper {
   display: flex;
