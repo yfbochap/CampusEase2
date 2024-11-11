@@ -35,4 +35,16 @@
         text-decoration: underline;
         border-radius: 5px;
     }
+    /* Responsive font size for navigation links on extra-small screens */
+  @media (max-width: 575.98px) { 
+  .nav-link {
+    font-size: 12px; /* Reduce font size on extra-small screens */
+    padding: 5px; /* Adjust padding to fit all links in one row */
+    margin-right: 10px; /* Add some spacing between links */
+  }
+  footer ul.nav {
+    flex-wrap: nowrap; /* Ensure links stay in one row */
+  }
+}
+
 </style>
