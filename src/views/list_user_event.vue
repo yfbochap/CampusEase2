@@ -53,7 +53,7 @@
                         >
                             <i class="bx bx-edit btnns"></i>
                         </button>
-                        <button class="btn" @click="deleteEvent()">
+                        <button class="btn" @click="deleteEvent(event.id)">
                             <i class="bx bx-trash btnns"></i>
                         </button>
                         </div>
@@ -137,6 +137,7 @@
             return `${startTimeFormatted} - ${endTimeFormatted}`;
             },
             deleteEvent(id){
+              console.log(id)
               this.delete_event_id = id
               this.deleteButton = true
               this.errorText = "Delete Event?"
@@ -152,10 +153,11 @@
             async confirmDelete(){
               this.closeAlert_errors()
               let id = this.delete_event_id
+              console.log(id)
               await deleteEventByEventID(id)
-              this.openAlert_errors()
               this.deleteButton = false
               this.errorText = "Event Deleted"
+              this.openAlert_errors()
               await this.getUserEvents()
             },
         },
