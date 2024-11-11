@@ -491,7 +491,7 @@
           openAlert()
           setTimeout(() => {
             router.push({ name: 'event', params: { id: createdEvent[0].id, name: eventName.value } });
-          }, 4000);
+          }, 6000);
 
           // Clear form fields
           // eventName.value = '';

@@ -1,18 +1,25 @@
 <template>
   <div class="main container-fluid">
-    <div class="row">
+    <div class="row align-items-start">
       <!-- Photos Section -->
       <div class="col-md-6 photos d-flex justify-content-center">
         <div>
-          <img :src=thumbnail :alt=eventTitle  id="thumbnail" class="img-fluid" />
+          <img 
+    :src="thumbnail" 
+    :alt="eventTitle"  
+    id="thumbnail" 
+    class="img-fluid fade-in" 
+    style="animation-delay: 0.2s;"
+  />
 
-          <div class="gallery d-flex flex-wrap mt-3">
+          <div class="gallery d-flex flex-wrap mt-3 ">
             <img
               v-for="(photo, index) in galleryPhotos"
               :key="index"
               :src="photo.src"
               :alt="photo.alt"
-              class="small-photo"
+              class="small-photo fade-in"
+              :style="{ animationDelay: (index + 1) * 0.3 + 's' }"
               @click="openLightbox(photo.src)"
             />
           </div>
@@ -21,41 +28,46 @@
 
       <!-- Event Details Section -->
       <div class="col-md-6 details">
-        <div>
-          <h2 id="eventTitle" class="d-inline-block mr-3">
-            {{ eventTitle }}
-            <span v-if="this.user_id != null">
-              <HeartIcon :isLiked="isLiked" :eventId="Number(eventID)" :userId="user_id" @toggle-like="toggleLikeStatus"/>
-            </span>
-          </h2>
-          <hr>
-          
-          <br>
-          <p style="white-space: pre-line">{{ description }}</p>
-
-          <div class="row">
-            <div class="col-6">
-              <h3>Location</h3>
-            <p>{{ location }}</p>
-            </div>
-            <div class="col-6">
-              <h3>Venue</h3>
-              <p>{{ venue }}</p>
-            </div>
-
-          </div>
-
-
-          <h3>Time</h3>
-          <p>{{ time }}</p>
-
-        <h5>
-          <u style="color: green;"><a class= "btn btn-outline-success d-inline-flex align-items-center" v-if='signUpLink != ""' :href="signUpLink" target="_blank">Sign Up here!&nbsp;<i class="bx bx-link-external"></i></a></u> &nbsp;
-          <u><a class="btn btn-outline-light d-inline-flex align-items-center" src="" @click="handleEventsCalendar">Add to Calendar&nbsp;<i class="bx bx-calendar"></i></a></u>
-        </h5>
+  <h2 id="eventTitle" class="d-inline-block mr-3">
+    {{ eventTitle }}
+    <span v-if="user_id != null">
+      <HeartIcon :isLiked="isLiked" :eventId="Number(eventID)" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+    </span>
+  </h2>
   
-      </div>
+  <hr>
+  
+  <p style="white-space: pre-line">{{ description }}</p>
+
+  <div class="row">
+    <div class="col-6">
+      <h3>Location</h3>
+      <p>{{ location }}</p>
     </div>
+    <div class="col-6">
+      <h3>Venue</h3>
+      <p>{{ venue }}</p>
+    </div>
+  </div>
+
+  <h3>Time</h3>
+  <p>{{ time }}</p>
+
+  <h5>
+    <u style="color: green;">
+      <a class="btn btn-outline-success d-inline-flex align-items-center" v-if="signUpLink != ''" :href="signUpLink" target="_blank">
+        Sign Up here!&nbsp;<i class="bx bx-link-external"></i>
+      </a>
+    </u> 
+    &nbsp;
+    <u>
+      <a class="btn btn-outline-light d-inline-flex align-items-center" @click="handleEventsCalendar">
+        Add to Calendar&nbsp;<i class="bx bx-calendar"></i>
+      </a>
+    </u>
+  </h5>
+</div>
+
 
       <!-- Lightbox -->
       <div v-if="lightboxVisible" id="lightbox" class="lightbox align-items-center justify-content-center" @click.self="closeLightbox">
@@ -113,6 +125,19 @@ export default {
   mounted(){
     this.getEvent()
     console.log(this.id)
+    const elements = document.querySelectorAll('.details > *, .gallery > img, .photos > img');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationPlayState = 'running';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    elements.forEach(element => {
+      element.style.animationPlayState = 'paused';
+      observer.observe(element);
+    });
   },
   components: {
     HeartIcon
@@ -328,6 +353,10 @@ export default {
 
 
 <style scoped>
+#thumbnail{
+  width: 400px;
+  height: auto;
+}
 body {
   background-color: #29292a;
   font-family: 'Nunito Sans';
@@ -336,11 +365,7 @@ h2{
   /* margin-bottom: 30px; */
   color: white;
 }
-.photos > img#thumbnail {
-  width: 400px;
-  height: auto;
-  margin-top: 70px;
-}
+
 .gallery {
   display: flex;
   margin-top: 10px;
@@ -406,6 +431,7 @@ h2{
 .photos > img,
 .galler > img {
   opacity: 0;
+  transform: translateY(20px);
   animation: fadeIn 0.6s forwards;
 }
 @keyframes fadeIn {
@@ -425,59 +451,37 @@ h2{
   min-height: 100vh;
   
 }
-/* Apply animation delays dynamically for each child element */
-.details > *:nth-child(1) {
-    animation-delay: 0.2s;
-}
-.details > *:nth-child(2) {
-    animation-delay: 0.4s;
-}
-.details > *:nth-child(3) {
-    animation-delay: 0.6s;
-}
-.details > *:nth-child(4) {
-    animation-delay: 0.8s;
-}
-.details > *:nth-child(5) {
-    animation-delay: 1s;
-}
-.details > *:nth-child(6) {
-    animation-delay: 1.2s;
-}
-.details > *:nth-child(7) {
-    animation-delay: 1.4s;
-}
-.details > *:nth-child(8) {
-    animation-delay: 1.6s;
-}
-.details > *:nth-child(9) {
-    animation-delay: 1.8s;
-}
-.details > *:nth-child(10) {
-    animation-delay: 2s;
-}
-.details > *:nth-child(11) {
-    animation-delay: 2.2s;
-}
-.details > *:nth-child(12) {
-    animation-delay: 2.2s;
-}
-/* Sequential delay for the thumbnail and gallery images */
-.photos > img#thumbnail {
-    animation-delay: 0.2s; /* Thumbnail fades in first */
+/* Sequential delay for the details section */
+.details > *:nth-child(1) { animation-delay: 0.2s; }
+.details > *:nth-child(2) { animation-delay: 0.4s; }
+.details > *:nth-child(3) { animation-delay: 0.6s; }
+.details > *:nth-child(4) { animation-delay: 0.8s; }
+.details > *:nth-child(5) { animation-delay: 1s; }
+.details > *:nth-child(6) { animation-delay: 1.2s; }
+.details > *:nth-child(7) { animation-delay: 1.4s; }
+.details > *:nth-child(8) { animation-delay: 1.6s; }
+.details > *:nth-child(9) { animation-delay: 1.8s; }
+
+#thumbnail {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeIn 0.6s forwards;
 }
 
-.gallery > img:nth-child(1) {
-    animation-delay: 0.5s; /* First small photo */
+/* Apply fade-in animation to each gallery photo */
+.gallery img {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeIn 0.6s forwards;
 }
 
-.gallery > img:nth-child(2) {
-    animation-delay: 0.6s; /* Second small photo */
-}
+/* Sequential animation delays for gallery photos */
+.gallery img:nth-child(1) { animation-delay: 0.5s; }
+.gallery img:nth-child(2) { animation-delay: 0.7s; }
+.gallery img:nth-child(3) { animation-delay: 0.9s; }
+.gallery img:nth-child(4) { animation-delay: 1.1s; }
+.gallery img:nth-child(5) { animation-delay: 1.3s; }
 
-.gallery > img:nth-child(3) {
-    animation-delay: 0.8s; /* Third small photo */
-}
 p{
   margin-bottom: 25px;
         }

@@ -20,7 +20,7 @@
     <div class="container my-4">
       <div class="row justify-content-center">
         <!-- Dynamically responsive columns -->
-        <div class="col-10 col-sm-6 col-md-6 col-lg-7 col-xl-7">
+        <div class="col-10 col-sm-6 col-md-6 col-lg-7 col-xl-7 mainbulk">
           <div class="about-section">
             <img src="@/assets/images/CElogo1-1.png" alt="Campus Ease Logo" class="about-logo img-fluid" />
             <img src="@/assets/images/about-desc1.png" alt="Campus Ease Description" class="about-description img-fluid" />
@@ -60,6 +60,12 @@ export default {
 </script>
 
 <style scoped>
+
+.mainbulk{
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+}
+
 body {
   font-family: sans-serif;
   display: flex;
@@ -100,8 +106,9 @@ video {
 /* About section styling */
 .about-section {
   padding: 10px;
-  background: rgba(255, 255, 255, 0.8);
+  /* background: rgba(255, 255, 255, 0.8); */
   text-align: center;
+
 }
 
 /* Limit the container max-width at large screen sizes */
@@ -127,7 +134,6 @@ video {
   padding-bottom: 10px;
   padding-left: 30px;
   padding-right: 30px;
-  background-color: rgba(255, 255, 255, 0.8);
   color: black;
 }
 
@@ -137,9 +143,9 @@ video {
 }
 
 .faq-item {
-  background-color: white;
+  background: rgba(255, 255, 255, 0.8);
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 10px;
   margin-bottom: 15px;
 }
 
@@ -148,12 +154,13 @@ video {
   padding: 15px;
   cursor: pointer;
   font-weight: bold;
-  background-color: #fff;
+  background: rgba(255, 255, 255, 0.7);
   color: black;
+  border-radius: 10px;
 }
 
 .faq-question:hover {
-  background-color: #f1f1f1;
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .faq-answer {
