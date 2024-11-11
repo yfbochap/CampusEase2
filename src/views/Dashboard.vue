@@ -24,6 +24,7 @@
       </div>
   <!-- </div> -->
 
+  <!-- Map View -->
   <div v-else>
     <div id="mapDimensions">
           <div id="map"></div>
@@ -37,31 +38,31 @@
               <div class="carousel-inner">
               <div
                   class="carousel-item"
-                  :class="{ active: index === 0 }"
+                  :class="{ active: index === activeIndex}"
                   v-for="(eventGroup, index) in groupedEvents"
-                  :key="index">
+                  :key="index"> current {{ index }} and {{ activeIndex }}
 
                   <div class="row d-flex justify-content-center">
                     <div class="col-sm-8 col-md-5 col-lg-3 align-items-stretch" v-for="event in eventGroup" :key="event.id">
                       
                         <div class="card mb-4">
                           <div class="card-body d-flex flex-column">
-                            <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
-                            <img class="event-image" :src=getPhotoURL(event) alt="Event Image">
-                          </router-link>
-                                    <div class="d-flex justify-content-center align-center" v-if='user_id != null'>
-                                      <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/> 
-                                      <span>
-                                        {{ eventLikes[event.id] || 0 }} People Liked
-                                      </span>
-                                    </div>
-                          <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
+                            <router-link :to="{name: 'event', params: { id: event.id, name: event.event_name}}" class="event-link">
+                              <img class="event-image" :src=getPhotoURL(event) alt="Event Image">
+                            </router-link>
+                            <div class="d-flex justify-content-center align-center" v-if='user_id != null'>
+                              <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/> 
+                              <span>
+                                {{ eventLikes[event.id] || 0 }} People Liked
+                              </span>
+                            </div>
+                            <router-link :to="{name: 'event', params: { id: event.id , name: event.event_name }}" class="event-link">
                               <h4 class="card-title">{{ event.event_name }}</h4>
                               <hr>
                               <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
                               <h6>{{  getTime(event.start_date_time, event.end_date_time) }}</h6>
                               <h6 class="card-subtitle">{{ event.location_short }}</h6>
-                          </router-link>
+                            </router-link>
                           </div>
                         </div>
                     </div>
@@ -70,12 +71,12 @@
               </div>
       
               <!-- Carousel controls -->
-              <button class="carousel-control-prev" type="button" data-bs-target="#carouselMap" data-bs-slide="prev">
+              <button class="carousel-control-prev" @click ="changeSlide('prev')" type="button" data-bs-target="#carouselMap" data-bs-slide="prev">
               <span class="carousel-control-prev-icon" aria-hidden="true"></span>
               <span class="visually-hidden">Previous</span>
               </button>
 
-              <button class="carousel-control-next" type="button" data-bs-target="#carouselMap" data-bs-slide="next">
+              <button class="carousel-control-next" type="button" @click ="changeSlide('next')"  data-bs-target="#carouselMap" data-bs-slide="next">
               <span class="carousel-control-next-icon" aria-hidden="true"></span>
               <span class="visually-hidden">Next</span>
               </button>
@@ -137,6 +138,7 @@
                                     </div>
                                     <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
                                       <h4 class="card-title" style="cursor: pointer;">{{ event.event_name }}</h4>
+                                      <hr>
                                       <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
                                       <h6>{{ getTime(event.start_date_time,event.end_date_time) }}</h6>
                                       <h6 class="card-subtitle ">{{ event.location_short}}</h6>
@@ -173,7 +175,6 @@
         selectedEvent: null, // Variable to hold the selected event details
         map:null, // Google Map holder
         debounceTimeout: null,
-        markerCluster: null,
         searchTerm: "", //Search term input by user
         searchedEvents: [],
         selectedCategory: "All",
@@ -181,6 +182,7 @@
         user_id: '',
         event_id: '',
         eventLikes: {},
+        activeIndex: 0,
       };
     },
 
@@ -188,18 +190,26 @@
     HeartIcon
   },
 
-  computed: {
-    groupedEvents() { //show events in groups
-      const num = this.numEventsGroup;
-      return this.events.reduce((acc, event, index) => {
-        const groupIndex = Math.floor(index / num);
-        if (!acc[groupIndex]) acc[groupIndex] = [];
-        acc[groupIndex].push(event);
-        return acc;
-      }, []);
+  watch: {
+    // Watch the groupedEvents to reset activeIndex to 0 when the events update
+    groupedEvents(newVal) {
+        this.activeIndex = 0; // Reset to the first carousel item
     },
-
   },
+
+
+  computed: {
+  groupedEvents() {
+    const num = this.numEventsGroup; // Group events by numEventsGroup (3 by default)
+    return this.events.reduce((acc, event, index) => {
+      const groupIndex = Math.floor(index / num);
+      if (!acc[groupIndex]) acc[groupIndex] = [];
+      acc[groupIndex].push(event);
+      console.log("Filted events: " ,acc)
+      return acc;
+    }, []);
+  },
+},
   async created() {
       this.fetchEvents();
       this.getUserID();
@@ -216,15 +226,16 @@
   methods: {
       // Like Functionality
       preloadImages() {
-    const images = this.all_events.map(event => {
-      return this.getPhotoURL(event); // This will generate the URLs for the images
-    });
+        const images = this.all_events.map(event => {
+          return this.getPhotoURL(event); // This will generate the URLs for the images
+        });
 
-    images.forEach((imageUrl) => {
-      const img = new Image();
-      img.src = imageUrl; // Preload image by setting the source
-    });
-  },
+        images.forEach((imageUrl) => {
+          const img = new Image();
+          img.src = imageUrl; // Preload image by setting the source
+        });
+      },
+
       async fetchLikedEvents(){
         try{
           console.log("Checking Profile ID: ", this.user_id)
@@ -278,18 +289,35 @@
           }
       },
 
+      
+
       // Card related functions:
       setNumEventsGroup() { //change number of cards displayed due to different breakpoints 
           const width = window.innerWidth;
           if (width >= 992) {
-              this.numEventsGroup = 4; // Large 
+              this.numEventsGroup = 3; // Large 
           } else if (width >= 768) {
               this.numEventsGroup = 2; // Medium 
           } else {
               this.numEventsGroup = 1; // Small 
           } 
       },
-
+        changeSlide(direction) {
+          if (direction === 'prev') {
+            if (this.activeIndex > 0) {
+              this.activeIndex = this.activeIndex - 1;
+            } else {
+              this.activeIndex = this.groupedEvents.length - 1;
+            }
+          } 
+          else if (direction === 'next') {
+            if (this.activeIndex < this.groupedEvents.length - 1) {
+              this.activeIndex = this.activeIndex + 1;
+            } else {
+              this.activeIndex = 0;
+            }
+          }
+        },
 
       // Event fetching related functions:
       async fetchEvents() { // fetch events from database and sort according to date --> needs to run on initialisation
@@ -323,17 +351,23 @@
       },
 
       getDates(start, end) {
-      const formatDate = (isoString) => {
-        const date = new Date(isoString.substring(0, 10));
-        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        return `${date.getDate()} ${months[date.getMonth()]} ${String(date.getFullYear()).substring(2)} (${days[date.getDay()]})`;
-      };
-      const displayedStartDate = formatDate(start);
-      const displayedEndDate = formatDate(end);
-      return displayedStartDate === displayedEndDate ? displayedStartDate : `${displayedStartDate} - ${displayedEndDate}`;
-    },
+        if (start == "" && end == ""){
+          return ""
+        }
+        const formatDate = (isoString) => {
+          const date = new Date(isoString.substring(0, 10));
+          const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          return `${date.getDate()} ${months[date.getMonth()]} ${String(date.getFullYear()).substring(2)} (${days[date.getDay()]})`;
+        };
+        const displayedStartDate = formatDate(start);
+        const displayedEndDate = formatDate(end);
+        return displayedStartDate === displayedEndDate ? displayedStartDate : `${displayedStartDate} - ${displayedEndDate}`;
+      },
     getTime(start, end) {
+      if (start == "" && end == ""){
+        return ""
+      }
       const formatTime = (isoString) => {
         const [hour, minute] = isoString.substring(11, 16).split(':').map(Number);
         const period = hour >= 12 ? 'pm' : 'am';
@@ -420,6 +454,7 @@
                   event_visible.push(event)
               }
           });
+          console.log("Number of events visible on the map: ",event_visible.length)
 
           if(event_visible.length == 0){
               // console.log("here")
@@ -431,7 +466,7 @@
                   event_name:"There are currently no events near here!",
                   event_type:"",
                   external_url:"",
-                  id:"",
+                  id:"0",
                   location:"",
                   organisation:"",
                   photos:"",
@@ -440,10 +475,13 @@
                   place_lng:"",
                   start_date_time:"",
                   venue:"",
+                  thumbnail:"",
               }
               event_visible.push(dummy_event)
+              console.log("dummy event has been added")
           }
           this.events = event_visible
+          console.log("visible events appended")
       },
       debounce(func, delay) { //for reducing the API calls made
       return function (...args) {
@@ -513,6 +551,7 @@
 
 <style scoped>
 .event-link {
+  min-width: 250px;
   color: inherit; 
   text-decoration: none; 
   display: block; 
@@ -697,7 +736,7 @@
 }
 
 #map {
-  height: 550px;
+  height: 350px;
   width: 90%
 }
 

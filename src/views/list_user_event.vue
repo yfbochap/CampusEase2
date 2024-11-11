@@ -1,5 +1,13 @@
 <template>
-    <div class="background-wrapper">
+      <div v-if="alertVisible_errors" class="fixed-alert alert alert-danger d-flex justify-content-between align-items-center slide-down-enter-active slide-up-exit-active" role="alert">
+        <h5 class="m-0"> {{ errorText }} </h5>
+        <button v-if="deleteButton" class="btn btn-outline-danger margin" @click="confirmDelete()">Delete</button>
+        <button type="button" class="close close-icon alertclose" @click="closeAlert_errors()" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <div class="background-wrapper d-flex justify-content-center align-items-center">
       <div class="calendar-card p-4 shadow">
         <div class="calendar-header">
           <h2 class="text-center text-dark">Your Created Events</h2>
@@ -8,12 +16,12 @@
         <div class="calendar-content">
           <div v-if="userEvents.length">
             <ul class="list-unstyled">
-              <li v-for="event in userEvents" :key="event.id" class="event-card mx-2 mb-2 p-3 text-dark">
+              <li v-for="event in userEvents" :key="event.id" class="event-card mb-2 p-3 text-dark">
                 <div class="d-flex justify-content-between align-items-center">
                   <router-link 
                     :to="{ name: 'event', params: { id: event.id, name: event.event_name } }" 
                     class="event-link">
-                    <h6 class="card-title"><u><strong>{{ event.event_name }}</strong></u></h6>
+                    <h5 class="card-title">{{ event.event_name }} &nbsp;<i class="bx bx-link-external"></i></h5> 
                   </router-link>
                   <div class="d-flex align-items-center">
                     <div>
@@ -27,7 +35,7 @@
                     </div>
                   </div>
                 </div>
-                <p>{{ event.location_short }}</p>
+                <p class="mb-2">{{ event.location_short }}</p>
                 <p style="font-size: 12px;">
                   {{ getDates(event.start_date_time, event.end_date_time) }}<br>
                   {{ getTime(event.start_date_time, event.end_date_time) }}
@@ -47,7 +55,7 @@
 
 <script>
     import router from '@/router';
-    import { getEventsByUserId, getLikedUsersByEventId } from '../../utils/supabaseRequests';
+    import { getEventsByUserId, getLikedUsersByEventId, deleteEventByEventID } from '../../utils/supabaseRequests';
     import { useUserStore } from '@/stores/counter';
 
     const userStore = useUserStore()
@@ -60,7 +68,11 @@
         data(){
             return {
                 userId: userStore.getAuthToken(),
-                userEvents : []
+                userEvents: [],
+                alertVisible_errors: false,
+                delete_event_id: "",
+                errorText: "",
+                deleteButton: true,
             }
         },
         methods: {
@@ -102,7 +114,28 @@
             const startTimeFormatted = formatTime(start);
             const endTimeFormatted = formatTime(end);
             return `${startTimeFormatted} - ${endTimeFormatted}`;
-            
+            },
+            deleteEvent(id){
+              this.delete_event_id = id
+              this.deleteButton = true
+              this.errorText = "Delete Event?"
+              this.openAlert_errors()
+            },
+            openAlert_errors(){
+              console.log("sent")
+              this.alertVisible_errors = true;
+            },
+            closeAlert_errors(){
+              this.alertVisible_errors = false;
+            },
+            async confirmDelete(){
+              this.closeAlert_errors()
+              let id = this.delete_event_id
+              await deleteEventByEventID(id)
+              this.openAlert_errors()
+              this.deleteButton = false
+              this.errorText = "Event Deleted"
+              await this.getUserEvents()
             },
         },
         mounted() {
@@ -146,7 +179,7 @@
 }
 
 .event-card {
-  background-color: #ffffff;
+  background-color: rgb(245, 245, 245);
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -159,5 +192,54 @@
 .like-count {
   font-size: 14px;
   color: #666;
+}
+
+.fixed-alert {
+  position: fixed;
+  top: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1050;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.close-icon {
+  font-size: 30px; 
+  color: darkolivegreen; 
+  background: transparent; 
+  border: none; 
+  cursor: pointer; 
+}
+
+
+.fixed-alert.slide-down-enter-active {
+  animation: slideDown 0.5s ease forwards;
+}
+.slide-up-exit-active {
+  transform: translate(-50%, -100%);
+  opacity: 0;
+}
+@keyframes slideDown {
+  0% {
+    transform: translate(-50%, -100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, 100px);
+    opacity: 1;
+  }
+}
+.invalid-input {
+  border-color: red;
+}
+.alertclose {
+  margin-left: 10px; /* Adjust this value as needed */
+}
+
+.margin{
+  margin-left:20px;
+}
+.card-title {
+  border-bottom: 1px solid black; 
 }
 </style>
