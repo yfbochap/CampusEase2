@@ -8,11 +8,20 @@ const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
 
+const isEmailValid = (email) => {
+  const emailDomain = "smu.edu.sg";
+  return email.endsWith(emailDomain);
+};
+
 const handleSignup = async () => {
   try {
     if (password.value !== confirmPassword.value) {
       alert("Passwords do not match.");
       return;
+    }
+
+    if (!isEmailValid(email.value)) {
+      throw new Error("Email must end with @smu.edu.sg");
     }
 
     const { data, error } = await supabase.auth.signUp({
