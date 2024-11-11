@@ -55,3 +55,36 @@ npm run test:e2e -- --debug
 ```sh
 npm run lint
 ```
+
+README for CampusEase
+
+# CampusEase
+This readme will help you install CampusEase locally
+
+## Installation
+
+Clone the repository into your folder using the following command:
+
+
+git clone https://github.com/yfbochap/CampusEase.git
+
+Enter the project directory
+
+
+cd CampusEase
+
+This assumes that you have a local Vue + Vite installation. If not, run the following command.
+
+npm create vue@latest
+
+When you have installed Vue + Vite, run the following
+
+npm install
+
+
+npm run dev
+
+## Usage
+Access via the provided localhost link when 
+npm run dev
+ completes
