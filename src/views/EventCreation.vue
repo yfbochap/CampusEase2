@@ -416,25 +416,30 @@
     const { thumbnailPath, additionalImagePaths } = await uploadFiles(thumbnailPhoto.value, eventPhotos.value, eventName.value);
 
     const createdEvent = await addEvent(newEvent, thumbnailPath, additionalImagePaths || []);
+    console.log("Created Event ID: ", createdEvent[0].id);
             
       if (createdEvent) {
           console.log('Event added successfully:', createdEvent);
           closeAlert_errors()
           openAlert()
+          setTimeout(() => {
+            router.push({ name: 'event', params: { id: createdEvent[0].id, name: eventName.value } }); // Perform the redirect after 3 seconds (3000 ms)
+          }, 3000);
 
           // Clear form fields
-          eventName.value = '';
-          eventVenue.value = '';
-          eventStartDateTime.value = '';
-          eventEndDateTime.value = '';
-          eventDescription.value = '';
-          eventOrganisation.value = '';
-          eventSignUp.value = '';
-          eventPhotos.value = Array(3).fill(null);
-          eventPhotosPreview.value = Array(3).fill('');
-          thumbnailPhoto.value = null;
-          selectedLocation.value = '';
-          otherLocation.value = '';
+          // eventName.value = '';
+          // eventVenue.value = '';
+          // eventStartDateTime.value = '';
+          // eventEndDateTime.value = '';
+          // eventDescription.value = '';
+          // eventOrganisation.value = '';
+          // eventSignUp.value = '';
+          // eventPhotos.value = Array(3).fill(null);
+          // eventPhotosPreview.value = Array(3).fill('');
+          // thumbnailPhoto.value = null;
+          // selectedLocation.value = '';
+          // otherLocation.value = '';
+          // eventType.value = '';
       }
 
     else {

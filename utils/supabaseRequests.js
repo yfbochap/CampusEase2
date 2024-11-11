@@ -90,12 +90,13 @@ export async function addEvent(eventData, thumbnailPath, additionalImagePaths) {
           event_type: eventData.event_type,
           thumbnail: thumbnailPath,
           photos: [...additionalImagePaths],
-        }]);
+        }])
+        .select('id');
   
       if (error) {
         throw error;
       }
-      return true;
+      return data;
     } catch (error) {
         console.error('Error adding event:', error.message);
         return null;
