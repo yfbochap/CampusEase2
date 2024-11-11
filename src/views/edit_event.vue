@@ -472,7 +472,9 @@
         thumbnailPath.value = thumbnailCheck;
       }
       else{
-        alert('Error uploading image. Try again, or use an alternative image');
+        errorText.value = "Please Use Another Image"
+        openAlert_errors()
+        return
       }
       await deleteImage(eventData.value.thumbnail);
       
