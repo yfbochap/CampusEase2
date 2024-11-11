@@ -109,8 +109,8 @@
           </div>
 
           <div class="mb-3">
-            <label for="eventOrganisation" class="form-label">Organisation (Optional)</label>
-            <input type="text" class="form-control" id="eventOrganisation" v-model="eventOrganisation">
+            <label for="eventOrganisation" class="form-label" >Organisation</label>
+            <input type="text" class="form-control" id="eventOrganisation" required v-model="eventOrganisation">
           </div>
 
           <div class="mb-3">
@@ -365,20 +365,28 @@
     // Upload additional files
     const additionalImagePaths = nonNullAdditionalFiles.length > 0 
         ? await Promise.all(
-            nonNullAdditionalFiles.map((file, index) => {
-              const filePath = uploadImage(file, 'additional', eventName, index);
+            nonNullAdditionalFiles.map( async (file, index) => {
+              try {
+                const filePath = await uploadImage(file, 'additional', eventName, index);
+                console.log("AAAAAAAA",filePath); // Debugging: log the file path
 
-              if (!filePath) {
+                if (!filePath) {
+                  // If the file upload failed (null), show the error message
+                  errorText.value = "An Extra Image Has An Error. Please Use Another Image";
+                  openAlert_errors();
+                  return null; // Stop further uploads for this file
+                }
+
+                return filePath; // Return the file path if the upload is successful
+
+              } catch (error) {
+                console.error("Error during file upload:", error);
                 errorText.value = "An Extra Image Has An Error. Please Use Another Image";
                 openAlert_errors();
-                return; // Stop further uploads for this file
+                return null; // Handle the error gracefully by returning null
               }
-
-              return filePath; // Return the file path if the upload is successful
-            
             })
-          )
-        : []; // Return an empty array if no additional files
+          ) : []; // Return an empty array if no additional files
 
     // Now create an array with the non-null values at the front and nulls at the end
     const fullAdditionalImagePaths = [
@@ -401,6 +409,16 @@
         return;
       }
     }
+    const start = new Date(eventStartDateTime.value)
+    const end = new Date(eventEndDateTime.value)
+    console.log(start, end)
+    if(start > end){
+      console.log(event.start_date_time, event.end_date_time)
+      errorText.value = "Invalid Date"
+      openAlert_errors()
+      return
+    }
+    
     console.log("THIS SHOULDNT HAVE CONTINUED PART 2")
     event.preventDefault();
 
