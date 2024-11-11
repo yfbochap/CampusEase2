@@ -736,8 +736,10 @@
 }
 
 #map {
-  height: 350px;
-  width: 90%
+  height: 500px;
+  width: 70%;
+  border-radius: 10px;
+
 }
 
 #mapDimensions{
