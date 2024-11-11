@@ -31,7 +31,7 @@
       </div>
 
       <div class="container-fluid mt-5">
-      <h1 class="text-center">Our Events</h1>
+      <h1 class="text-center">Events Around SMU</h1>
 
         <!-- Carousel -->
         <div id="carouselMap" class="carousel slide" data-bs-ride="carousel">
@@ -138,7 +138,7 @@
                                       <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
                                       <h6>{{ getTime(event.start_date_time,event.end_date_time) }}</h6>
                                       <h6 class="card-subtitle ">{{ event.location_short}}</h6>
-                                      <h6 class="card-subtitle" style="font-weight: bold">By: {{ event.organisation}}</h6>
+                                      <h6 class="card-subtitle" style="font-weight: bold">Organiser: {{ event.organisation}}</h6>
                                     </router-link>
                                 </div>
                             </div>
