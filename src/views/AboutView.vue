@@ -116,7 +116,9 @@ video {
   max-width: 1200px;
   margin-top: 0px;
 }
-
+.about{
+  min-height: 100vh;
+}
 .about-logo {
   width: 30%;
   max-width: 35%;

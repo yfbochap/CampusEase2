@@ -666,6 +666,7 @@
   white-space: nowrap; /* Prevents text from breaking */
   flex: 0 1 auto; /* Default to auto size based on content */
   margin: 5px;
+  border: none;
 }
 
 @media (min-width: 992px) {
