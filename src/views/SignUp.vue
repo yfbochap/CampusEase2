@@ -170,14 +170,10 @@ input[type="text"],input[type="email"],input[type="password"]{
   color: #fafefb;
   border-color: #777676;
 }
-.submit{
+.submit, .back {
   background-color: rgba(187, 182, 182, 0.9);
-  width: 20%
-
-}
-.back{
-  background-color: rgba(187, 182, 182, 0.9);
-  width: 20%;
+  width: auto; /* Let the width adjust based on content */
+  padding: 0.5rem 1.5rem; /* Add padding for better appearance */
 }
 .submit, .back{
   transition: background-color 0.3s ease, color 0.3s ease;
