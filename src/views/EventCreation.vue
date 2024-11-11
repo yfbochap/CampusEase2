@@ -10,9 +10,6 @@
 
       <div v-if="alertVisible" class="fixed-alert alert alert-success d-flex justify-content-between align-items-center slide-down-enter-active" role="alert">
         <h5 class="m-0">Event Created Successfully!</h5>
-        <button type="button" class="close close-icon alertclose" @click="closeAlert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
       </div>
     
       <form class="mt-4 d-flex justify-content-center flex-wrap">
@@ -229,13 +226,14 @@
   const alertVisible = ref(false);
   const alertVisible_errors = ref(false)
   const errorText = ref('')
+  const thumbnailSuccess = ref('')
 
   const autoCloseAlertErrors = () => {
-  setTimeout(() => {
-    if (alertVisible_errors.value) {
-      closeAlert_errors();
-    }
-  }, 3000); // Closes the alert after 3 seconds
+  // setTimeout(() => {
+  //   if (alertVisible_errors.value) {
+  //     closeAlert_errors();
+  //   }
+  // }, 3000); // Closes the alert after 3 seconds
 };
   const openAlert_errors = () => {
   alertVisible_errors.value = true;
@@ -344,56 +342,68 @@
     });
   };
 
-  const uploadFiles = async(thumbnailFile, additionalFiles, eventName) => {
+  const uploadFiles = async (thumbnailFile, additionalFiles, eventName) => {
     let thumbnailPath;
-    if (typeof thumbnailFile === 'string') {
-        // If it's a URL, use it directly
-        thumbnailPath = thumbnailFile;
-        console.log('Using existing thumbnail path:', thumbnailPath);
-    } else {
-        // If it's a File object, upload it
-        thumbnailPath = await uploadImage(thumbnailFile, 'thumbnail', eventName);
-        if (!thumbnailPath){
-          errorText.value = "Error. Please Use Another Thumbnail";
-          openAlert_errors();
-          return;
-        }
+    console.log("Thumbnail Success?", thumbnailSuccess.value)
+    if (!thumbnailSuccess.value){
+        if (typeof thumbnailFile === 'string') {
+          // If it's a URL, use it directly
+          thumbnailPath = thumbnailFile;
+          console.log('Using existing thumbnail path:', thumbnailPath);
+      } else {
+          // If it's a File object, upload it
+          thumbnailPath = await uploadImage(thumbnailFile, 'thumbnail', eventName);
+          if (!thumbnailPath){
+            errorText.value = "Error. Please Use Another Thumbnail";
+            openAlert_errors();
+            return;
+          }
+          thumbnailSuccess.value = thumbnailPath;
+      }
     }
     
     const nonNullAdditionalFiles = additionalFiles.filter(file => file !== null);
 
     // Upload additional files
-    const additionalImagePaths = nonNullAdditionalFiles.length > 0 
-        ? await Promise.all(
-            nonNullAdditionalFiles.map( async (file, index) => {
-              try {
-                const filePath = await uploadImage(file, 'additional', eventName, index);
-                console.log("AAAAAAAA",filePath); // Debugging: log the file path
+    const additionalImagePaths = nonNullAdditionalFiles.length > 0
+    ? [] // Start with an empty array to store the valid paths
+    : []; // If no files, we just return an empty array
 
-                if (!filePath) {
-                  // If the file upload failed (null), show the error message
-                  errorText.value = "An Extra Image Has An Error. Please Use Another Image";
-                  openAlert_errors();
-                  return null; // Stop further uploads for this file
-                }
+    // Sequentially process each file
+    for (let index = 0; index < nonNullAdditionalFiles.length; index++) {
+      const file = nonNullAdditionalFiles[index];
+      
+      try {
+        // Await each uploadImage call to ensure sequential execution
+        const filePath = await uploadImage(file, 'additional', eventName, index);
+        console.log('File path:', filePath); // Debugging: log the file path after awaiting
 
-                return filePath; // Return the file path if the upload is successful
+        // Check if filePath is valid, and handle errors if not
+        if (!filePath) {
+          console.log('Upload failed, filePath is null');
+          errorText.value = "An Extra Image Has An Error. Please Use Another Image";
+          openAlert_errors();
+          return; // Stop the loop if an image fails
+        }
 
-              } catch (error) {
-                console.error("Error during file upload:", error);
-                errorText.value = "An Extra Image Has An Error. Please Use Another Image";
-                openAlert_errors();
-                return null; // Handle the error gracefully by returning null
-              }
-            })
-          ) : []; // Return an empty array if no additional files
+        // Push the valid filePath to the result array
+        additionalImagePaths.push(filePath);
 
-    // Now create an array with the non-null values at the front and nulls at the end
-    const fullAdditionalImagePaths = [
-        ...additionalImagePaths, // Add all the uploaded images first
-        ...additionalFiles.filter(file => file === null) // Add the nulls at the end
-    ];
+      } catch (error) {
+        console.error("Error during file upload:", error);
+        errorText.value = "An Extra Image Has An Error. Please Use Another Image";
+        openAlert_errors();
+        return; // Exit the loop if there was an error during the upload
+      }
+    }
 
+      // Now create an array with the non-null values at the front and nulls at the end
+      const fullAdditionalImagePaths = [
+          ...additionalImagePaths, // Add all the uploaded images first
+          ...additionalFiles.filter(file => file === null) // Add the nulls at the end
+      ];
+
+      thumbnailPath = thumbnailSuccess.value;
     return { thumbnailPath, additionalImagePaths: fullAdditionalImagePaths };
   }
 
@@ -491,22 +501,9 @@
           openAlert()
           setTimeout(() => {
             router.push({ name: 'event', params: { id: createdEvent[0].id, name: eventName.value } });
-          }, 6000);
-
-          // Clear form fields
-          // eventName.value = '';
-          // eventVenue.value = '';
-          // eventStartDateTime.value = '';
-          // eventEndDateTime.value = '';
-          // eventDescription.value = '';
-          // eventOrganisation.value = '';
-          // eventSignUp.value = '';
-          // eventPhotos.value = Array(3).fill(null);
-          // eventPhotosPreview.value = Array(3).fill('');
-          // thumbnailPhoto.value = null;
-          // selectedLocation.value = '';
-          // otherLocation.value = '';
-          // eventType.value = '';
+            window.location.reload()
+          }, 5000);
+  
       }
 
     else {
