@@ -472,7 +472,7 @@
         thumbnailPath.value = thumbnailCheck;
       }
       else{
-        errorText.value = "Please Use Another Image"
+        errorText.value = "Error. Please Use Another Image"
         openAlert_errors()
         return
       }
