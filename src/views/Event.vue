@@ -28,16 +28,21 @@
 
       <!-- Event Details Section -->
       <div class="col-md-6 details">
-  <h2 id="eventTitle" class="d-inline-block mr-3">
-    {{ eventTitle }}
-    <span v-if="user_id != null">
-      <HeartIcon :isLiked="isLiked" :eventId="Number(eventID)" :userId="user_id" @toggle-like="toggleLikeStatus"/>
-    </span>
-  </h2>
-  
-  <hr>
-  
-  <p style="white-space: pre-line">{{ description }}</p>
+          <h2 id="eventTitle" class="d-inline-block mr-3">
+            {{ eventTitle }}
+            <span v-if="this.user_id != null">
+              <HeartIcon :isLiked="isLiked" :eventId="Number(eventID)" :userId="user_id" @toggle-like="toggleLikeStatus"/>
+            </span> 
+          </h2>
+          <hr class="m-0">
+          
+          <br>
+          <div class="d-flex align-items-center">
+            <button class="btn button-disabled text-light" :style="{backgroundColor: getCategoryColor(eventType)}">{{ eventType }}</button> 
+            <span v-if="organisation != ''" :style="{ fontStyle: 'italic' }">&nbsp; Organised by: {{ organisation }}</span>
+          </div>
+          <br>
+          <p style="white-space: pre-line">{{ description }}</p>
 
   <div class="row">
     <div class="col-6">
@@ -54,19 +59,20 @@
   <p>{{ time }}</p>
 
   <h5>
-    <u style="color: green;">
-      <a class="btn btn-outline-success d-inline-flex align-items-center" v-if="signUpLink != ''" :href="signUpLink" target="_blank">
-        Sign Up here!&nbsp;<i class="bx bx-link-external"></i>
-      </a>
-    </u> 
-    &nbsp;
     <u>
       <a class="btn btn-outline-light d-inline-flex align-items-center" @click="handleEventsCalendar">
         Add to Calendar&nbsp;<i class="bx bx-calendar"></i>
       </a>
     </u>
+    &nbsp;
+    <u style="color: green;">
+      <a class="btn btn-outline-success d-inline-flex align-items-center" v-if="signUpLink != ''" :href="signUpLink" target="_blank">
+        Sign Up here!&nbsp;<i class="bx bx-link-external"></i>
+      </a>
+    </u> 
   </h5>
 </div>
+
 
 
       <!-- Lightbox -->
@@ -74,6 +80,7 @@
         <span class="close" @click="closeLightbox">&times;</span>
         <img class="lightbox-content" :src="lightboxImage" />
       </div>
+    
     </div>
   </div>
 </template>
@@ -111,6 +118,8 @@ export default {
       user_id: "",
       likedEvents: [],
       eventID: "",
+      eventType: "",
+      organisation: '',
       //For Google Calendar
       campusEaseCalendarId: null,
       userEmail: null,
@@ -158,6 +167,9 @@ export default {
       console.log("Event Data: ", event)
       this.eventTitle = event.event_name
       this.location = event.location
+      this.eventType = event.event_type
+      this.organisation = event.organisation
+      console.log("organisation",this.organisation)
       this.venue = event.venue
       this.description = event.description
       this.thumbnail = this.getPhotoURL(event)
@@ -346,7 +358,33 @@ export default {
       if (!dateTime) return 'N/A';
       const time = new Date(dateTime);
       return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    },
+    getCategoryColor(category){
+    const categories = {
+      Academic: '#4a90e2',
+      Sports: '#50e3c2',
+      Arts: '#e94e77',
+      Networking: '#f5a623',
+      Charity: '#7ed321',
+      Community: '#b8e986',
+      Welfare: '#bd10e0',
+      default: '#cccccc' 
     }
+    return categories[category]
+  },
+  getCategoryColor(category){
+    const categories = {
+      Others: "#7B8794",
+      Academic: "#4A90E2",
+      Sports: "#50C878",
+      Arts: "#9B59B6",
+      Networking: "#F5A623",
+      Charity: "#E74C3C",
+      Community: "#F1C40F",
+      Welfare: "#1ABC9C"
+    }
+    return categories[category]
+  }
   },
 }
 </script>
@@ -461,6 +499,7 @@ h2{
 .details > *:nth-child(7) { animation-delay: 1.4s; }
 .details > *:nth-child(8) { animation-delay: 1.6s; }
 .details > *:nth-child(9) { animation-delay: 1.8s; }
+.details > *:nth-child(10) { animation-delay: 2.0s; }
 
 #thumbnail {
   opacity: 0;
@@ -484,5 +523,11 @@ h2{
 
 p{
   margin-bottom: 25px;
-        }
+}
+
+.button-disabled:hover{
+  cursor: default;
+  color: black;
+}
+
 </style>
