@@ -467,8 +467,15 @@
     console.log("After compare & update images: ", imagesToUpload, imagesToDelete);
 
     if(updateThumbnail.value){
+      const thumbnailCheck = await uploadImage(thumbnailPhoto.value, 'thumbnail', eventName.value) //here
+      if (thumbnailCheck){
+        thumbnailPath.value = thumbnailCheck;
+      }
+      else{
+        alert('Error uploading image. Try again, or use an alternative image');
+      }
       await deleteImage(eventData.value.thumbnail);
-      thumbnailPath.value = await uploadImage(thumbnailPhoto.value, 'thumbnail', eventName.value) //here
+      
       console.log('New thumbnail uploaded:', thumbnailPath);
     }
     
