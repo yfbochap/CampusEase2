@@ -128,7 +128,7 @@
 <script setup>
   import { ref, reactive, watch, nextTick, onMounted } from 'vue';
   import { supabase } from '../../utils/supabaseClient';
-  import { addEvent, uploadFiles, checkEventExists } from '../../utils/supabaseRequests';
+  import { addEvent, uploadImage, checkEventExists } from '../../utils/supabaseRequests';
   import { useUserStore } from '@/stores/counter';
   import router from '@/router';
 
@@ -344,6 +344,51 @@
     });
   };
 
+  const uploadFiles = async(thumbnailFile, additionalFiles, eventName) => {
+    let thumbnailPath;
+    if (typeof thumbnailFile === 'string') {
+        // If it's a URL, use it directly
+        thumbnailPath = thumbnailFile;
+        console.log('Using existing thumbnail path:', thumbnailPath);
+    } else {
+        // If it's a File object, upload it
+        thumbnailPath = await uploadImage(thumbnailFile, 'thumbnail', eventName);
+        if (!thumbnailPath){
+          errorText.value = "Error. Please Use Another Thumbnail";
+          openAlert_errors();
+          return;
+        }
+    }
+    
+    const nonNullAdditionalFiles = additionalFiles.filter(file => file !== null);
+
+    // Upload additional files
+    const additionalImagePaths = nonNullAdditionalFiles.length > 0 
+        ? await Promise.all(
+            nonNullAdditionalFiles.map((file, index) => {
+              const filePath = uploadImage(file, 'additional', eventName, index);
+
+              if (!filePath) {
+                errorText.value = "An Extra Image Has An Error. Please Use Another Image";
+                openAlert_errors();
+                return; // Stop further uploads for this file
+              }
+
+              return filePath; // Return the file path if the upload is successful
+            
+            })
+          )
+        : []; // Return an empty array if no additional files
+
+    // Now create an array with the non-null values at the front and nulls at the end
+    const fullAdditionalImagePaths = [
+        ...additionalImagePaths, // Add all the uploaded images first
+        ...additionalFiles.filter(file => file === null) // Add the nulls at the end
+    ];
+
+    return { thumbnailPath, additionalImagePaths: fullAdditionalImagePaths };
+  }
+
   const submitEvent = async (event) => {
     if(selectedLocation.value === 'Other'){
       let error = await getCoordinates()
@@ -416,6 +461,7 @@
     }
 
     console.log("Before Upload Files: ", thumbnailPhoto.value, eventPhotos.value);
+
     const { thumbnailPath, additionalImagePaths } = await uploadFiles(thumbnailPhoto.value, eventPhotos.value, eventName.value);
 
     const createdEvent = await addEvent(newEvent, thumbnailPath, additionalImagePaths || []);
