@@ -1,6 +1,6 @@
 <template>
   <div class="main container-fluid">
-    <div class="row align-items-center">
+    <div class="row">
       <!-- Photos Section -->
       <div class="col-md-6 photos d-flex justify-content-center">
         <div>
@@ -420,11 +420,10 @@ h2{
 }
 .main{
   background-color: #29292a;
-  padding-top: 100px;
-  padding-bottom: 100px;
-  padding-left: 50px;
-  padding-right: 50px;
+  padding: 100px 50px;
   color: #ddd;
+  min-height: 100vh;
+  
 }
 /* Apply animation delays dynamically for each child element */
 .details > *:nth-child(1) {
