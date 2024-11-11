@@ -100,9 +100,9 @@ main{
 .get-started-btn {
   padding: 15px 25px;
   font-size: 20px;
-  background-color: transparent;
+  background-color: black;
   color: rgb(255, 255, 255);
-  border: 4px solid rgb(71, 206, 255);
+  border: 4px solid rgb(255, 255, 255);
   border-radius: 5px;
   margin: 50px;
   cursor: pointer;
@@ -111,7 +111,7 @@ main{
 }
 
 .get-started-btn:hover {
-  background-color: rgb(71, 206, 255);
+  background-color: rgb(55, 55, 55);
   color: white;
 }
 

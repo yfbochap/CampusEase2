@@ -419,25 +419,30 @@
     const { thumbnailPath, additionalImagePaths } = await uploadFiles(thumbnailPhoto.value, eventPhotos.value, eventName.value);
 
     const createdEvent = await addEvent(newEvent, thumbnailPath, additionalImagePaths || []);
+    console.log("Created Event ID: ", createdEvent[0].id);
             
       if (createdEvent) {
           console.log('Event added successfully:', createdEvent);
           closeAlert_errors()
           openAlert()
+          setTimeout(() => {
+            router.push({ name: 'event', params: { id: createdEvent[0].id, name: eventName.value } });
+          }, 4000);
 
           // Clear form fields
-          eventName.value = '';
-          eventVenue.value = '';
-          eventStartDateTime.value = '';
-          eventEndDateTime.value = '';
-          eventDescription.value = '';
-          eventOrganisation.value = '';
-          eventSignUp.value = '';
-          eventPhotos.value = Array(3).fill(null);
-          eventPhotosPreview.value = Array(3).fill('');
-          thumbnailPhoto.value = null;
-          selectedLocation.value = '';
-          otherLocation.value = '';
+          // eventName.value = '';
+          // eventVenue.value = '';
+          // eventStartDateTime.value = '';
+          // eventEndDateTime.value = '';
+          // eventDescription.value = '';
+          // eventOrganisation.value = '';
+          // eventSignUp.value = '';
+          // eventPhotos.value = Array(3).fill(null);
+          // eventPhotosPreview.value = Array(3).fill('');
+          // thumbnailPhoto.value = null;
+          // selectedLocation.value = '';
+          // otherLocation.value = '';
+          // eventType.value = '';
       }
 
     else {
@@ -722,11 +727,11 @@ textarea:focus{
   flex: 1;
 }
 .close-icon {
-  font-size: 30px; /* Standard close button size */
-  color: darkolivegreen; /* Default color for the close button (black) */
-  background: transparent; /* Transparent background */
-  border: none; /* Remove border */
-  cursor: pointer; /* Change the cursor to a pointer on hover */
+  font-size: 30px; 
+  color: darkolivegreen; 
+  background: transparent; 
+  border: none; 
+  cursor: pointer; 
 }
 /* ANIMATION FOR MODAL */
 .fixed-alert {

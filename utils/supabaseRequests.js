@@ -90,12 +90,13 @@ export async function addEvent(eventData, thumbnailPath, additionalImagePaths) {
           event_type: eventData.event_type,
           thumbnail: thumbnailPath,
           photos: [...additionalImagePaths],
-        }]);
+        }])
+        .select('id');
   
       if (error) {
         throw error;
       }
-      return true;
+      return data;
     } catch (error) {
         console.error('Error adding event:', error.message);
         return null;
@@ -280,3 +281,16 @@ export async function getLikedUsersByEventId(event_id) {
 }
 
 
+export async function deleteEventByEventID(id){
+  console.log(id)
+  try {
+    const { data, error } = await supabase
+      .from('event') 
+      .delete()
+      .eq('id', id); 
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error deleting event:', error);
+  }
+
+}

@@ -1,17 +1,18 @@
 <template>
   <div class="background-wrapper d-flex justify-content-center align-items-center">
-    <div class="calendar-card p-4 shadow">
+    <div class="calendar-card p-4 shadow ">
       <div class="calendar-header">
-        <h2 class="text-center text-dark">Your Liked Events</h2>
-        <p class="text-center text-dark">Check Out Your Liked Events Here!</p>
+        <h2 class="text-center ">Your Liked Events</h2>
+        <p class="text-center ">Check Out Your Liked Events Here!</p>
       </div>
-      <div class="calendar-content">
+      <div class="calendar-content your-scrollable-element">
         <div v-if="events.length">
           <ul class="list-unstyled">
-            <li v-for="event in events" :key="event.id" class="event-card mb-3 p-3 text-dark">
-              <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
+            <li v-for="event in events" :key="event.id" class="event-card mx-2 mb-3 p-3 text-dark">
                 <div class="d-flex justify-content-between align-items-center">
-                  <strong class="card-title">{{ event.event_name }}</strong>
+                  <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
+                    <strong class="card-title">{{ event.event_name }} &nbsp;<i class="bx bx-link-external"></i></strong>
+                  </router-link>
                   <button class="heart-btn" @click="toggleLike(event.id)" :aria-label="isLiked(event.id) ? 'Unlike' : 'Like'">
                     <svg class="heart-icon" :class="{ filled: isLiked(event.id) }" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -19,11 +20,12 @@
                   </button>
                 </div>
                 <p>{{ event.location_short }}</p>
+                <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
                 <p style="font-size: 12px;">
                   {{ getDates(event.start_date_time, event.end_date_time) }}<br>
                   {{ getTime(event.start_date_time, event.end_date_time) }}
                 </p>
-              </router-link>
+                </router-link>
             </li>
           </ul>
         </div>
@@ -114,6 +116,15 @@ export default {
 </script>
 
 <style scoped>
+.your-scrollable-element {
+  overflow: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.your-scrollable-element::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
 .event-link {
   color: inherit; 
   text-decoration: none; 
@@ -130,7 +141,7 @@ export default {
 }
 
 .background-wrapper {
-  background-image: url('@/assets/images/bg-7.png');
+  background-image: url('@/assets/images/bg-7.jpg');
   background-size: cover;
   background-position: center;
   height: 110vh;
@@ -142,18 +153,20 @@ export default {
   max-height: 80vh;
   width: 40vw;
   border-radius: 10px;
-  background-color: #f8f9fa;
+  background-color: #333435;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  
 }
 
 .calendar-header {
   position: sticky;
   top: 0;
-  background-color: #f8f9fa;
+  background-color: #333435;
   z-index: 10;
-  padding-bottom: 8px;
+  /* padding-bottom: 8px; */
+  color: white;
 }
 
 .calendar-content {
@@ -190,5 +203,9 @@ export default {
 .heart-icon.filled {
   fill: #ff3040;
   stroke: #ff3040;
+}
+
+.card-title {
+  border-bottom: 1px solid black; 
 }
 </style>

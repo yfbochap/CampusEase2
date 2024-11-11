@@ -467,8 +467,17 @@
     console.log("After compare & update images: ", imagesToUpload, imagesToDelete);
 
     if(updateThumbnail.value){
+      const thumbnailCheck = await uploadImage(thumbnailPhoto.value, 'thumbnail', eventName.value) //here
+      if (thumbnailCheck){
+        thumbnailPath.value = thumbnailCheck;
+      }
+      else{
+        errorText.value = "Error. Please Use Another Image"
+        openAlert_errors()
+        return
+      }
       await deleteImage(eventData.value.thumbnail);
-      thumbnailPath.value = await uploadImage(thumbnailPhoto.value, 'thumbnail', eventName.value) //here
+      
       console.log('New thumbnail uploaded:', thumbnailPath);
     }
     
@@ -489,7 +498,14 @@
 
       for (const [index, item] of imagesToUpload.entries()){
         const uploadedPath = await uploadImage(item, 'additional', eventName.value, index);
-        uploadedImages.push(uploadedPath);
+        if (uploadedPath){
+          uploadedImages.push(uploadedPath);
+        }
+        else{
+          errorText.value = "An Extra Image Has An Error. Please Use Another Image";
+          openAlert_errors();
+          return;
+        }
       }
 
       console.log("Uploaded images: ", uploadedImages)
@@ -539,7 +555,7 @@
           console.log('Event updated successfully:', updatedEvent);
           openAlert()
           setTimeout(() => {
-            window.location.reload();
+            router.push("/your_events");
           }, 3000);
       }
 
