@@ -19,8 +19,8 @@
     </div>
 
     <h2>Update Event</h2>
-    <form class="mt-4 d-flex">
-      <div class="left-column">
+    <form class="mt-4 d-flex justify-content-center flex-wrap">
+      <div class="me-4">
         <label for="thumbnailPhoto" class="form-label">Thumbnail Photo (Mandatory)</label>
         <div class="thumbnail-box" style="border-radius: 10px;">
           <input type="file" id="thumbnailPhoto" @change="handleThumbnailPhoto" accept="image/*">
@@ -40,14 +40,14 @@
         </div>
       </div>
 
-      <div class="right-column ms-4">
-        <div class="mb-3 d-flex location-venue-container">
-          <div class="flex-half">
+      <div class="right-column">
+        <div class="mb-3 d-flex flex-wrap gap-2">
+          <div class="flex-grow-1 same-width">
           <label for="eventName" class="form-label">Event Name</label>
           <input type="text" class="form-control" id="eventName" v-model="eventName" required>
         </div>
 
-        <div class="flex-half ms-2">
+        <div class="flex-grow-1 same-width">
           <label for="eventType" class="form-label">Event Category</label>
           <select id="eventType" class="form-control" v-model="eventType" required>
             <option value="Academic">Academic</option>
@@ -62,8 +62,8 @@
         </div>
         </div>
 
-        <div class="mb-3 d-flex location-venue-container">
-          <div class="flex-half">
+        <div class="mb-3 d-flex flex-wrap gap-2 location-venue-container">
+          <div class="flex-grow-1 same-width">
           <label for="location" class="form-label">Location</label>
           <select id="location" class="form-control" v-model="selectedLocation" required>
             <option value="Administration Building">Administration Building</option>
@@ -81,28 +81,29 @@
             <option value="Other">Other</option>
           </select>
         </div>
-        &nbsp;&nbsp;
 
-        <div v-if="selectedLocation === 'Other'" class="mb-3">
+        <div v-if="selectedLocation === 'Other'" class="flex-grow-1 same-width">
           <label for="otherLocation" class="form-label">Google Maps Address</label>
           <input type="text" id="otherLocation" v-model="otherLocation" class="form-control" placeholder="Specify location" required autocomplete="off">
         </div>
 
-        <div class="flex-half ms-2">
+        <div class="flex-grow-1 same-width">
           <label for="eventVenue" class="form-label">Venue</label>
           <input type="text" class="form-control" id="eventVenue" v-model="eventVenue" required>
         </div>
       </div>
 
-        <div class="mb-3">
+      <div class="mb-3 d-flex flex-wrap gap-2">
+        <div class="flex-grow-1 same-width">
           <label for="eventStartDateTime" class="form-label">Start Date</label>
           <input type="datetime-local" class="form-control" id="eventStartDateTime" v-model="eventStartDateTime" required>
         </div>
 
-        <div class="mb-3">
+        <div class="flex-grow-1 same-width">
           <label for="eventEndDateTime" class="form-label">End Date</label>
           <input type="datetime-local" class="form-control" id="eventEndDateTime" v-model="eventEndDateTime" required>
         </div>
+      </div>
 
         <div class="mb-3">
           <label for="eventDescription" class="form-label">Description</label>
@@ -617,10 +618,92 @@
   margin: auto; /* Center the form content */
 }
 
+.same-width {
+  flex: 1 1 0;
+  flex-grow: 1;
+  min-width: 200px;
+}
+
+
 /* Limit scaling to 1000px for large screens */
 @media (min-width: 1000px) {
   .container-fluid {
     max-width: 1000px;
+    margin: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .right-column {
+    flex: 1 1 100%;
+  }
+
+  .location-venue-container {
+    flex-direction: column; /* Stack the Location and Venue fields */
+  }
+
+  .mb-3.d-flex {
+    flex-direction: column;
+  }
+}
+
+.location-venue-container {
+  display: flex;
+  gap: 2rem;
+}
+
+@media (max-width: 564px) {
+  .container-fluid {
+    padding-top: 50px;
+    margin: auto;
+  }
+
+  .right-column {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+  }
+
+  
+
+  /* Stretch input fields in right column */
+  .right-column input[type="text"],
+  .right-column input[type="datetime-local"],
+  .right-column input[type="url"],
+  .right-column select,
+  .right-column textarea {
+    width: 100%;
+  }
+
+  .location-venue-container {
+    flex-direction: column;
+  }
+
+  /* Center the thumbnail box with fixed width */
+  .thumbnail-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    max-width: 400px; /* Sets a fixed width for centering */
+  }
+
+  .small-photo-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  /* Ensure each small photo box is centered and has a defined size */
+  .small-photo-box {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin: auto;
   }
 }
@@ -642,6 +725,7 @@ textarea:focus{
   justify-content: center;
   align-items: center;
   height: 400px;
+  width: 100%;
   cursor: pointer;
   position: relative;
   margin-bottom: 1rem;
@@ -711,17 +795,15 @@ textarea:focus{
     background: darkred;
 }
 
-
-.left-column {
-  width: 40%;
-  margin-right: 2%;
-}
 .right-column {
   width: 60%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
+  flex: 2;
+  min-width: 300px;
+  margin-right: 20px;
 }
 .small-photo-wrapper {
   display: flex;
