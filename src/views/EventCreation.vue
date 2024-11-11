@@ -423,8 +423,8 @@
           closeAlert_errors()
           openAlert()
           setTimeout(() => {
-            router.push({ name: 'event', params: { id: createdEvent[0].id, name: eventName.value } }); // Perform the redirect after 3 seconds (3000 ms)
-          }, 3000);
+            router.push({ name: 'event', params: { id: createdEvent[0].id, name: eventName.value } });
+          }, 4000);
 
           // Clear form fields
           // eventName.value = '';

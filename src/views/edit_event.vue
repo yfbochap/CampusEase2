@@ -539,7 +539,7 @@
           console.log('Event updated successfully:', updatedEvent);
           openAlert()
           setTimeout(() => {
-            window.location.reload();
+            router.push("/your_events");
           }, 3000);
       }
 

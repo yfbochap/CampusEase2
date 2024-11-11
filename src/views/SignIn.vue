@@ -6,8 +6,20 @@ import router from "../router/index";
 const email = ref("");
 const password = ref("");
 
+// Validate email domain before signing in
+const isEmailValid = (email) => {
+  const emailDomain = "smu.edu.sg";
+  return email.endsWith(emailDomain);
+};
+
 const handleSignIn = async () => {
   try {
+
+    // Check if the email ends with "smu.edu.sg"
+    if (!isEmailValid(email.value)) {
+      throw new Error("Email must end with @smu.edu.sg");
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email.value,
       password: password.value,
@@ -39,6 +51,21 @@ const handleGoogleSignIn = async () => {
       }
     });
     if (error) throw error;
+
+        // Extract the user's email after successful sign-in
+        const userEmail = data.user.email;
+
+        // Validate the email domain
+        const isEmailValid = (email) => {
+          const emailDomain = "smu.edu.sg";
+          return email.endsWith(emailDomain);
+        };
+
+        // If the email is invalid, show an error message
+        if (!isEmailValid(userEmail)) {
+          throw new Error("Email must end with @smu.edu.sg");
+        }
+
   } catch (error) {
     alert(error.message);
   }
