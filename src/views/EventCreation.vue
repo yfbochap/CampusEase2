@@ -501,8 +501,10 @@
           openAlert()
           setTimeout(() => {
             router.push({ name: 'event', params: { id: createdEvent[0].id, name: eventName.value } });
-            window.location.reload()
-          }, 5000);
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          }, 1000);
   
       }
 
