@@ -14,6 +14,7 @@
           <p class="text-center ">Manage the events you've created!</p>
         </div>
         <div class="calendar-content your-scrollable-element">
+        <div class="calendar-content your-scrollable-element">
           <div v-if="userEvents.length">
             <ul class="list-unstyled">
                 <li 
@@ -52,7 +53,7 @@
                         >
                             <i class="bx bx-edit btnns"></i>
                         </button>
-                        <button class="btn">
+                        <button class="btn" @click="deleteEvent()">
                             <i class="bx bx-trash btnns"></i>
                         </button>
                         </div>
@@ -67,6 +68,7 @@
           </div>
         </div>
       </div>
+    </div>
     </div>
   </template>
 
@@ -240,6 +242,7 @@ i{
   background-color: rgb(245, 245, 245);
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 4px;
 }
 
 .event-link {

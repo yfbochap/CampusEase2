@@ -109,8 +109,8 @@
           </div>
 
           <div class="mb-3">
-            <label for="eventOrganisation" class="form-label">Organisation (Optional)</label>
-            <input type="text" class="form-control" id="eventOrganisation" v-model="eventOrganisation">
+            <label for="eventOrganisation" class="form-label" >Organisation</label>
+            <input type="text" class="form-control" id="eventOrganisation" required v-model="eventOrganisation">
           </div>
 
           <div class="mb-3">
@@ -128,7 +128,7 @@
 <script setup>
   import { ref, reactive, watch, nextTick, onMounted } from 'vue';
   import { supabase } from '../../utils/supabaseClient';
-  import { addEvent, uploadFiles, checkEventExists } from '../../utils/supabaseRequests';
+  import { addEvent, uploadImage, checkEventExists } from '../../utils/supabaseRequests';
   import { useUserStore } from '@/stores/counter';
   import router from '@/router';
 
@@ -344,6 +344,59 @@
     });
   };
 
+  const uploadFiles = async(thumbnailFile, additionalFiles, eventName) => {
+    let thumbnailPath;
+    if (typeof thumbnailFile === 'string') {
+        // If it's a URL, use it directly
+        thumbnailPath = thumbnailFile;
+        console.log('Using existing thumbnail path:', thumbnailPath);
+    } else {
+        // If it's a File object, upload it
+        thumbnailPath = await uploadImage(thumbnailFile, 'thumbnail', eventName);
+        if (!thumbnailPath){
+          errorText.value = "Error. Please Use Another Thumbnail";
+          openAlert_errors();
+          return;
+        }
+    }
+    
+    const nonNullAdditionalFiles = additionalFiles.filter(file => file !== null);
+
+    // Upload additional files
+    const additionalImagePaths = nonNullAdditionalFiles.length > 0 
+        ? await Promise.all(
+            nonNullAdditionalFiles.map( async (file, index) => {
+              try {
+                const filePath = await uploadImage(file, 'additional', eventName, index);
+                console.log("AAAAAAAA",filePath); // Debugging: log the file path
+
+                if (!filePath) {
+                  // If the file upload failed (null), show the error message
+                  errorText.value = "An Extra Image Has An Error. Please Use Another Image";
+                  openAlert_errors();
+                  return null; // Stop further uploads for this file
+                }
+
+                return filePath; // Return the file path if the upload is successful
+
+              } catch (error) {
+                console.error("Error during file upload:", error);
+                errorText.value = "An Extra Image Has An Error. Please Use Another Image";
+                openAlert_errors();
+                return null; // Handle the error gracefully by returning null
+              }
+            })
+          ) : []; // Return an empty array if no additional files
+
+    // Now create an array with the non-null values at the front and nulls at the end
+    const fullAdditionalImagePaths = [
+        ...additionalImagePaths, // Add all the uploaded images first
+        ...additionalFiles.filter(file => file === null) // Add the nulls at the end
+    ];
+
+    return { thumbnailPath, additionalImagePaths: fullAdditionalImagePaths };
+  }
+
   const submitEvent = async (event) => {
     if(selectedLocation.value === 'Other'){
       let error = await getCoordinates()
@@ -356,6 +409,16 @@
         return;
       }
     }
+    const start = new Date(eventStartDateTime.value)
+    const end = new Date(eventEndDateTime.value)
+    console.log(start, end)
+    if(start > end){
+      console.log(event.start_date_time, event.end_date_time)
+      errorText.value = "Invalid Date"
+      openAlert_errors()
+      return
+    }
+    
     console.log("THIS SHOULDNT HAVE CONTINUED PART 2")
     event.preventDefault();
 
@@ -416,6 +479,7 @@
     }
 
     console.log("Before Upload Files: ", thumbnailPhoto.value, eventPhotos.value);
+
     const { thumbnailPath, additionalImagePaths } = await uploadFiles(thumbnailPhoto.value, eventPhotos.value, eventName.value);
 
     const createdEvent = await addEvent(newEvent, thumbnailPath, additionalImagePaths || []);
