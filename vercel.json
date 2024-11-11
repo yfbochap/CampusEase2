@@ -12,13 +12,7 @@
         "destination": "/index.html"
       }
     ],
-    "routes": [
-      {
-        "src": "/index.html",
-        "headers": {
-          "cache-control": "public, max-age=0, must-revalidate"
-        }
-      }
-    ]
+    "cleanUrls": true,
+    "trailingSlash": false
   }
   
