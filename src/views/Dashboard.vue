@@ -3,84 +3,81 @@
   <div class="container-fluid maincon">
     <div id="eventMapTitle">
 
-  </div>
-  <div class="row d-flex justify-content-center">
-    <button
-    class="col-3 btn viewbutton"
-    :class="{ active: view === 'other' }"
-    v-on:click="switchView('otherView')"
-    >All Events</button>
-    <!-- <div class="col-1"></div> -->
-    <button
-    class="col-3 btn viewbutton"
-    :class="{ active: view === 'map' }"
-    v-on:click="switchView('mapView')"
-    >Map View</button>
-  </div>
+    </div>
+    <div class="row d-flex justify-content-center">
+      <button
+      class="col-3 btn viewbutton"
+      :class="{ active: view === 'other' }"
+      v-on:click="switchView('otherView')"
+      >All Events</button>
+      <!-- <div class="col-1"></div> -->
+      <button
+      class="col-3 btn viewbutton"
+      :class="{ active: view === 'map' }"
+      v-on:click="switchView('mapView')"
+      >Map View</button>
+    </div>
 
-  <!-- All Events View -->
-  <div v-if="view === 'other'" class="mt-2 mb-2">
-      <h1 class="category-title">Events</h1>
-      </div>
-  <!-- </div> -->
+    <!-- All Events View -->
+    <div v-if="view === 'other'" class="mt-2 mb-2">
+        <h1 class="category-title">Events</h1>
+        </div>
+    <!-- </div> -->
 
-  <!-- Map View -->
-  <div v-else>
-    <div id="mapDimensions">
-          <div id="map"></div>
+    <!-- Map View -->
+    <div v-else>
+      <div id="mapDimensions">
+        <div id="map"></div>
       </div>
 
       <div class="container-fluid mt-5">
       <h1 class="text-center">Our Events</h1>
 
-          <!-- Carousel -->
-          <div id="carouselMap" class="carousel slide" data-bs-ride="carousel">
-              <div class="carousel-inner">
-              <div
-                  class="carousel-item"
-                  :class="{ active: index === activeIndex}"
-                  v-for="(eventGroup, index) in groupedEvents"
-                  :key="index"> current {{ index }} and {{ activeIndex }}
+        <!-- Carousel -->
+        <div id="carouselMap" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+            <div class="carousel-item" :class="{ active: index === activeIndex}" v-for="(eventGroup, index) in groupedEvents":key="index">
+                <div class="row d-flex justify-content-center">
+                  <div class="col-sm-8 col-md-5 col-lg-3 align-items-stretch" v-for="event in eventGroup" :key="event.id">
 
-                  <div class="row d-flex justify-content-center">
-                    <div class="col-sm-8 col-md-5 col-lg-3 align-items-stretch" v-for="event in eventGroup" :key="event.id">
-                      
-                        <div class="card mb-4">
-                          <div class="card-body d-flex flex-column">
-                            <router-link :to="{name: 'event', params: { id: event.id, name: event.event_name}}" class="event-link">
-                              <img class="event-image" :src=getPhotoURL(event) alt="Event Image">
-                            </router-link>
-                            <div class="d-flex justify-content-center align-center" v-if='user_id != null'>
-                              <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/> 
-                              <span>
-                                {{ eventLikes[event.id] || 0 }} People Liked
-                              </span>
-                            </div>
-                            <router-link :to="{name: 'event', params: { id: event.id , name: event.event_name }}" class="event-link">
-                              <h4 class="card-title">{{ event.event_name }}</h4>
-                              <hr>
-                              <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
-                              <h6>{{  getTime(event.start_date_time, event.end_date_time) }}</h6>
-                              <h6 class="card-subtitle">{{ event.location_short }}</h6>
-                            </router-link>
-                          </div>
+                    <!-- Cards -->
+                    <div class="card mb-4">
+                      <div class="card-body d-flex flex-column">
+                        <router-link v-if= "event.id != 0" :to="{name: 'event', params: { id: event.id, name: event.event_name}}" class="event-link">
+                          <img class="event-image" :src=getPhotoURL(event) alt="Event Image">
+                        </router-link>
+                        <div class="d-flex justify-content-center align-center" v-if='user_id != null'>
+                          <HeartIcon v-if= "event.id != 0"  :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/> 
+                          <span v-if= "event.id != 0" >
+                            {{ eventLikes[event.id] || 0 }} People Liked
+                          </span>
                         </div>
+                        <router-link :to="{name: 'event', params: { id: event.id , name: event.event_name }}" class="event-link">
+                          <h4 class="card-title">{{ event.event_name }}</h4>
+                          <hr v-if= "event.id != 0" >
+                          <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
+                          <h6>{{  getTime(event.start_date_time, event.end_date_time) }}</h6>
+                          <h6 class="card-subtitle">{{ event.location_short }}</h6>
+                        </router-link>
+                      </div>
                     </div>
-                  </div>
-              </div>
-              </div>
-      
-              <!-- Carousel controls -->
-              <button class="carousel-control-prev" @click ="changeSlide('prev')" type="button" data-bs-target="#carouselMap" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Previous</span>
-              </button>
 
-              <button class="carousel-control-next" type="button" @click ="changeSlide('next')"  data-bs-target="#carouselMap" data-bs-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Next</span>
-              </button>
-          </div>
+                  </div>
+                </div>
+            </div>
+            </div>
+    
+            <!-- Carousel controls -->
+            <button class="carousel-control-prev" @click ="changeSlide('prev')" type="button" data-bs-target="#carouselMap" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+            </button>
+
+            <button class="carousel-control-next" type="button" @click ="changeSlide('next')"  data-bs-target="#carouselMap" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+            </button>
+        </div>
       </div>
   </div>
 
@@ -97,7 +94,7 @@
               v-model="searchTerm"
               @input="searchForEvents"
               type="text"
-              placeholder="Search events..."
+              placeholder="Search by Event or Organisation..."
               aria-label="Search"
               autocomplete="off"
             />
@@ -123,8 +120,7 @@
                   </h1>
                   <div v-if="searchedEvents.length != 0" class="row d-flex p-5 justify-content-center">
                     <!-- <transition-group name="fade" tag="div" class="row"> -->
-                        <div class="col-sm-8 col-md-5 col-lg-4 align-items-stretch fade-item" v-for="(event,index) in searchedEvents" :key="event.id" :style="{ animationDelay: (index * 0.5) + 's' }">
-                      
+                        <div class="col-sm-8 col-md-4 col-lg-3 align-items-stretch fade-item" v-for="(event,index) in searchedEvents" :key="event.id">
                             <div class="card mb-4 fade-item">
                                 <div class="card-body d-flex flex-column">
                                   <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
@@ -133,7 +129,7 @@
                                     <div class="d-flex justify-content-center align-center" v-if='user_id != null'>
                                       <HeartIcon :isLiked="isLiked(event)" :eventId="event.id" :userId="user_id" @toggle-like="toggleLikeStatus"/> 
                                       <span>
-                                        {{ eventLikes[event.id] || 0 }} People Liked
+                                          {{ eventLikes[event.id] || 0 }} People Liked
                                       </span>
                                     </div>
                                     <router-link :to="{name: 'event', params: {id: event.id, name:event.event_name} }" class="event-link">
@@ -142,6 +138,7 @@
                                       <h6>{{ getDates(event.start_date_time,event.end_date_time) }}</h6>
                                       <h6>{{ getTime(event.start_date_time,event.end_date_time) }}</h6>
                                       <h6 class="card-subtitle ">{{ event.location_short}}</h6>
+                                      <h6 class="card-subtitle" style="font-weight: bold">By: {{ event.organisation}}</h6>
                                     </router-link>
                                 </div>
                             </div>
@@ -334,16 +331,27 @@
       },
 
       // All Events View related functions:
-      async searchForEvents(){ // by search for events in database by search term + selected catagory
-          const data = await searchEvents('event_name',this.searchTerm) 
-          this.searchedEvents = []
-          const category = this.selectedCategory
-          let events_criteria = data.filter(event =>  // filter according to events which meet the 
-              category === "All" || event.event_type === category
-          );
+      async searchForEvents() {
+    // Fetch events by search term for both event name and organization
+    const data = await searchEvents('event_name', this.searchTerm);
+    const data1 = await searchEvents('organisation', this.searchTerm);
+    
+    // Combine both datasets and remove duplicates based on `event.id`
+    const combinedData = [...data, ...data1];
+    const uniqueEvents = Array.from(new Map(combinedData.map(event => [event.id, event])).values());
+    console.log(uniqueEvents)
 
-          return this.searchedEvents = events_criteria.sort((a, b) => new Date(a.start_date_time) - new Date(b.start_date_time)); // sort events based on start time
-      },
+    // Filter unique events by category and search term
+    const category = this.selectedCategory;
+    let events_criteria = uniqueEvents.filter(event => 
+        (category === "All" || event.event_type === category)
+    );
+
+    // Sort events by start time and assign to `searchedEvents`
+    return this.searchedEvents = events_criteria.sort((a, b) => 
+        new Date(a.start_date_time) - new Date(b.start_date_time)
+    );
+},
 
       selectCategory(category){ //update category selected and call search for events
           this.selectedCategory = category
@@ -737,6 +745,7 @@
 
 #map {
   height: 350px;
+  border-radius: 15px;
   width: 90%
 }
 
