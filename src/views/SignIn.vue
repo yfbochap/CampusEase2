@@ -43,11 +43,12 @@ const handleSignIn = async () => {
 
 const handleGoogleSignIn = async () => {
   try {
+    const redirectUrl = import.meta.env.VITE_REDIRECT_URL;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         scopes: 'profile email',
-        redirectTo: 'http://campus-ease2.vercel.app' // Change this to your redirect URL
+        redirectTo: "https://campus-ease2-green.vercel.app", // Change this to your redirect URL
       }
     });
     if (error) throw error;
