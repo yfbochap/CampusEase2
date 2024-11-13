@@ -48,7 +48,7 @@ const handleGoogleSignIn = async () => {
       provider: 'google',
       options: {
         scopes: 'profile email',
-        redirectTo: 'https://campus-ease-green.vercel.app/', // Change this to your redirect URL
+        redirectTo: 'https://campus-ease-green.vercel.app', // Change this to your redirect URL
       }
     });
     if (error) throw error;
